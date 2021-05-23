@@ -8,7 +8,7 @@ Shared notes and important question can be useful guide for students to score go
 
 ## :sparkles: Features
 - A Cross Platform Application so people can use them anywhere anytime.
-- Tech Stack : TBA
+- Tech Stack : Django anb React/Angular(TBD)
 
 
 ## Code Contributors
