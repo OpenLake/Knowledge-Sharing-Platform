@@ -17,7 +17,7 @@ The success of our vision to bring knowledge to every single hand depends on you
 
 ## 🧑‍🏫 Maintainers 
 
-This is a massive collaboration. Hence, to keep the quality intact and drive the vision in the proper direction, we have maintainers.
+To keep the quality intact and drive the vision in the proper direction, we have maintainers.
 
 > Maintainers are your friends forever. They are vastly different from moderators.
 
