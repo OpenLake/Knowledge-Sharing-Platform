@@ -1,9 +1,9 @@
 # knowlege-sharing-platform
-A Internal collage application to share study notes and reviews for professors and courses.
+An internal college application to share study notes and reviews for professors and courses.
 
 ## ❓ Problem Statement
-Our Motive is to create a cross-platform application for student benefit. In the application student can share courses feedback, study notes, professor's feedback etc. So Before taking a courses other student can know more about professor and course. 
-Shared notes and important question can be useful guide for students to score good in that course. 
+Our Motive is to create a cross-platform application for student benefit. In the application student can share courses feedback, study notes, professor's feedback etc. So Before taking a course other student can know more about that professor and course. 
+Shared notes and important question can act as a useful guide for students to score good in that course. 
 
 
 ## :sparkles: Features
