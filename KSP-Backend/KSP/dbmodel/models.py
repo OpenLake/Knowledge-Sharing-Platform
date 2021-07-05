@@ -1,16 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-class professor (models.Model):
+class Professor (models.Model):
     id = models.IntegerField()
     photo_url = models.CharField(max_length=100)
     web_url = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
     rating = models.FloatField() # between 1 to 10 
  
-
-class course (models.Model):
-    id =  models.ManyToManyField(professor)
+class Course (models.Model):
+    professors =  models.ManyToManyField(Professor)
     course_code = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
     sem = models.CharField(max_length=100)
@@ -18,16 +17,13 @@ class course (models.Model):
     end_time = models.DateTimeField()
     department = models.CharField(max_length=100)
 
-class course_notes (models.Model):
-    id =  models.IntegerField()
+class CourseNotes (models.Model):
     title  = models.CharField(max_length=100)
     upload_time = models.DateTimeField(auto_now_add=True)
-    course_id =  models.ForeignKey(course, null=True, on_delete=models.SET_NULL)
+    course_id =  models.ForeignKey(Course, null=True, on_delete=models.SET_NULL)
     url  = models.CharField(max_length=100)
  
-
-class user (AbstractUser):
-    id =  models.IntegerField() 
+class User (AbstractUser):
     name  = models.CharField(max_length=100)
     gender  = models.CharField(max_length=100)
     batch  = models.CharField(max_length=100)
@@ -35,17 +31,13 @@ class user (AbstractUser):
     department  = models.CharField(max_length=100)
     rating = models.FloatField()
  
-
-class tag (models.Model):
-    id =  models.ManyToManyField(course_notes)
+class Tag (models.Model):
+    notes =  models.ManyToManyField(CourseNotes)
     value  = models.CharField(max_length=100)
  
-
-
-class course_feedback (models.Model):
-    course_id = models.ForeignKey(course, null=True, on_delete=models.SET_NULL)
-    id =  models.IntegerField()
-    user_id = models.ForeignKey(user, on_delete=models.SET_NULL)
+class CourseFeedback (models.Model):
+    courses = models.ForeignKey(Course, null=True, on_delete=models.SET_NULL)
+    students = models.ForeignKey(User, on_delete=models.SET_NULL)
     comment  = models.CharField(max_length=100)
     upvote = models.IntegerField()
     downvote = models.IntegerField()
