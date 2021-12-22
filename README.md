@@ -8,7 +8,7 @@ Shared notes and important question can act as a useful guide for students to sc
 
 ## :sparkles: Features
 - A Cross Platform Application so people can use them anywhere anytime.
-- Tech Stack : Django anb React/Angular(TBD)
+- Tech Stack : Django anb React
 
 
 ## 📄 Creating a PR 
