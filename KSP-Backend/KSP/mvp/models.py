@@ -22,7 +22,7 @@ class Feedback(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
     feedback = models.TextField()
 
-class PYQs(models.Model):
+class PreviousYearQuestions(models.Model):
     course_id = models.CharField(max_length=10)
     batch = models.IntegerField(choices=YEAR_CHOICES)
     course_instructor = models.CharField(max_length=100)
