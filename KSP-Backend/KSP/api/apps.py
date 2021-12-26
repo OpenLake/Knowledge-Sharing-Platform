@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class DbmodelConfig(AppConfig):
+class MvpConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'dbmodel'
+    name = 'mvp'
