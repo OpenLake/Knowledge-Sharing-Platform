@@ -1,42 +1,35 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
-import {Helmet} from 'react-helmet'
 import {SideBarData} from "./SideBarData"
 import './Navbar.css'
 
 function Navbar() {
-
     return (
-        <div>
-            <Helmet>
-                <style>{'body { background-color: #f5f5fb; }'}</style>
-            </Helmet>
+        <div className='nav-bar'>
+            <div className='ksp'>
+                <h2> K S P </h2>
+            </div>
 
-            <div>
-                <div className='ksp'>
-                    <h3> K S P </h3>
-                </div>
+            <div className='nav-toggle'>
+                <div className='nav-items'>
 
-                <div className='nav-bar'>
-                    <div className='nav-items'>
-
-                        {SideBarData.map((item, index) => {
-                            return (
-                                <li key={index} className={item.cName}>
-                                    <Link to={item.path}>
-                                        {item.icon}
-                                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                                        <span>{item.title}</span>
-                                    </Link>
-                                </li>
-                            )
-                        })}
-                    </div>
+                    {SideBarData.map((item, index) => {
+                        return (
+                            <li key={index} className={item.cName}>
+                                <Link to={item.path}>
+                                    {item.icon}
+                                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                    <span className='span-text'>{item.title}</span>
+                                </Link>
+                            </li>
+                        )
+                    })}
                 </div>
             </div>
         </div>
 
-    )
+    );
 }
 
-export default Navbar
+export default Navbar;
+
