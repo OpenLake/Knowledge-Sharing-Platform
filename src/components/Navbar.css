@@ -1,31 +1,36 @@
-h3 {
+h2 {
     padding-top: 15px;
     text-align: center;
     color: white;
 }
 
 .ksp {
-    background-color: blueviolet;
+    background-color: #3f51b5;
     height: 56px;
     width: 160px;
     border-radius: 5px;
     align-items: center;
-    margin-left: 70px;
-    margin-top: 40px;
+    margin-left: 75px;
+    margin-top: 55px;
     margin-bottom: 150px;
 
 }
 
-.nav-bar {
+.nav-toggle {
     background-color: white;
-    height: 1024px;
+    height: 670px;
     width: 272px;
     display: flex;
     position: fixed;
     justify-content: start;
-    margin-top: -90px;
+    margin-top: -105px;
     margin-left: 30px;
 
+}
+
+.nav-bar {
+    position: fixed;
+    margin-top: -155px;
 }
 
 .nav-text {
@@ -44,12 +49,28 @@ h3 {
     display: flex;
     text-decoration: none;
     color: black;
-    align-items: center;
+    align-items: end;
     padding: 0 16px;
-    border-radius: 4px;
+    transition: 0.5s ease;
 
 }
 
-/*.nav-text a:hover {*/
+/*.nav-text:active {*/
+/*    width: 100%;*/
+/*    height: 32px;*/
+/*    border-right: 5px solid #5e81f4;*/
+/*    border-radius: 1px;*/
+/*    margin-left: 30px;*/
+/*    transition: 0.5s ease;*/
+/*    color: #5e81f4;*/
+/*}*/
+
+/*.nav-text a:active {*/
+/*    background-color: #5e81f4;*/
+/*    !*display: flex;*!*/
+/*    width: 32px;*/
+/*    height: 32px;*/
+/*    margin-left: 200px;*/
+/*    align-items: end;*/
 
 /*}*/

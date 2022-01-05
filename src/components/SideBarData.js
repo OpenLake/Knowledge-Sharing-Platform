@@ -3,7 +3,7 @@ import * as CgIcons from 'react-icons/cg';
 import * as GiIcons from 'react-icons/gi';
 import * as MdIcons from 'react-icons/md';
 
-let iconStyle = {color: 'blueviolet'}
+let iconStyle = {color: '#3f51b5'}
 
 export const SideBarData = [
     {
