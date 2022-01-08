@@ -77,7 +77,7 @@ function Popup(props) {
                             autoFocus
                             margin='dense'
                             id='name'
-                            label={props.type == 'REVIEW' ? 'Review' : 'Link'}
+                            label={props.type === 'REVIEW' ? 'Review' : 'Link'}
                             type='text'
                             fullWidth
                             variant='standard'

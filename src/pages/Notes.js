@@ -15,6 +15,7 @@ import Paper from '@mui/material/Paper';
 import {visuallyHidden} from '@mui/utils';
 import Popup from '../components/Popup';
 import '../App.css';
+import SearchBar from '../components/SearchBar';
 
 function createData(name, course_name, course_id, batch, link, description, voting) {
     return {
@@ -119,7 +120,7 @@ function EnhancedTableHead(props) {
 
     return (
         <>
-            <Popup type='NOTES'/>
+            <Popup type='NOTES' class="right-top-button"/>
             <TableHead>
                 <TableRow>
                     {headCells.map((headCell) => (
@@ -203,8 +204,11 @@ function Notes() {
 
     return (
         <>
-            {/*<TextField className='search-bar' id="outlined-basic" label="Search" variant="outlined"/>*/}
-            <Box ml={42} mt={18.5} sx={{width: '75%'}}>
+            <div class="search-bar">
+                <SearchBar/>
+            </div>
+
+            <Box ml={42} mt={5} sx={{width: '75%'}}>
                 <Paper sx={{width: '100%', mb: 2}}>
                     <EnhancedTableToolbar/>
                     <TableContainer>

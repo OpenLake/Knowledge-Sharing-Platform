@@ -6,11 +6,17 @@ h3 {
 }
 
 .new {
-    height: 56px;
-    width: 175px;
+    /* height: 56px; */
+    /* width: 175px; */
     position: absolute;
-    top: 50px;
-    right: 70px;
+    top: 8%;
+    right: 1%;
+    padding: 3px 5px;
     border-radius: 5px;
     align-items: center;
+}
+
+
+.search-bar {
+    margin: 9% 40% 0 42%;
 }
