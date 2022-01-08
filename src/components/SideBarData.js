@@ -4,7 +4,7 @@ import * as GiIcons from 'react-icons/gi';
 import * as MdIcons from 'react-icons/md';
 import * as AiIcons from 'react-icons/ai';
 
-let iconStyle = {color: '#3f51b5'}
+const iconStyle = {color: '#3f51b5'}
 
 export const SideBarData = [
     {
