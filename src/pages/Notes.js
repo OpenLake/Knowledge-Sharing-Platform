@@ -14,33 +14,34 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import {visuallyHidden} from '@mui/utils';
 import Popup from '../components/Popup';
-// import axios from 'axios';
+import '../App.css';
 
-function createData(name, course_name, course_id, batch, link, voting) {
+function createData(name, course_name, course_id, batch, link, description, voting) {
     return {
         name,
         course_name,
         course_id,
         batch,
         link,
+        description,
         voting
     };
 }
 
 const rows = [
-    createData('Dr.Soumajit Pramanik', 'Intro to Programming', 'IC100', 2020, 'xxx', 56),
-    createData('Dr.Subhajit', 'Database Management Systems', 'CS204', 2019, 'xxx', 90),
-    createData('Dr. Amit Dhar', 'Intro to Programming', 'IC100', 2019, 'xxx', 40),
-    createData('Dr.Subidh Ali', 'Machine Learning', 'CS301', 2020, 'xxx', 35),
-    createData('Dr. Dhiman', 'STT', 'CS201', 2019, 'xxx', 50),
-    createData('Dr. xyz', 'abcde', 'IC222', 2021, 'xxx', 57),
-    createData('Dr. ACB', 'abcjw', 'CY674', 2020, 'xxx', 59),
-    createData('Dr. jwub', 'BWEFB', 'DS501', 2016, 'xxx', 30),
-    createData('Dr. DQR', 'DBH', 'hwbd', 2021, 'xxx', 5),
-    createData('Dr. qhwdb', 'bfberq', 'dbh', 2021, 'xxx', 66),
-    createData('Dr.bhdb', 'nxje', 'CS303', 2019, 'xxx', 45),
-    createData('Dr. abc', 'dcjen', 'IC493', 2019, 'xxx', 70),
-    createData('Dr. Sonal Jha', 'Adaptation', 'LA323', 2019, 'xxx', 65),
+    createData('Dr.Soumajit Pramanik', 'Intro to Programming', 'IC100', 2020, 'xxx', 'Great', 56),
+    createData('Dr.Subhajit', 'Database Management Systems', 'CS204', 2019, 'xxx', 'Great', 90),
+    createData('Dr. Amit Dhar', 'Intro to Programming', 'IC100', 2019, 'xxx', 'Great', 40),
+    createData('Dr.Subidh Ali', 'Machine Learning', 'CS301', 2020, 'xxx', 'Great', 35),
+    createData('Dr. Dhiman', 'STT', 'CS201', 2019, 'xxx', 'Great', 50),
+    createData('Dr. xyz', 'abcde', 'IC222', 2021, 'xxx', 'Great', 57),
+    createData('Dr. ACB', 'abcjw', 'CY674', 2020, 'xxx', 'Great', 59),
+    createData('Dr. jwub', 'BWEFB', 'DS501', 2016, 'xxx', 'Great', 30),
+    createData('Dr. DQR', 'DBH', 'hwbd', 2021, 'xxx', 'Great', 5),
+    createData('Dr. qhwdb', 'bfberq', 'dbh', 2021, 'xxx', 'Great', 66),
+    createData('Dr.bhdb', 'nxje', 'CS303', 2019, 'xxx', 'Great', 45),
+    createData('Dr. abc', 'dcjen', 'IC493', 2019, 'xxx', 'Great', 70),
+    createData('Dr. Sonal Jha', 'Adaptation', 'LA323', 2019, 'xxx', 'Great', 65),
 ];
 
 function descendingComparator(a, b, orderBy) {
@@ -98,6 +99,11 @@ const headCells = [
         label: 'Link',
     },
     {
+        id: 'description',
+        numeric: true,
+        label: 'Description',
+    },
+    {
         id: 'voting',
         numeric: true,
         label: 'Voting',
@@ -148,7 +154,6 @@ EnhancedTableHead.propTypes = {
     onRequestSort: PropTypes.func.isRequired,
     order: PropTypes.oneOf(['asc', 'desc']).isRequired,
     orderBy: PropTypes.string.isRequired,
-    rowCount: PropTypes.number.isRequired,
 };
 
 const EnhancedTableToolbar = () => {
@@ -198,6 +203,7 @@ function Notes() {
 
     return (
         <>
+            {/*<TextField className='search-bar' id="outlined-basic" label="Search" variant="outlined"/>*/}
             <Box ml={42} mt={18.5} sx={{width: '75%'}}>
                 <Paper sx={{width: '100%', mb: 2}}>
                     <EnhancedTableToolbar/>
@@ -211,7 +217,6 @@ function Notes() {
                                 order={order}
                                 orderBy={orderBy}
                                 onRequestSort={handleRequestSort}
-                                rowCount={rows.length}
                             />
                             <TableBody>
 
@@ -238,6 +243,7 @@ function Notes() {
                                                 <TableCell align="right">{row.course_id}</TableCell>
                                                 <TableCell align="right">{row.batch}</TableCell>
                                                 <TableCell align="right">{row.link}</TableCell>
+                                                <TableCell align="right">{row.description}</TableCell>
                                                 <TableCell align="right">{row.voting}</TableCell>
                                             </TableRow>
                                         );
@@ -271,3 +277,4 @@ function Notes() {
 }
 
 export default Notes;
+

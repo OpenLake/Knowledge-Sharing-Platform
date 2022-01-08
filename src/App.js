@@ -4,9 +4,9 @@ import Navbar from "./components/Navbar";
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import PYQs from './pages/PYQs';
 import Reviews from './pages/Reviews';
-import EnhancedTable from "./pages/Notes";
 import {Helmet} from "react-helmet";
-
+import Notes from "./pages/Notes";
+import Home from "./pages/Home";
 
 function App() {
     return (
@@ -17,13 +17,13 @@ function App() {
         <Router>
             <Navbar/>
             <Routes>
-                <Route path='/Notes' element={< EnhancedTable/>}/>
+                <Route path='/' element={<Home />}/>
+                <Route path='/Notes' element={< Notes/>}/>
                 <Route path='/PYQs' element={< PYQs/>}/>
                 <Route path='/Reviews' element={< Reviews/>}/>
             </Routes>
         </Router>
         </>
-
 
     );
 }
