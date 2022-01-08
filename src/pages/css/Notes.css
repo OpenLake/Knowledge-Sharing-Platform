@@ -5,17 +5,17 @@ h3 {
     color: white;
 }
 
+/*.search-bar {*/
+/*    width: 750px;*/
+/*    right: 0;*/
+/*}*/
+
 .new {
     height: 56px;
     width: 175px;
-    position:absolute;
+    position: absolute;
     top: 50px;
     right: 70px;
     border-radius: 5px;
     align-items: center;
-}
-
-.cards {
-    margin-left: 350px;
-    margin-bottom: 20px;
 }

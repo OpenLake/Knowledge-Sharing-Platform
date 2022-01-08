@@ -1,36 +1,40 @@
+a {
+    margin-left: 20px;
+}
+
 h2 {
-    padding-top: 15px;
+    margin-top: 17px;
+    margin-left: 50px;
     text-align: center;
+    position: fixed;
     color: white;
+}
+
+.side-bar {
+    position: fixed;
+    width: 95%;
+    height: 100%;
 }
 
 .ksp {
     background-color: #3f51b5;
+    color: white;
     height: 56px;
     width: 160px;
+    text-align: center;
+    position: fixed;
     border-radius: 5px;
-    align-items: center;
-    margin-left: 75px;
-    margin-top: 55px;
-    margin-bottom: 150px;
-
+    margin: -95px 90px 55px;
 }
 
 .nav-toggle {
     background-color: white;
     height: 670px;
     width: 272px;
-    display: flex;
     position: fixed;
-    justify-content: start;
-    margin-top: -105px;
+    margin-top: -6px;
     margin-left: 30px;
 
-}
-
-.nav-bar {
-    position: fixed;
-    margin-top: -155px;
 }
 
 .nav-text {
@@ -44,33 +48,29 @@ h2 {
 
 .nav-text a {
     font-size: 18px;
-    width: 95%;
+    width: 69%;
     height: 100%;
     display: flex;
     text-decoration: none;
     color: black;
-    align-items: end;
+    align-items: center;
     padding: 0 16px;
-    transition: 0.5s ease;
+    border-radius: 5px;
 
 }
 
-/*.nav-text:active {*/
-/*    width: 100%;*/
-/*    height: 32px;*/
-/*    border-right: 5px solid #5e81f4;*/
-/*    border-radius: 1px;*/
-/*    margin-left: 30px;*/
-/*    transition: 0.5s ease;*/
-/*    color: #5e81f4;*/
-/*}*/
+.nav-text a:hover {
+    color: #3f51b5;
+}
 
-/*.nav-text a:active {*/
-/*    background-color: #5e81f4;*/
-/*    !*display: flex;*!*/
-/*    width: 32px;*/
-/*    height: 32px;*/
-/*    margin-left: 200px;*/
-/*    align-items: end;*/
+.nav-text a:focus, a:active {
+    color: #3f51b5;
+    background-color: #f5f5fb;
+    font-weight: bold;
+}
 
-/*}*/
+span {
+    margin-left: 60px;
+}
+
+

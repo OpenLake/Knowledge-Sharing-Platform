@@ -6,7 +6,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
-import '../pages/css/Notes.css'
+import '../pages/css/Notes.css';
 
 const theme = createTheme({
     palette: {
@@ -29,6 +29,7 @@ function Popup(props) {
     };
 
     return (
+
         <div className='new'>
             <ThemeProvider theme={theme}>
                 <Button variant='contained' color='primary' onClick={handleClickOpen}>
@@ -88,7 +89,10 @@ function Popup(props) {
                     </DialogActions>
                 </Dialog>
             </ThemeProvider>
+
         </div>
+
+
     );
 }
 
