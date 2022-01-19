@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from "react";
 import { Button, Modal, ModalHeader, ModalBody } from "reactstrap";
-import NewNoteForm from "./NewNoteForm";
+import NewForm from "../NewForm";
 
-class NewNoteModal extends Component {
+class NewFeedbackModal extends Component {
   state = {
     modal: false
   };
@@ -17,31 +17,32 @@ class NewNoteModal extends Component {
     const create = this.props.create;
 
     if (create) {
-      var title = "Adding Notes";
+      var title = "ADD NEW FEEDBACK";
 
       var button = (
          <Button
-          color="primary"
-          className="float-right"
           onClick={this.toggle}
-          style={{ minWidth: "200px"}}
+          style={{ minWidth: "200px", minHeight: "40px", color: "white", backgroundColor: "#3c52ad", position: "fixed"}}
         >
-          Create New
+          <span> ADD FEEDBACK </span>
         </Button>
       );
     }
 
     return (
-      <Fragment>
-        {button}
+      <Fragment >
+        <div className="button">
+          {button}
+        </div>
+
         <Modal isOpen={this.state.modal} toggle={this.toggle}>
-          <ModalHeader toggle={this.toggle}>{title}</ModalHeader>
+          <ModalHeader toggle={this.toggle}><span>{title}</span></ModalHeader>
 
           <ModalBody>
-            <NewNoteForm
+            <NewForm
               resetState={this.props.resetState}
               toggle={this.toggle}
-              student={this.props.student}
+              note={this.props.note}
             />
           </ModalBody>
         </Modal>
@@ -50,4 +51,4 @@ class NewNoteModal extends Component {
   }
 }
 
-export default NewNoteModal;
+export default NewFeedbackModal;

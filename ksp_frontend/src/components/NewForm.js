@@ -3,7 +3,7 @@ import { Button, Form, FormGroup, Input, Label } from "reactstrap";
 import axios from "axios";
 import { API_URL_N } from "../constants/api";
 
-class NewNoteForm extends React.Component {
+class NewForm extends React.Component {
   state = {
     pk: 0 , title: "" ,name: "", course_id: "",course_instructor: "",batch: "",gdrive_link: ""
   };
@@ -36,65 +36,71 @@ class NewNoteForm extends React.Component {
     return (
       <Form onSubmit={this.createNote}>
         <FormGroup>
-          <Label for="title">Title:</Label>
+          <Label for="title" style={{fontSize: "2em"}}>Title:</Label>
           <Input
             type="text"
             name="title"
+            bsSize="lg"
             onChange={this.onChange}
             value={this.defaultIfEmpty(this.state.title)}
           />
         </FormGroup>
         <FormGroup>
-          <Label for="name">Name:</Label>
+          <Label for="name" style={{fontSize: "2em"}}>Name:</Label>
           <Input
             type="text"
             name="name"
+            bsSize="lg"
             onChange={this.onChange}
             value={this.defaultIfEmpty(this.state.name)}
           />
         </FormGroup>
         <FormGroup>
-          <Label for="course_id">Course id:</Label>
+          <Label for="course_id" style={{fontSize: "2em"}}>Course id:</Label>
           <Input
             type="text"
             name="course_id"
+            bsSize="lg"
             onChange={this.onChange}
             value={this.defaultIfEmpty(this.state.course_id)}
           />
         </FormGroup>
         <FormGroup>
-          <Label for="course_instructor">Course instructor:</Label>
+          <Label for="course_instructor" style={{fontSize: "2em"}}>Course instructor:</Label>
           <Input
             type="text"
             name="course_instructor"
+            bsSize="lg"
             onChange={this.onChange}
             value={this.defaultIfEmpty(this.state.course_instructor)}
           />
         </FormGroup>
         <FormGroup>
-          <Label for="batch">Batch:</Label>
+          <Label for="batch" style={{fontSize: "2em"}}>Batch:</Label>
           <Input
             type="number"
             name="batch"
+            bsSize="lg"
             onChange={this.onChange}
             value={this.defaultIfEmpty(this.state.batch)}
           />
         </FormGroup>
         <FormGroup>
-          <Label for="gdrive_link">Link:</Label>
+          <Label for="gdrive_link" style={{fontSize: "2em"}}>Link:</Label>
           <Input
             type="text"
             name="gdrive_link"
+            bsSize="lg"
             onChange={this.onChange}
             value={this.defaultIfEmpty(this.state.gdrive_link)}
           />
         </FormGroup>
   
-        <Button>Send</Button>
+        <Button style={{minWidth: "100px", backgroundColor: "#3c52ad"}}><span>SUBMIT</span></Button>
       </Form>
       
     );
   }
 }
 
-export default NewNoteForm;
+export default NewForm;

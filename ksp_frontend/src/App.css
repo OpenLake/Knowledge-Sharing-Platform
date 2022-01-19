@@ -1,134 +1,96 @@
-.App {
-  display: flex;
-  width: 100%;
-  align-items: stretch;
+span {
+    font-size: 19px;
 }
 
-@import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
-
-body {
-  font-family: "Poppins", sans-serif;
-  background: #fafafa;
+.button {
+    margin-left: 84.4%;
+    margin-top: -5%;
+    margin-bottom: 3%;
 }
 
-a,
-a:hover,
-a:focus {
-  color: inherit;
-  text-decoration: none;
-  transition: all 0.3s;
+th, td {
+    font-size: 22px;
+
 }
 
-/* ---------------------------------------------------
-    SIDEBAR STYLE
------------------------------------------------------ */
-.sidebar {
-  min-width: 250px;
-  max-width: 250px;
-  background: #7386d5;
-  color: #fff;
-  margin-left: -250px;
-  transition: all 0.5s;
+.modal-content {
+    width: 500px;
 }
 
-.sidebar.is-open {
-  margin-left: 0;
-  transition: 0.5s;
+.search-bar {
+    margin-top: -5%;
 }
 
-.sidebar-header {
-  background: #6d7fcc;
+@media (max-width: 500px) {
+    .table thead {
+        display: none;
+    }
+
+    .table, .table tbody, .table tr, .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tr {
+        margin-bottom: 15px;
+    }
+
+    .table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+    }
+
+    .table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 15px;
+        font-size: 15px;
+        font-weight: bold;
+        text-align: left;
+    }
+
 }
 
-.sidebar-header h3 {
-  color: #fff;
-  padding: 1em;
+@media (max-width: 1170px) {
+    .button {
+        margin-left: 79%;
+    }
+
 }
 
-.sidebar ul p {
-  color: #fff;
-  padding: 10px;
+@media (max-width: 988px) {
+    .button {
+        margin-left: 72%;
+        margin-bottom: 8%;
+    }
+
 }
 
-.menu-open {
-  background: #6d7fcc;
+@media (max-width: 767px) {
+    .button {
+        margin-left: 62%;
+        margin-bottom: 11%;
+    }
+
 }
 
-.nav-item:hover {
-  color: #7386d5;
-  background: #fff;
+@media (max-width: 521px) {
+    .button {
+        margin-left: 60%;
+    }
 }
 
-.items-menu {
-  color: #fff;
-  background: #6d7fcc;
+@media (max-width: 412px) {
+    .button {
+        margin-left: 50%;
+    }
 }
 
-li a.dropdown-toggle::after {
-  display: inline-flex;
-  position: relative;
-  left: 60%;
-  top: 10%;
-}
-
-.sidebar-header > span {
-  position: relative;
-  float: right;
-  margin: 0.5em;
-  font-size: 2rem;
-  cursor: pointer;
-  display: none;
-}
-.side-menu {
-  height: calc(100vh - 130px);
-  overflow-y: scroll;
-}
-
-.side-menu::-webkit-scrollbar {
-  width: 10px;
-}
-
-.side-menu::-webkit-scrollbar-thumb {
-  background: #5466b3;
-  border-radius: 3px;
-}
-
-.side-menu::-webkit-scrollbar-thumb:hover {
-  background: #3a4c99;
-}
-
-/* ---------------------------------------------------
-    CONTENT STYLE
------------------------------------------------------ */
-.content {
-  padding: 20px;
-  margin-left: 0;
-  height: 100vh;
-}
-
-@media only screen and (max-width: 500px) {
-  body {
-    overflow: hidden;
-  }
-
-  .content.is-open {
-    margin-left: 100%;
-  }
-
-  .sidebar.is-open {
-    min-width: 100%;
-    max-width: 100%;
-    margin-left: 0;
-    transition: all 0.5s, height 0s;
-  }
-
-  .sidebar.is-open > .sidebar-header span {
-    display: unset;
-  }
-
-  li a.dropdown-toggle::after {
-    display: inline-block;
-    position: relative;
-    left: 68%;
-  }
+@media (max-width: 375px) {
+    .button {
+        margin-left: 44.3%;
+    }
 }

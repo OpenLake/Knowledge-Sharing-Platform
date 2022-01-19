@@ -1,14 +1,13 @@
 import React, { Component } from "react";
 import { Table } from "reactstrap";
-import NewNoteModal from "./NewNoteModal";
-
+import "../../App.css";
 
 
 class NoteList extends Component {
   render() {
     const notes = this.props.notes;
     return (
-      <Table dark>
+      <Table dark bordered responsive>
         <thead>
           <tr>
             <th>Title</th>
@@ -16,15 +15,14 @@ class NoteList extends Component {
             <th>Course ID</th>
             <th>Batch</th>
             <th>Course Instructor</th>
-            <th>Link</th>
-            <th></th>
+            <th>Feedback</th>
           </tr>
         </thead>
         <tbody>
           {!notes || notes.length <= 0 ? (
             <tr>
-              <td colSpan="6" align="center">
-                <b>Ops, no one here yet</b>
+              <td colSpan="6" align="center" width="400px">
+                <b>Oops, nothing here yet</b>
               </td>
             </tr>
           ) : (
@@ -35,15 +33,7 @@ class NoteList extends Component {
                 <td>{note.course_id}</td>
                 <td>{note.batch}</td>
                 <td>{note.course_instructor}</td>
-                <td>{note.gdrive_link}</td>
-                <td align="center">
-                  <NewNoteModal
-                    create={false}
-                    note={note}
-                    resetState={this.props.resetState}
-                  />
-                  &nbsp;&nbsp;
-                </td>
+                <td>{note.feedback}</td>
               </tr>
             ))
           )}
