@@ -36,14 +36,6 @@ const Header = () => {
                 </div>
 
                 <div className="login-signup">
-                    <ul className="ls-desktop">
-                        <li>
-                            <a href="#">
-                                <span>LOGIN</span>
-                            </a>
-                        </li>
-
-                    </ul>
                     <div className="hamburger-menu">
                         <a href="#" onClick={() => setShowNavItems(!showNavItems)}>
                             <GiHamburgerMenu style={{color: "white"}}/>
