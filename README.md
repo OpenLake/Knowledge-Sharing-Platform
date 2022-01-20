@@ -10,12 +10,15 @@
 ### Install the dependencies for backend
 `pip install django djangorestframework django-cors-headers`
 
+### Apply migrations
+`python manage.py migrate`
+
 ### Run the backend server:
 `python manage.py runserver`
 
 Open a new terminal and do the following:
 
-#### Navigate to the frontend folder
+### Navigate to the frontend folder
 `cd ksp_frontend`
 
 ### Install the dependencies for frontend
