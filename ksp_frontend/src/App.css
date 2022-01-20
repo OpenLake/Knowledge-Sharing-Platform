@@ -1,4 +1,15 @@
-span {
+.search-bar {
+    margin-top: -4.9%;
+    margin-bottom: 2%;
+}
+
+.search-input {
+    width: 80%;
+    padding: 10px;
+}
+
+input::-webkit-input-placeholder {
+    padding: 5px;
     font-size: 19px;
 }
 
@@ -8,6 +19,14 @@ span {
     margin-bottom: 3%;
 }
 
+.button-style {
+    width: 200px;
+    height: 40px;
+    color: white;
+    position: fixed;
+}
+
+
 th, td {
     font-size: 22px;
 
@@ -15,10 +34,6 @@ th, td {
 
 .modal-content {
     width: 500px;
-}
-
-.search-bar {
-    margin-top: -5%;
 }
 
 @media (max-width: 500px) {
@@ -54,32 +69,75 @@ th, td {
 
 }
 
+@media (max-width: 1393px) {
+    .button {
+        margin-left: 82%;
+    }
+}
+
+@media (max-width: 1199px) {
+
+    .button-style {
+        margin-left: 0.5%;
+        width: 160px;
+
+    }
+
+    .search-input {
+        width: 80%;
+    }
+}
+
 @media (max-width: 1170px) {
     .button {
-        margin-left: 79%;
+        margin-left: 82.3%;
+    }
+
+    .search-input {
+        width: 80%;
+        padding: 10px;
     }
 
 }
 
-@media (max-width: 988px) {
+@media (max-width: 991px) {
     .button {
-        margin-left: 72%;
-        margin-bottom: 8%;
+        margin-left: 77%;
     }
 
+    .search-input {
+        width: 75%;
+    }
 }
 
 @media (max-width: 767px) {
     .button {
-        margin-left: 62%;
-        margin-bottom: 11%;
+        margin-left: 69%;
+    }
+
+    .search-input {
+        width: 65%;
     }
 
 }
 
+@media (max-width: 575px) {
+    .button {
+        margin-left: 71%;
+    }
+
+    .search-input {
+        width: 70%;
+    }
+}
+
 @media (max-width: 521px) {
     .button {
-        margin-left: 60%;
+        margin-left: 68%;
+    }
+
+    .search-input {
+        width: 65%;
     }
 }
 
@@ -87,10 +145,14 @@ th, td {
     .button {
         margin-left: 50%;
     }
-}
 
-@media (max-width: 375px) {
-    .button {
-        margin-left: 44.3%;
+    .button-style {
+        margin-top: 0.1%;
+        margin-left: 10%;
+        width: 155px;
+    }
+
+    .search-input {
+        width: 55%;
     }
 }
