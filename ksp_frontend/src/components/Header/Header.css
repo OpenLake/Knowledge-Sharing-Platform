@@ -79,11 +79,11 @@ li {
     font-size: 3.5rem;
 }
 
-.login-signup {
+.drop-down-nav {
     grid-column: 4/7;
 }
 
-.login-signup ul {
+.drop-down-nav ul {
     height: 100px;
     display: grid;
     grid-template-columns: 3fr repeat(3, 1fr);
@@ -91,21 +91,8 @@ li {
     justify-content: flex-end;
 }
 
-.login-signup ul li {
-    text-align: right;
-}
-
-.login-signup .hamburger-menu {
+.drop-down-nav .hamburger-menu {
     display: none;
-}
-
-.login-signup ul li a {
-    color: white;
-    font-size: 1.6rem;
-}
-
-.login-signup ul li:first-child {
-    grid-column: 2/3;
 }
 
 /*Responsive*/
@@ -117,8 +104,7 @@ li {
     }
 
     .logo,
-    .nav-links ul,
-    .login-signup ul {
+    .nav-links ul {
         height: 8rem;
     }
 }
@@ -135,8 +121,7 @@ li {
         display: none;
     }
 
-    .logo,
-    .login-signup ul {
+    .logo {
         height: 7rem;
     }
 
@@ -171,7 +156,7 @@ li {
         transition-delay: 0.2s;
     }
 
-    .login-signup {
+    .drop-down-nav {
         grid-row: 1/2;
         grid-column: 3/5;
         justify-items: end;
@@ -179,19 +164,14 @@ li {
         transition: all 2s linear;
     }
 
-    .login-signup .ls-desktop {
-        height: 0;
-        display: none;
-    }
-
-    .login-signup {
+    .drop-down-nav {
         height: 7rem;
         display: flex;
         justify-self: end;
         align-items: center;
     }
 
-    .login-signup .hamburger-menu {
+    .drop-down-nav .hamburger-menu {
         display: block;
         font-size: 2.5rem;
     }
@@ -203,19 +183,18 @@ li {
         grid-template-columns: 1rem 2fr 1fr 1fr 1rem;
     }
 
-    .logo,
-    .login-signup ul {
+    .logo {
         height: 6rem;
     }
 
-    .login-signup {
+    .drop-down-nav {
         height: 6rem;
         display: flex;
         justify-self: end;
         align-items: center;
     }
 
-    .login-signup .hamburger-menu {
+    .drop-down-nav .hamburger-menu {
         display: block;
         font-size: 2.5rem;
     }
@@ -227,8 +206,7 @@ li {
         grid-template-columns: 1rem 4fr 1fr 1fr 1rem;
     }
 
-    .logo,
-    .login-signup ul {
+    .logo {
         height: 6rem;
     }
 
@@ -236,14 +214,14 @@ li {
         font-size: 2rem;
     }
 
-    .login-signup {
+    .drop-down-nav {
         height: 6rem;
         display: flex;
         justify-self: end;
         align-items: center;
     }
 
-    .login-signup .hamburger-menu {
+    .drop-down-nav .hamburger-menu {
         display: block;
         font-size: 2.5rem;
     }

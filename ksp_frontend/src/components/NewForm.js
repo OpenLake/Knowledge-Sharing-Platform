@@ -78,17 +78,24 @@ class NewForm extends React.Component {
         <FormGroup>
           <Label for="batch" style={{fontSize: "2em"}}>Batch:</Label>
           <Input
-            type="number"
+            type="select"
             name="batch"
             bsSize="lg"
             onChange={this.onChange}
             value={this.defaultIfEmpty(this.state.batch)}
-          />
+          >
+              <option>2016</option>
+              <option>2017</option>
+              <option>2018</option>
+              <option>2019</option>
+              <option>2020</option>
+              <option>2021</option>
+          </Input>
         </FormGroup>
         <FormGroup>
           <Label for="gdrive_link" style={{fontSize: "2em"}}>Link:</Label>
           <Input
-            type="text"
+            type="url"
             name="gdrive_link"
             bsSize="lg"
             onChange={this.onChange}
