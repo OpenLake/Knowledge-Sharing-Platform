@@ -17,9 +17,8 @@ a {
     font-size: 2.4rem;
 }
 
-a:hover:after {
-    border-bottom: 2px solid white;
-    transition: 0.3s;
+span {
+    font-size: 1.2em;
 }
 
 li {
@@ -59,7 +58,7 @@ li {
     font-weight: bold;
 }
 
-.nav-links ul li a.active {
+.nav-links ul li .active {
     border-bottom: 2px solid white;
 }
 

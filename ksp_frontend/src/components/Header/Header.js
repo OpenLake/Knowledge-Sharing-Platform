@@ -1,11 +1,16 @@
 import React, {useState} from "react";
-import { GiHamburgerMenu } from "react-icons/gi";
+import {GiHamburgerMenu} from "react-icons/gi";
 import './Header.css';
+import {useLocation} from "react-router-dom";
 
 
 const Header = () => {
     const [showNavItems, setShowNavItems] = useState(false);
+    const location = useLocation();
 
+    const { pathname } = location;
+
+    const splitLocation = pathname.split("/");
     return (
         <>
             <nav className="main-nav">
@@ -15,16 +20,16 @@ const Header = () => {
                 <div className={showNavItems ? "mobile-nav-link" : "nav-links"}>
                     <ul>
                         <li>
-                            <a href="/" className="nav-item">Home</a>
+                            <a href="/home" className={splitLocation[1] === "home" ? "active" : " "}>Home</a>
                         </li>
                         <li>
-                            <a href="/notes" >Notes</a>
+                            <a href="/notes" className={splitLocation[1] === "notes" ? "active" : " "}>Notes</a>
                         </li>
                         <li>
-                            <a href="/PYQs" >PYQs</a>
+                            <a href="/PYQs" className={splitLocation[1] === "PYQs" ? "active" : " "}>PYQs</a>
                         </li>
                         <li>
-                            <a href="/feedbacks">Feedbacks</a>
+                            <a href="/feedbacks" className={splitLocation[1] === "feedbacks" ? "active" : " "}>Feedbacks</a>
                         </li>
                     </ul>
 
@@ -34,7 +39,7 @@ const Header = () => {
                     <ul className="ls-desktop">
                         <li>
                             <a href="#">
-                                LOGIN
+                                <span>LOGIN</span>
                             </a>
                         </li>
 
