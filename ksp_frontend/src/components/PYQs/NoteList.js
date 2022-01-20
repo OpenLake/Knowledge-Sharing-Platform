@@ -12,7 +12,8 @@ function NoteList(props) {
         <>
             <div className="search-bar">
                 <input type="text"
-                       placeholder="Search"
+                       style={{fontSize: "19px"}}
+                       placeholder="Search for Papers..."
                        className="search-input"
                        onChange={(e) => setSearchTerm(e.target.value)}
                 />
