@@ -20,7 +20,7 @@ const Header = () => {
                 <div className={showNavItems ? "mobile-nav-link" : "nav-links"}>
                     <ul>
                         <li>
-                            <a href="/home" className={splitLocation[1] === "home" ? "active" : " "}>Home</a>
+                            <a href="/" className={splitLocation[1] === "" ? "active" : " "}>Home</a>
                         </li>
                         <li>
                             <a href="/notes" className={splitLocation[1] === "notes" ? "active" : " "}>Notes</a>
