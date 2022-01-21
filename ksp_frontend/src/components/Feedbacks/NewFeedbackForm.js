@@ -5,13 +5,13 @@ import { API_URL_F } from "../../constants/api";
 
 class NewFeedbackForm extends React.Component {
   state = {
-    pk: 0 , title: "" ,name: "", course_id: "",course_instructor: "",batch: "",gdrive_link: ""
+    pk: 0 , title: "" ,name: "", course_id: "",course_instructor: "",batch: "",Feedback: ""
   };
 
   componentDidMount() {
     if (this.props.note) {
-      const { pk, title ,name, course_id,course_instructor,batch,gdrive_link } = this.props.note;
-      this.setState({ pk, title ,name, course_id,course_instructor,batch,gdrive_link });
+      const { pk, title ,name, course_id,course_instructor,batch,Feedback } = this.props.note;
+      this.setState({ pk, title ,name, course_id,course_instructor,batch,Feedback });
     }
   }
 
@@ -94,13 +94,13 @@ class NewFeedbackForm extends React.Component {
           </Input>
         </FormGroup>
         <FormGroup>
-          <Label for="gdrive_link" style={{fontSize: "2em"}}>Link:</Label>
+          <Label for="Feedback" style={{fontSize: "2em"}}>Feedback:</Label>
           <Input
-            type="url"
-            name="gdrive_link"
+            type="text"
+            name="Feedback"
             bsSize="lg"
             onChange={this.onChange}
-            value={this.defaultIfEmpty(this.state.gdrive_link)}
+            value={this.defaultIfEmpty(this.state.Feedback)}
           />
         </FormGroup>
 

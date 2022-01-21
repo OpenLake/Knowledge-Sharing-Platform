@@ -54,7 +54,7 @@ function NoteList(props) {
                             <td>{note.course_id}</td>
                             <td>{note.batch}</td>
                             <td>{note.course_instructor}</td>
-                            <td>{note.feedback}</td>
+                            <td>{note.Feedback}</td>
                         </tr>
                     ))
                 )}
