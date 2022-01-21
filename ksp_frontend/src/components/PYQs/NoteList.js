@@ -21,8 +21,8 @@ function NoteList(props) {
             <Table dark bordered responsive>
                 <thead>
                 <tr>
-                    <th>Title</th>
-                    <th>Name</th>
+                    <th>Course name</th>
+                    <th>Author</th>
                     <th>Course ID</th>
                     <th>Batch</th>
                     <th>Course Instructor</th>
@@ -42,7 +42,8 @@ function NoteList(props) {
                                 return val;
                             } else if (
                                 val.course_id.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                val.course_instructor.toString().toLowerCase().includes(searchTerm.toLowerCase())) {
+                                val.course_instructor.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                val.name.toString().toLowerCase().includes(searchTerm.toLowerCase())) {
 
                                 return val;
                             }

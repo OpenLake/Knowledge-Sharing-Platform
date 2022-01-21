@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from "react";
 import {Button, Modal, ModalHeader, ModalBody} from "reactstrap";
-import NewForm from "../NewForm";
+import NewFeedbackForm from "./NewFeedbackForm";
 import "../../App.css";
 
 class NewFeedbackModal extends Component {
@@ -41,7 +41,7 @@ class NewFeedbackModal extends Component {
                     <ModalHeader toggle={this.toggle}><span>{title}</span></ModalHeader>
 
                     <ModalBody>
-                        <NewForm
+                        <NewFeedbackForm
                             resetState={this.props.resetState}
                             toggle={this.toggle}
                             note={this.props.note}

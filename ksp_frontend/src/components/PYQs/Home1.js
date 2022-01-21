@@ -4,6 +4,7 @@ import NewPaperModal from "./NewPaperModal";
 import axios from "axios";
 import NoteList from "./NoteList";
 import {API_URL_P} from "../../constants/api";
+import "../../App.css";
 
 class Home1 extends Component {
     state = {
@@ -38,7 +39,6 @@ class Home1 extends Component {
                         />
                     </Col>
                 </Row>
-
             </Container>
         );
     }

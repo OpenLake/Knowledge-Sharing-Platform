@@ -1,9 +1,9 @@
 import React from "react";
 import { Button, Form, FormGroup, Input, Label } from "reactstrap";
 import axios from "axios";
-import { API_URL_N } from "../constants/api";
+import { API_URL_N } from "../../constants/api";
 
-class NewForm extends React.Component {
+class NewNoteForm extends React.Component {
   state = {
     pk: 0 , title: "" ,name: "", course_id: "",course_instructor: "",batch: "",gdrive_link: ""
   };
@@ -36,7 +36,7 @@ class NewForm extends React.Component {
     return (
       <Form onSubmit={this.createNote}>
         <FormGroup>
-          <Label for="title" style={{fontSize: "2em"}}>Title:</Label>
+          <Label for="title" style={{fontSize: "2em"}}>Author:</Label>
           <Input
             type="text"
             name="title"
@@ -46,7 +46,7 @@ class NewForm extends React.Component {
           />
         </FormGroup>
         <FormGroup>
-          <Label for="name" style={{fontSize: "2em"}}>Name:</Label>
+          <Label for="name" style={{fontSize: "2em"}}>Course name:</Label>
           <Input
             type="text"
             name="name"
@@ -102,12 +102,12 @@ class NewForm extends React.Component {
             value={this.defaultIfEmpty(this.state.gdrive_link)}
           />
         </FormGroup>
-  
+
         <Button style={{minWidth: "100px", backgroundColor: "#3c52ad"}}><span>SUBMIT</span></Button>
       </Form>
-      
+
     );
   }
 }
 
-export default NewForm;
+export default NewNoteForm;

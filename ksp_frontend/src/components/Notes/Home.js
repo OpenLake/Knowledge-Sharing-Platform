@@ -28,7 +28,7 @@ class Home extends Component {
             <Container style={{marginTop: "6%"}}>
                 <Row>
                     <Col>
-                        <NewNoteModal style={{marginLeft: '60px'}} create={true} resetState={this.resetState}/>
+                        <NewNoteModal create={true} resetState={this.resetState}/>
                     </Col>
                 </Row>
                 <Row >
