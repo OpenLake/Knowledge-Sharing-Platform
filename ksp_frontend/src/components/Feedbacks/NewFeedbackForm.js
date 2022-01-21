@@ -36,7 +36,7 @@ class NewFeedbackForm extends React.Component {
     return (
       <Form onSubmit={this.createNote}>
         <FormGroup>
-          <Label for="title" style={{fontSize: "2em"}}>Author:</Label>
+          <Label for="title" style={{fontSize: "2em"}}>Course name:</Label>
           <Input
             type="text"
             name="title"
@@ -46,7 +46,7 @@ class NewFeedbackForm extends React.Component {
           />
         </FormGroup>
         <FormGroup>
-          <Label for="name" style={{fontSize: "2em"}}>Course name:</Label>
+          <Label for="name" style={{fontSize: "2em"}}>Author:</Label>
           <Input
             type="text"
             name="name"
