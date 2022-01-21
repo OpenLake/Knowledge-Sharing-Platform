@@ -84,6 +84,7 @@ class NewFeedbackForm extends React.Component {
             onChange={this.onChange}
             value={this.defaultIfEmpty(this.state.batch)}
           >
+              <option> </option>
               <option>2016</option>
               <option>2017</option>
               <option>2018</option>
