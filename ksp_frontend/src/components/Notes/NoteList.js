@@ -43,7 +43,7 @@ function NoteList(props) {
                             } else if (
                                 val.course_id.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
                                 val.course_instructor.toString().toLowerCase().includes(searchTerm.toLowerCase())) {
-                                val.name.toString().toLowerCase().includes(searchTerm.toLowerCase())
+                                val.title.toString().toLowerCase().includes(searchTerm.toLowerCase())
                                 return val;
                             }
                         }
