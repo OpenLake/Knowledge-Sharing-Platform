@@ -1,0 +1,24 @@
+.main {
+    height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.main p {
+    font-size: 3rem;
+    text-transform: capitalize;
+}
+
+.main h1 {
+    font-size: 5rem;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.main h4 {
+    border: 1px solid #3c52ad;
+    padding: 50px;
+
+}
