@@ -18,7 +18,7 @@ function NoteList(props) {
                        onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            <Table dark bordered responsive>
+            <Table striped bordered responsive>
                 <thead>
                 <tr>
                     <th>Course name</th>
