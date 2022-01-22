@@ -1,0 +1,158 @@
+.search-bar {
+    margin-top: -4.9%;
+    margin-bottom: 2%;
+}
+
+.search-input {
+    width: 80%;
+    padding: 10px;
+}
+
+input::-webkit-input-placeholder {
+    padding: 5px;
+    font-size: 19px;
+}
+
+.button {
+    margin-left: 84.4%;
+    margin-top: -5%;
+    margin-bottom: 3%;
+}
+
+.button-style {
+    width: 200px;
+    height: 40px;
+    color: white;
+    position: fixed;
+}
+
+
+th, td {
+    font-size: 22px;
+
+}
+
+.modal-content {
+    width: 500px;
+}
+
+@media (max-width: 500px) {
+    .table thead {
+        display: none;
+    }
+
+    .table, .table tbody, .table tr, .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tr {
+        margin-bottom: 15px;
+    }
+
+    .table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+    }
+
+    .table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 15px;
+        font-size: 15px;
+        font-weight: bold;
+        text-align: left;
+    }
+
+}
+
+@media (max-width: 1393px) {
+    .button {
+        margin-left: 82%;
+    }
+}
+
+@media (max-width: 1199px) {
+
+    .button-style {
+        margin-left: 0.5%;
+        width: 160px;
+
+    }
+
+    .search-input {
+        width: 80%;
+    }
+}
+
+@media (max-width: 1170px) {
+    .button {
+        margin-left: 82.3%;
+    }
+
+    .search-input {
+        width: 80%;
+        padding: 10px;
+    }
+
+}
+
+@media (max-width: 991px) {
+    .button {
+        margin-left: 77%;
+    }
+
+    .search-input {
+        width: 75%;
+    }
+}
+
+@media (max-width: 767px) {
+    .button {
+        margin-left: 69%;
+    }
+
+    .search-input {
+        width: 65%;
+    }
+
+}
+
+@media (max-width: 575px) {
+    .button {
+        margin-left: 71%;
+    }
+
+    .search-input {
+        width: 70%;
+    }
+}
+
+@media (max-width: 521px) {
+    .button {
+        margin-left: 68%;
+    }
+
+    .search-input {
+        width: 65%;
+    }
+}
+
+@media (max-width: 412px) {
+    .button {
+        margin-left: 50%;
+    }
+
+    .button-style {
+        margin-top: 0.1%;
+        margin-left: 10%;
+        width: 155px;
+    }
+
+    .search-input {
+        width: 55%;
+    }
+}
