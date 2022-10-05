@@ -55,7 +55,7 @@ function NoteList(props) {
                             <td>{note.course_id}</td>
                             <td>{note.batch}</td>
                             <td>{note.course_instructor}</td>
-                            <td><a href={note.gdrive_link}>Click here to view notes</a></td>
+                            <td><a href={note.gdrive_link} target="_blank">Click here to view notes</a></td>
                         </tr>
                     ))
                 )}
