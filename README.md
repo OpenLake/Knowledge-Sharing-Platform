@@ -18,7 +18,7 @@ Please go through the Wiki. The success of our vision to bring knowledge to ever
 ## Set-up the project 💻
 
 ### Install the virtual env
-`sudo apt install -y python3-venv activate`
+`sudo apt install -y python3-venv `
 
 ### Create the virtual env.
 `python3 -m venv <env name>`
@@ -29,6 +29,9 @@ Please go through the Wiki. The success of our vision to bring knowledge to ever
 ### Install the dependencies for backend
 `pip install django djangorestframework django-cors-headers`
 
+### Install the requirements
+`pip install -r requirements.txt`
+
 ### Apply migrations
 `python manage.py migrate`
 
@@ -38,7 +41,7 @@ Please go through the Wiki. The success of our vision to bring knowledge to ever
 Open a new terminal and do the following:
 
 ### Navigate to the frontend folder
-`cd ksp_frontend`
+`cd ksp`
 
 ### Install the dependencies for frontend
 `npm install`
