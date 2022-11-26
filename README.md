@@ -5,7 +5,8 @@ Knowledge sharing platform application aims to get the students acquainted with 
 Django, ReactJS, AWS-S3
 
 ## Maintainers ☀️
-[@Ananyaiitbhilai](https://github.com/Ananyaiitbhilai) 
+| [@Ananya](https://github.com/Ananyaiitbhilai)| [@Anshuman Dhiman](https://github.com/AnshumanDhiman)|
+|--------|---------------|
 
 ## Other details 📑
 This project is in its secomd iteration. We might have NodeJS as backend. In future, might do clustering of students on the basis of the course taken.
