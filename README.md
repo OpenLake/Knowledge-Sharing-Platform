@@ -12,8 +12,10 @@ This project is in its secomd iteration. We might have NodeJS as backend. In fut
 
 ## Contribution Guidelines ✨
 Please go through the Wiki. The success of our vision to bring knowledge to every single hand depends on you. Even a small contribution helps. All forms of contributions are highly welcomed and valued.
-- [How to create a PR?](https://github.com/OpenLake/Speech-Analyser/wiki/PR-Format-Guidelines)
-- [PR Format Guidelines](https://github.com/OpenLake/Speech-Analyser/wiki/How-to-create-a-PR)
+- [How to create a PR?](https://github.com/OpenLake/Knowledge-Sharing-Platform
+/wiki/PR-Format-Guidelines)
+- [PR Format Guidelines](https://github.com/OpenLake/Knowledge-Sharing-Platform
+/wiki/How-to-create-a-PR)
 
 ## Set-up the project 💻
 
