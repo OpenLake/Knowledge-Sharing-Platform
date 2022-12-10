@@ -1,24 +1,102 @@
 .main {
-    height: 80vh;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    color: var(--dark-blue);
+    text-align: center;
+    margin: 10rem 0;
     flex-direction: column;
 }
 
-.main p {
-    font-size: 3rem;
-    text-transform: capitalize;
+.main h1,
+.main h1 span {
+    font-size: 6rem;
+    font-weight: 600;
 }
 
-.main h1 {
-    font-size: 5rem;
-    text-transform: uppercase;
+.main h1 span {
+    color: var(--pink);
+}
+
+.main p {
+    color: var(--grey);
+    font-size: 1.8rem;
+}
+
+.main .CTA_container {
+    padding: 2rem 0;
+    display: flex;
+    gap: 2rem;
+}
+
+.main .CTA_container a {
+    font-size: 1.7rem;
+    font-weight: 500;
+}
+
+.main .CTA_container .btn_1 {
+    background-color: var(--purple);
+    padding: .5em 1.5em;
+    color: white;
+    border-radius: 2em;
+}
+
+.main .CTA_container .btn_2 {
+    display: flex;
+    align-items: center;
+    color: inherit;
+}
+
+.main .CTA_container .btn_2 .play_btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: .5em;
+    height: 4rem;
+    border-radius: 50%;
+    width: 4rem;
+    background-color: var(--pastel-purple);
+}
+
+.CTA_container .play_btn .icon {
+    color: var(--purple);
+    font-size: 2rem;
+}
+
+.main .image_container {
+    display: inline-flex;
+    width: 80%;
+    justify-content: space-between;
+    margin: auto;
+}
+
+.main .image_container img {
+    width: 20%;
+    object-fit: cover;
+    border-radius: 15rem;
+}
+
+.about {
+    width: 80%;
+    margin: auto;
+}
+
+.section_title{
+    margin: auto;
     text-align: center;
 }
 
-.main h4 {
-    border: 1px solid #3c52ad;
-    padding: 50px;
+.section_title h4 {
+    color: var(--pink);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 600;
+}
 
+.section_title h2 {
+    color: var(--dark-blue);
+    text-transform: capitalize;
+    font-weight: 600;
+    font-size: 4.5rem;
 }
