@@ -1,7 +1,7 @@
-import React, {useState} from "react";
-import {GiHamburgerMenu} from "react-icons/gi";
+import React, { useState } from "react";
+import { GiHamburgerMenu } from "react-icons/gi";
 import './Header.css';
-import {useLocation} from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 
 const Header = () => {
@@ -23,13 +23,13 @@ const Header = () => {
                             <a href="/" className={splitLocation[1] === "" ? "active" : " "}>Home</a>
                         </li>
                         <li>
-                            <a href="/notes" className={splitLocation[1] === "notes" ? "active" : " "}>Notes</a>
+                            <a target={'_blank'} href="/notes" className={splitLocation[1] === "notes" ? "active" : " "}>Notes</a>
                         </li>
                         <li>
-                            <a href="/PYQs" className={splitLocation[1] === "PYQs" ? "active" : " "}>PYQs</a>
+                            <a target={'_blank'} href="/PYQs" className={splitLocation[1] === "PYQs" ? "active" : " "}>PYQs</a>
                         </li>
                         <li>
-                            <a href="/feedbacks" className={splitLocation[1] === "feedbacks" ? "active" : " "}>Feedbacks</a>
+                            <a target={'_blank'} href="/feedbacks" className={splitLocation[1] === "feedbacks" ? "active" : " "}>Feedbacks</a>
                         </li>
                     </ul>
 
@@ -38,7 +38,7 @@ const Header = () => {
                 <div className="drop-down-nav">
                     <div className="hamburger-menu">
                         <a href="#" onClick={() => setShowNavItems(!showNavItems)}>
-                            <GiHamburgerMenu style={{color: "white"}}/>
+                            <GiHamburgerMenu style={{ color: "white" }} />
                         </a>
                     </div>
                 </div>
