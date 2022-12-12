@@ -8,7 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import Header from "./components/Header/Header";
 import axios from 'axios';
-
+import Footer from "./components/footer/footer"
 // allow calls from react app to Django api 
 axios.defaults.xsrfCookieName = 'csrftoken'
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'
@@ -25,6 +25,7 @@ const App = () => {
                     <Route path="/PYQs" element={<Home1/>}/>
                     <Route path="/feedbacks" element={<Home2/>}/>
                 </Routes>
+                <Footer/>
 
             </div>
         </Router>
