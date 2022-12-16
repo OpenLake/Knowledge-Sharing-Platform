@@ -3,7 +3,7 @@ import { FC } from "react";
 
 export const Footer: FC<{}> = ({ }) => {
     return (
-        <footer className="p-4 bg-primary-dark text-white md:px-6 md:py-8">
+        <footer className="p-4 bg-primary text-white md:px-6 md:py-8">
             <div className="sm:flex sm:items-center sm:justify-between">
                 <a href="https://flowbite.com/" className="flex items-center mb-4 sm:mb-0">
                     <span className="self-center text-2xl font-semibold whitespace-nowrap ">Knowledge Sharing App</span>

@@ -39,7 +39,7 @@ Knowledge sharing platform application aims to get the students acquainted with 
 
 ## Techstack 👩‍💻
 
-Django, ReactJS, AWS-S3
+NextJS, TailwindCSS
 
 ## Maintainers ☀️
 

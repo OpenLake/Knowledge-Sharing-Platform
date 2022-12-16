@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  uid     String   @id @default(uuid())
+  email   String   @unique
+  name    String
+  notes   Note[]
+  courses Course[]
+  pyqs    PYQ[]
+}
+
+model Note {
+  id          Int      @id @unique @default(autoincrement())
+  title       String   @db.VarChar(255)
+  desc        String?  @db.Text
+  url         String   @db.VarChar(255)
+  batch       String   @db.VarChar(255)
+  createdBy   User     @relation(fields: [createdById], references: [uid])
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Course {
+  id          Int      @id @unique @default(autoincrement())
+  title       String   @db.VarChar(255)
+  desc        String?  @db.Text
+  url         String   @db.VarChar(255)
+  createdBy   User     @relation(fields: [createdById], references: [uid])
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model PYQ {
+  id          Int      @id @unique @default(autoincrement())
+  subject     String   @db.VarChar(255)
+  year        Int      @db.Year
+  createdBy   User     @relation(fields: [createdById], references: [uid])
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
