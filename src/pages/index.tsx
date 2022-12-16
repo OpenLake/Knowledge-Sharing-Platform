@@ -1,10 +1,14 @@
 import Head from 'next/head'
 import { Inter } from '@next/font/google'
-import { useEffect } from 'react'
-
+import { useEffect, useState } from 'react'
+import { Player } from '@lottiefiles/react-lottie-player';
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+  //? states
+  const [animationData, setAnimationData] = useState();
+
+
   useEffect(() => {
     const script = document.createElement('script')
     script.src = "https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"
@@ -32,7 +36,11 @@ export default function Home() {
           <p className='font-semibold text-lg text-gray-700'>NOTES | COURSES | PYQs</p>
         </div>
         <div className='col-span-5 md:col-span-2'>
-          <lottie-player src="https://assets8.lottiefiles.com/private_files/lf30_kmlipp9j.json" background="transparent" speed="1" loop autoplay></lottie-player>
+          <Player
+            autoplay={true}
+            loop={true}
+            src="https://assets8.lottiefiles.com/private_files/lf30_kmlipp9j.json"
+          />
         </div>
       </div>
       <div className="col-span-5 p-10">
