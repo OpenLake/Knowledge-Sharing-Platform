@@ -29,7 +29,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="grid grid-cols-5 gap-0 py-32 h-screen items-start px-14">
+      <div className="grid grid-cols-5 gap-0 h-screen items-center px-14">
         <div className="col-span-5 md:col-span-3 flex flex-col space-y-2 ">
           <p className='font-bold text-base text-gray-600'>WELCOME TO</p>
           <h1 className='font-extrabold text-5xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-light'>KNOWLEDGE SHARING PLATFORM</h1>

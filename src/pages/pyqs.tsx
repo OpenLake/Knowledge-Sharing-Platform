@@ -1,5 +1,5 @@
 export default function PYQs() {
     return (
-        <div className="">Pyqs</div>
+        <div className="h-screen">Pyqs</div>
     )
 }

@@ -1,5 +1,5 @@
 export default function Notes() {
     return (
-        <div className="">notes</div>
+        <div className="h-screen">notes</div>
     )
 }
