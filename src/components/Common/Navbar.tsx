@@ -1,12 +1,14 @@
-import { FC, Ref, useEffect, useRef, useState } from "react";
+import { FC, Ref, RefObject, useEffect, useRef, useState } from "react";
 import { Logo } from "./Logo";
-import { HiOutlineUserCircle } from 'react-icons/hi'
+import { FcGoogle } from 'react-icons/fc'
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useAuth } from "../../contexts/auth";
 
 export const Navbar: FC<{}> = ({ }) => {
     const router = useRouter()
-    const activeRef = useRef(null)
+    const { login } = useAuth()
+    const activeRef = useRef<any | null>(null)
     const [activeOffsetWidth, setActiveOffsetWidth] = useState<string>('')
     const [activeOffsetLeft, setActiveOffsetLeft] = useState<string>('')
 
@@ -21,9 +23,9 @@ export const Navbar: FC<{}> = ({ }) => {
         <div className="w-full fixed top-0 right-0 left-0 z-50 bg-transparent px-8 py-6 flex flex-col">
             <div className="flex justify-between items-center">
                 <Logo />
-                <div className="rounded-full bg-white flex space-x-2 items-center p-3">
-                    <HiOutlineUserCircle className="h-7 w-7 text-primary" />
-                    <span className="text-lg font-semibold">Login</span>
+                <div onClick={login} className="rounded-full bg-white cursor-pointer flex space-x-2 items-center p-3">
+                    <FcGoogle className="h-7 w-7 text-primary" />
+                    <span className="text-lg font-semibold">Login with Google</span>
                 </div>
             </div>
 

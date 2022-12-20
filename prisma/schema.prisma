@@ -7,44 +7,80 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  uid     String   @id @default(uuid())
-  email   String   @unique
-  name    String
-  notes   Note[]
-  courses Course[]
-  pyqs    PYQ[]
+model user {
+  user_id        String          @id @default(uuid())
+  email          String          @unique
+  name           String
+  access_token   String?
+  refresh_token  String?
+  expires_at     Int?
+  token_type     String?
+  scope          String?
+  provider       String
+  notes          note[]
+  courses        course[]
+  pyqs           pyq[]
+  note_upvotes   note_upvote[]
+  course_upvotes course_upvote[]
+  pyq_upvotes    pyq_upvote[]
 }
 
-model Note {
-  id          Int      @id @unique @default(autoincrement())
-  title       String   @db.VarChar(255)
-  desc        String?  @db.Text
-  url         String   @db.VarChar(255)
-  batch       String   @db.VarChar(255)
-  createdBy   User     @relation(fields: [createdById], references: [uid])
-  createdById String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model note {
+  id            Int           @id @unique @default(autoincrement())
+  title         String        @db.VarChar(255)
+  desc          String?       @db.Text
+  url           String        @db.VarChar(255)
+  batch         String        @db.VarChar(255)
+  created_by    user          @relation(fields: [created_by_id], references: [user_id], onDelete: Restrict)
+  created_by_id String
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
+  upvotes       note_upvote[]
 }
 
-model Course {
-  id          Int      @id @unique @default(autoincrement())
-  title       String   @db.VarChar(255)
-  desc        String?  @db.Text
-  url         String   @db.VarChar(255)
-  createdBy   User     @relation(fields: [createdById], references: [uid])
-  createdById String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model note_upvote {
+  id      Int    @id @unique @default(autoincrement())
+  users   user   @relation(fields: [user_id], references: [user_id], onDelete: Restrict)
+  user_id String @unique
+  notes   note   @relation(fields: [note_id], references: [id], onDelete: Restrict)
+  note_id Int    @unique
 }
 
-model PYQ {
-  id          Int      @id @unique @default(autoincrement())
-  subject     String   @db.VarChar(255)
-  year        Int      @db.Year
-  createdBy   User     @relation(fields: [createdById], references: [uid])
-  createdById String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model course {
+  id            Int             @id @unique @default(autoincrement())
+  title         String          @db.VarChar(255)
+  desc          String?         @db.Text
+  url           String          @db.VarChar(255)
+  created_by    user            @relation(fields: [created_by_id], references: [user_id], onDelete: Restrict)
+  created_by_id String
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
+  upvotes       course_upvote[]
+}
+
+model course_upvote {
+  id        Int    @id @unique @default(autoincrement())
+  user      user   @relation(fields: [user_id], references: [user_id], onDelete: Restrict)
+  user_id   String @unique
+  course    course @relation(fields: [course_id], references: [id], onDelete: Restrict)
+  course_id Int    @unique
+}
+
+model pyq {
+  id            Int          @id @unique @default(autoincrement())
+  subject       String       @db.VarChar(255)
+  year          Int          @db.Year
+  created_by    user         @relation(fields: [created_by_id], references: [user_id], onDelete: Restrict)
+  created_by_id String
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
+  upvotes       pyq_upvote[]
+}
+
+model pyq_upvote {
+  id      Int    @id @unique @default(autoincrement())
+  user    user   @relation(fields: [user_id], references: [user_id], onDelete: Restrict)
+  user_id String @unique
+  pyq     pyq    @relation(fields: [pyq_id], references: [id], onDelete: Restrict)
+  pyq_id  Int    @unique
 }

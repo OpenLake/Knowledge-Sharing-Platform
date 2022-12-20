@@ -44,11 +44,11 @@ export default function Home() {
         </div>
       </div>
       <div className="col-span-5 p-10">
-        <div className="col-span-5 shadow-2xl rounded-2xl bg-white grid grid-cols-5 items-center space-y-4">
-          <h2 className="font-bold col-span-2 text-5xl justify-self-center">
+        <div className="shadow-2xl rounded-2xl bg-white grid grid-cols-5 items-center pl-0">
+          <h2 className="font-bold underline col-span-2 text-5xl justify-self-center pl-0">
             About
           </h2>
-          <p className='col-span-3 p-4'> Knowledge sharing platform application aims to get the students acquainted with the courses, professors, evaluation schemes. This webapp does the said things i.e. gathering notes, PYQs, course feedback, professor feedback, and previous year grading schemes. Here people can share their honest reviews without being scrutinized much. Getting reviews from mass makes it easy for one to choose the particular course and get the right information about that course. Moreover, students can also get relevant course resources from the students who already opted for the course. This platform might also act as a general guidance portal.</p>
+          <p className='font-semibold col-span-3 p-5 m-0'> Knowledge sharing platform application aims to get the students acquainted with the courses, professors, evaluation schemes. This webapp does the said things i.e. gathering notes, PYQs, course feedback, professor feedback, and previous year grading schemes. Here people can share their honest reviews without being scrutinized much. Getting reviews from mass makes it easy for one to choose the particular course and get the right information about that course. Moreover, students can also get relevant course resources from the students who already opted for the course. This platform might also act as a general guidance portal.</p>
         </div>
       </div>
     </div>
