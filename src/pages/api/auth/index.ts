@@ -1,17 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getAuth } from 'firebase-admin/auth';
 import { initializeApp } from 'firebase-admin/app';
-import { credential } from 'firebase-admin'
-import { deleteApp } from 'firebase-admin/app';
-const { privateKey } = JSON.parse(process.env.PRIVATE_KEY!)
-
-const FIREBASE_ADMIN_CONFIG = {
-    credential: credential.cert({
-        projectId: process.env.PROJECT_ID,
-        clientEmail: process.env.CLIENT_EMAIL,
-        privateKey
-    })
-}
+import { adminAuth } from '../../../utils/firebaseAdminInit';
+import { responseData } from '../../../types/responseData';
 
 export default async function authHandler(req: NextApiRequest, res: NextApiResponse) {
     const { method, headers } = req
@@ -21,18 +12,21 @@ export default async function authHandler(req: NextApiRequest, res: NextApiRespo
             if (headers && headers.authorization) {
                 const accessToken = headers.authorization.split(' ')[1]
 
-                const firebaseAdminApp = initializeApp(FIREBASE_ADMIN_CONFIG)
-                const adminAuth = getAuth(firebaseAdminApp)
+                try {
+                    const user = await adminAuth.verifyIdToken(accessToken!)
+                    console.log(user)
 
-                const user = await adminAuth.verifyIdToken(accessToken!)
-                console.log(user)
-                await deleteApp(firebaseAdminApp)
-
+                    res.status(200).json({
+                        message: 'User fetched',
+                        result: user
+                    })
+                }
+                catch (err: any) {
+                    res.status(405).json({
+                        err
+                    })
+                }
             }
-            res.status(200).json({
-                message: 'User fetched',
-                // result: user
-            })
             break
         default:
             res.status(405).json({
