@@ -1,11 +1,10 @@
-import { Context, FC, createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import cookies from 'js-cookie'
 import { api } from "../utils/api";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
-import { deleteApp, initializeApp } from "firebase/app"
-import { FIREBASE_CONFIG } from "../config";
+import { signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth'
 import { firebaseAuth } from "../utils/firebaseInit";
 import { useRouter } from 'next/router'
+import { toast } from "react-hot-toast";
 
 const AuthContext = createContext({
     isAuthenticated: false,
@@ -13,6 +12,7 @@ const AuthContext = createContext({
     photoURL: '',
     displayName: '',
     login: () => { },
+    logout: () => { },
     loading: true,
 })
 
@@ -29,9 +29,17 @@ export const AuthProvider = ({ children }: any) => {
 
     //? functions
     const logout = () => {
-        cookies.remove('accessToken')
-        setUser(null)
-        delete api.defaults.headers.Authorization
+        signOut(firebaseAuth)
+            .then(() => {
+                cookies.remove('accessToken')
+                setUser(null)
+                setPhotoURL('')
+                setDisplayName('')
+                delete api.defaults.headers.Authorization
+            })
+            .catch((err: any) => {
+                toast.error(err.message)
+            })
     }
 
     const login = () => {
@@ -40,17 +48,22 @@ export const AuthProvider = ({ children }: any) => {
         signInWithPopup(firebaseAuth, provider)
             .then(async (res) => {
                 const { user }: any = res
-                const { accessToken, photoURL, displayName } = user
-                console.log(user)
+                const { accessToken } = user
+
                 if (accessToken) {
                     cookies.set('accessToken', accessToken, { expires: 60 })
+
                     api.defaults.headers.Authorization = `Bearer ${accessToken}`
                     const { data } = await api.get('/api/auth/')
-                    const { result: user } = data
-                    console.log(user)
-                    setPhotoURL(photoURL)
-                    setDisplayName(displayName)
-                    setUser(user)
+                    const { result: userData } = data
+                    const { picture, name } = userData
+
+                    if (userData) {
+                        setUser(userData)
+                        setPhotoURL(picture)
+                        setDisplayName(name)
+                    }
+                    toast.success('Login Successfull')
                 }
             })
             .catch((err: any) => {
@@ -71,7 +84,6 @@ export const AuthProvider = ({ children }: any) => {
                     setPhotoURL(picture)
                     setDisplayName(name)
                 }
-
             }
             catch (err: any) {
                 console.log(err)
@@ -99,6 +111,7 @@ export const AuthProvider = ({ children }: any) => {
                 photoURL,
                 displayName,
                 login,
+                logout,
                 loading
             }}>
             {children}
