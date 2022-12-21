@@ -4,10 +4,11 @@ import { FcGoogle } from 'react-icons/fc'
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useAuth } from "../../contexts/auth";
+import Image from 'next/image'
 
 export const Navbar: FC<{}> = ({ }) => {
     const router = useRouter()
-    const { login } = useAuth()
+    const { user, photoURL, displayName, login } = useAuth()
     const activeRef = useRef<any | null>(null)
     const [activeOffsetWidth, setActiveOffsetWidth] = useState<string>('')
     const [activeOffsetLeft, setActiveOffsetLeft] = useState<string>('')
@@ -23,10 +24,18 @@ export const Navbar: FC<{}> = ({ }) => {
         <div className="w-full fixed top-0 right-0 left-0 z-50 bg-transparent px-8 py-6 flex flex-col">
             <div className="flex justify-between items-center">
                 <Logo />
-                <div onClick={login} className="rounded-full bg-white cursor-pointer flex space-x-2 items-center p-3">
-                    <FcGoogle className="h-7 w-7 text-primary" />
-                    <span className="text-lg font-semibold">Login with Google</span>
-                </div>
+                {
+                    user ?
+                        <div className="rounded-full bg-white cursor-pointer flex space-x-2 items-center pl-2 pr-3 py-2">
+                            <Image className="rounded-full" src={photoURL} width={40} height={40} alt="user" />
+                            <span className="text-lg font-semibold">{displayName}</span>
+                        </div>
+                        :
+                        <div onClick={login} className="rounded-full bg-white cursor-pointer flex space-x-2 items-center p-3">
+                            <FcGoogle className="h-7 w-7 text-primary" />
+                            <span className="text-lg font-semibold">Login with Google</span>
+                        </div>
+                }
             </div>
 
             <div className="inline-flex gap-3 overflow-hidden relative justify-center items-center font-semibold text-xl">

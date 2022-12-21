@@ -10,6 +10,8 @@ import { useRouter } from 'next/router'
 const AuthContext = createContext({
     isAuthenticated: false,
     user: null,
+    photoURL: '',
+    displayName: '',
     login: () => { },
     loading: true,
 })
@@ -46,8 +48,8 @@ export const AuthProvider = ({ children }: any) => {
                     const { data } = await api.get('/api/auth/')
                     const { result: user } = data
                     console.log(user)
-                    // setPhotoURL(photoURL)
-                    // setDisplayName(displayName)
+                    setPhotoURL(photoURL)
+                    setDisplayName(displayName)
                     setUser(user)
                 }
             })
@@ -63,7 +65,13 @@ export const AuthProvider = ({ children }: any) => {
             try {
                 const { data } = await api.get('/api/auth/')
                 const { result: user } = data
-                if (user) setUser(user)
+                const { picture, name } = user
+                if (user) {
+                    setUser(user)
+                    setPhotoURL(picture)
+                    setDisplayName(name)
+                }
+
             }
             catch (err: any) {
                 console.log(err)
@@ -88,6 +96,8 @@ export const AuthProvider = ({ children }: any) => {
             value={{
                 isAuthenticated: !!user,
                 user,
+                photoURL,
+                displayName,
                 login,
                 loading
             }}>
