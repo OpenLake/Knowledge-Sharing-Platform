@@ -12,30 +12,36 @@ export default async function authHandler(req: NextApiRequest, res: NextApiRespo
         case 'GET':
             if (headers && headers.authorization) {
                 const accessToken = headers.authorization.split(' ')[1]
-
-                try {
-                    const user = await adminAuth.verifyIdToken(accessToken!)
-                    const { email, name, user_id } = user
-
-                    const result = await prisma.user.findUnique({
-                        where: {
-                            user_id: user_id
-                        },
-                    })
-
-                    if (!result) {
-                        await prisma.user.create({
-                            data: {
-                                user_id,
-                                email: email as string,
-                                name
-                            }
+                const user = await adminAuth.verifyIdToken(accessToken!)
+                if (user) {
+                    try {
+                        const subjects = await prisma.subject.findMany()
+                        res.status(200).json({
+                            message: 'Subjects Fetched',
+                            result: subjects
                         })
                     }
+                    catch (err: any) {
+                        res.status(405).json({
+                            err
+                        })
+                    }
+                }
+                else {
+                    res.status(401).json({
+                        message: 'Unauthorized Access'
+                    })
+                }
+            }
+            break
+        case 'POST':
+            if (headers && headers.authorization) {
+                const accessToken = headers.authorization.split(' ')[1]
 
+                try {
+                    prisma.subject.findMany()
                     res.status(200).json({
-                        message: 'User fetched',
-                        result: user
+                        message: 'Subject Created'
                     })
                 }
                 catch (err: any) {

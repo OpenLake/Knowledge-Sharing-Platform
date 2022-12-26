@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -11,12 +11,6 @@ model user {
   user_id        String          @id @default(uuid())
   email          String          @unique
   name           String
-  access_token   String?
-  refresh_token  String?
-  expires_at     Int?
-  token_type     String?
-  scope          String?
-  provider       String
   notes          note[]
   courses        course[]
   pyqs           pyq[]
@@ -25,12 +19,23 @@ model user {
   pyq_upvotes    pyq_upvote[]
 }
 
+model subject {
+  id    Int    @id @unique @default(autoincrement())
+  code  String @unique
+  name  String @db.VarChar(255)
+  notes note[]
+}
+
 model note {
   id            Int           @id @unique @default(autoincrement())
   title         String        @db.VarChar(255)
   desc          String?       @db.Text
   url           String        @db.VarChar(255)
+  subjects      subject       @relation(fields: [subject], references: [code])
+  subject       String        @db.VarChar(255)
   batch         String        @db.VarChar(255)
+  branch        String        @db.VarChar(255)
+  class         String        @db.VarChar(100)
   created_by    user          @relation(fields: [created_by_id], references: [user_id], onDelete: Restrict)
   created_by_id String
   created_at    DateTime      @default(now())
@@ -50,7 +55,6 @@ model course {
   id            Int             @id @unique @default(autoincrement())
   title         String          @db.VarChar(255)
   desc          String?         @db.Text
-  url           String          @db.VarChar(255)
   created_by    user            @relation(fields: [created_by_id], references: [user_id], onDelete: Restrict)
   created_by_id String
   created_at    DateTime        @default(now())
@@ -69,7 +73,9 @@ model course_upvote {
 model pyq {
   id            Int          @id @unique @default(autoincrement())
   subject       String       @db.VarChar(255)
-  year          Int          @db.Year
+  batch         String       @db.VarChar(255)
+  branch        String       @db.VarChar(255)
+  year          String       @db.VarChar(100)
   created_by    user         @relation(fields: [created_by_id], references: [user_id], onDelete: Restrict)
   created_by_id String
   created_at    DateTime     @default(now())

@@ -24,7 +24,7 @@ export const Navbar: FC<{}> = ({ }) => {
     }, [router, activeRef, activeRef.current?.offsetWidth])
 
     return (
-        <div className="w-full fixed top-0 right-0 left-0 z-50 bg-transparent px-8 py-6 flex flex-col">
+        <div className="w-full fixed top-0 right-0 left-0 z-50 bg-bg-primary shadow-md px-8 py-6 flex flex-col">
             <div className="flex justify-between items-center">
                 <Logo />
                 {
