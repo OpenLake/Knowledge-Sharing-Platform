@@ -13,6 +13,7 @@ model user {
   name           String
   notes          note[]
   courses        course[]
+  subjects       subject[]
   pyqs           pyq[]
   note_upvotes   note_upvote[]
   course_upvotes course_upvote[]
@@ -20,10 +21,14 @@ model user {
 }
 
 model subject {
-  id    Int    @id @unique @default(autoincrement())
-  code  String @unique
-  name  String @db.VarChar(255)
-  notes note[]
+  id            Int      @id @unique @default(autoincrement())
+  code          String   @unique
+  name          String   @db.VarChar(255)
+  created_by    user     @relation(fields: [created_by_id], references: [user_id], onDelete: Restrict)
+  created_by_id String
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  notes         note[]
 }
 
 model note {

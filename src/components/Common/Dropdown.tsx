@@ -9,7 +9,7 @@ export const Dropdown: FC<{
     items, showDropdown, setShowDropdown, setSelectedItem
 }) => {
         return (
-            <ul className={`${showDropdown ? 'absolute' : 'hidden'} h-56 overflow-x-clip border-2 -bottom-12 overflow-y-auto w-1/3 border-gray-400 bg-white rounded-md shadow-md flex flex-col`}>
+            <ul className={`${showDropdown ? 'absolute' : 'hidden'} h-56 overflow-x-clip border-2 overflow-y-auto w-1/3 border-gray-400 bg-white rounded-md shadow-md flex flex-col`}>
                 {
                     items.map((item) => {
                         return (
