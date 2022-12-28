@@ -1,22 +1,29 @@
-import { Dispatch, FC, SetStateAction } from "react";
+import { Dispatch, FC, Ref, SetStateAction } from "react";
 
 export const Dropdown: FC<{
+    ref: Ref<any>
     items: Array<any>
     setSelectedItem: Dispatch<SetStateAction<string>>
     showDropdown: boolean
     setShowDropdown: Dispatch<SetStateAction<boolean>>
 }> = ({
-    items, showDropdown, setShowDropdown, setSelectedItem
+    ref, items, showDropdown, setShowDropdown, setSelectedItem
 }) => {
         return (
-            <ul className={`${showDropdown ? 'absolute' : 'hidden'} h-56 overflow-x-clip border-2 overflow-y-auto w-1/3 border-gray-400 bg-white rounded-md shadow-md flex flex-col`}>
+            <ul ref={ref} className={`${showDropdown ? 'absolute' : 'hidden'} max-h-44 top-16 overflow-x-clip z-50 border-2 overflow-y-auto items-center min-w-[20%] border-gray-300 bg-white rounded shadow-xl flex flex-col`}>
                 {
                     items.map((item) => {
                         return (
-                            <li onClick={() => {
-                                setShowDropdown(false)
-                                setSelectedItem(item.name)
-                            }} key={item.id} className="font-semibold p-3 border-b bg-white hover:bg-gray-100 cursor-pointer">{item.name}</li>
+                            <li
+                                key={item.id}
+                                onClick={() => {
+                                    setSelectedItem(item.name)
+                                    setShowDropdown(false)
+                                }}
+                                className="font-semibold w-full text-center p-2 border-b bg-white hover:bg-gray-100 cursor-pointer"
+                            >
+                                {item.name}
+                            </li>
                         )
                     })
                 }

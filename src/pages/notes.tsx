@@ -6,6 +6,7 @@ import { useTable } from 'react-table'
 import Head from 'next/head'
 import { AddNoteModal } from '../components/Notes/AddNoteModal'
 import { BsPlus } from "react-icons/bs";
+import { toast } from "react-hot-toast";
 
 export default function Notes() {
     //? states
@@ -94,7 +95,15 @@ export default function Notes() {
                 <div
                     className="col-span-5 flex flex-row items-center justify-between">
                     <h3 className="font-bold text-4xl">Notes</h3>
-                    <button onClick={() => setShowAddNoteModal(true)} type="button" className="flex items-center space-x-2 p-2 duration-200 transition-all rounded-md shadow-md hover:shadow-xl bg-primary text-white font-semibold">
+                    <button
+                        onClick={() => {
+                            if (user)
+                                setShowAddNoteModal(true)
+                            else toast("Please login to add new notes", {
+                                icon: 'ℹ️'
+                            })
+                        }}
+                        type="button" className="flex items-center space-x-2 p-2 duration-200 transition-all rounded-md shadow-md hover:shadow-xl bg-primary text-white font-semibold">
                         <BsPlus className="h-9 w-9" />
                         <span className="text-lg">
                             Add Notes
