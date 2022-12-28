@@ -118,10 +118,12 @@ export default function Notes() {
                         {// Loop over the header rows
                             headerGroups.map((headerGroup, index) => (
                                 // Apply the header row props
+                                // eslint-disable-next-line react/jsx-key
                                 <tr className="" {...headerGroup.getHeaderGroupProps()}>
                                     {// Loop over the headers in each row
                                         headerGroup.headers.map(column => (
                                             // Apply the header cell props
+                                            // eslint-disable-next-line react/jsx-key
                                             <th className="bg-primary border-primary border-2 text-white p-4" {...column.getHeaderProps()}>
                                                 {// Render the header
                                                     column.render('Header')}
@@ -137,11 +139,13 @@ export default function Notes() {
                                 prepareRow(row)
                                 return (
                                     // Apply the row props
+                                    // eslint-disable-next-line react/jsx-key
                                     <tr className="" {...row.getRowProps()}>
                                         {// Loop over the rows cells
                                             row.cells.map(cell => {
                                                 // Apply the cell props
                                                 return (
+                                                    // eslint-disable-next-line react/jsx-key
                                                     <td className="text-center p-3 border-2 border-gray-800" {...cell.getCellProps()}>
                                                         {// Render the cell contents
                                                             cell.render('Cell')}
