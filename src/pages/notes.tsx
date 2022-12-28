@@ -2,12 +2,23 @@ import { useAuth } from "../contexts/auth";
 import useSWR, { mutate } from 'swr'
 import { api } from "../utils/api";
 import { useEffect, useMemo, useState } from "react";
-import { useTable } from 'react-table'
+import { Column, useTable } from 'react-table'
 import Head from 'next/head'
 import { AddNoteModal } from '../components/Notes/AddNoteModal'
 import { BsPlus } from "react-icons/bs";
 import { toast } from "react-hot-toast";
 import { getNotes } from "../services/db/getNotes";
+
+interface ColumnData {
+    sno: string;
+    title: string;
+    subjectCode: string;
+    subject: string;
+    url: string;
+    class: string;
+    batch: string;
+    branch: string;
+}
 
 export default function Notes() {
     //? states
@@ -16,11 +27,11 @@ export default function Notes() {
 
     const { user, loading }: any = useAuth();
     // const { data: { data: pages } = {}, isValidating } = useSWR(loading ? false : '/pages', api.get)
-    const columns = useMemo(
+    const columns = useMemo<Column<ColumnData>[]>(
         () => [
             {
                 Header: 'S.No.',
-                accessor: 'sno', // accessor is the "key" in the data
+                accessor: 'sno',
             },
             {
                 Header: 'Title',
@@ -79,7 +90,7 @@ export default function Notes() {
         prepareRow,
     } = tableInstance
 
-
+    console.log(headerGroups[0].getHeaderGroupProps())
     //? effects
     useEffect(() => {
         getNotes()
@@ -115,40 +126,41 @@ export default function Notes() {
                 </div>
                 <table className="col-span-5" {...getTableProps()}>
                     <thead>
-                        {// Loop over the header rows
-                            headerGroups.map((headerGroup, index) => (
-                                // Apply the header row props
-                                // eslint-disable-next-line react/jsx-key
-                                <tr className="" {...headerGroup.getHeaderGroupProps()}>
-                                    {// Loop over the headers in each row
-                                        headerGroup.headers.map(column => (
-                                            // Apply the header cell props
-                                            // eslint-disable-next-line react/jsx-key
-                                            <th className="bg-primary border-primary border-2 text-white p-4" {...column.getHeaderProps()}>
-                                                {// Render the header
-                                                    column.render('Header')}
-                                            </th>
-                                        ))}
-                                </tr>
-                            ))}
+                        {
+                            headerGroups.map((headerGroup, index) => {
+                                const { key: headerGroupPropsKey, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps()
+                                return (
+                                    <tr className="" key={headerGroupPropsKey} {...restHeaderGroupProps}>
+                                        {
+                                            headerGroup.headers.map(column => {
+                                                const { key: headerPropsKey, ...restHeaderProps } = headerGroup.getHeaderProps()
+                                                return (
+                                                    <th key={headerPropsKey} className="bg-primary border-primary border-2 text-white p-4" {...restHeaderProps}>
+                                                        {
+                                                            column.render('Header')}
+                                                    </th>
+                                                )
+                                            })}
+                                    </tr>
+                                )
+                            })
+                        }
                     </thead>
                     <tbody {...getTableBodyProps()}>
-                        {// Loop over the table rows
+                        {
                             rows.map(row => {
-                                // Prepare the row for display
                                 prepareRow(row)
+                                const { key: rowPropsKey, ...restRowProps } = row.getRowProps()
                                 return (
-                                    // Apply the row props
-                                    // eslint-disable-next-line react/jsx-key
-                                    <tr className="" {...row.getRowProps()}>
-                                        {// Loop over the rows cells
+                                    <tr key={rowPropsKey} className="" {...restRowProps}>
+                                        {
                                             row.cells.map(cell => {
-                                                // Apply the cell props
+                                                const { key: cellPropsKey, ...restCellProps } = cell.getCellProps()
                                                 return (
-                                                    // eslint-disable-next-line react/jsx-key
-                                                    <td className="text-center p-3 border-2 border-gray-800" {...cell.getCellProps()}>
-                                                        {// Render the cell contents
-                                                            cell.render('Cell')}
+                                                    <td key={cellPropsKey} className="text-center p-3 border-2 border-gray-800" {...restCellProps}>
+                                                        {
+                                                            cell.render('Cell')
+                                                        }
                                                     </td>
                                                 )
                                             })}
