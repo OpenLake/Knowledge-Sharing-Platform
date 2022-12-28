@@ -90,7 +90,6 @@ export default function Notes() {
         prepareRow,
     } = tableInstance
 
-    console.log(headerGroups[0].getHeaderGroupProps())
     //? effects
     useEffect(() => {
         getNotes()
@@ -133,7 +132,7 @@ export default function Notes() {
                                     <tr className="" key={headerGroupPropsKey} {...restHeaderGroupProps}>
                                         {
                                             headerGroup.headers.map(column => {
-                                                const { key: headerPropsKey, ...restHeaderProps } = headerGroup.getHeaderProps()
+                                                const { key: headerPropsKey, ...restHeaderProps } = column.getHeaderProps()
                                                 return (
                                                     <th key={headerPropsKey} className="bg-primary border-primary border-2 text-white p-4" {...restHeaderProps}>
                                                         {
