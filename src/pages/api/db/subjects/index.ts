@@ -77,6 +77,11 @@ export default async function authHandler(req: NextApiRequest, res: NextApiRespo
                     })
                 }
             }
+            else {
+                res.status(401).json({
+                    message: 'Unauthorized Access'
+                })
+            }
             break
         default:
             res.status(405).json({

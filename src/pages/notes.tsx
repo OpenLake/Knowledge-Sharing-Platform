@@ -56,18 +56,19 @@ export default function Notes() {
     const data = useMemo(
         () => notes.map((note: any) => {
             return {
-                sno: `${note.id + 1}.`,
+                sno: `${note.id}.`,
                 title: note.title,
                 subjectCode: note.subject,
-                subject: 'hii',
+                subject: note.subjects.name,
                 url: note.url,
                 class: note.class,
                 batch: note.batch,
                 branch: note.branch
             }
         }),
-        []
+        [notes]
     )
+
 
     const tableInstance = useTable({ columns, data })
     const {

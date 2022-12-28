@@ -9,7 +9,15 @@ export default async function noteHandler(req: NextApiRequest, res: NextApiRespo
     switch (method) {
         case 'GET':
             try {
-                const notes = await prisma.note.findMany()
+                const notes = await prisma.note.findMany({
+                    include: {
+                        subjects: {
+                            select: {
+                                name: true
+                            }
+                        }
+                    }
+                })
                 res.status(200).json({
                     message: "Notes Fetched",
                     result: notes
