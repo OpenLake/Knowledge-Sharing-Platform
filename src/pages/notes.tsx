@@ -1,55 +1,21 @@
 import { useAuth } from "../contexts/auth";
 import useSWR, { mutate } from 'swr'
 import { api } from "../utils/api";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTable } from 'react-table'
 import Head from 'next/head'
 import { AddNoteModal } from '../components/Notes/AddNoteModal'
 import { BsPlus } from "react-icons/bs";
 import { toast } from "react-hot-toast";
+import { getNotes } from "../services/db/getNotes";
 
 export default function Notes() {
     //? states
     const [showAddNoteModal, setShowAddNoteModal] = useState(false)
+    const [notes, setNotes] = useState([])
 
     const { user, loading }: any = useAuth();
     // const { data: { data: pages } = {}, isValidating } = useSWR(loading ? false : '/pages', api.get)
-    const data = useMemo(
-        () => [
-            {
-                sno: 1,
-                name: 'Sem 1',
-                url: 'https://www.google.com/',
-                batch: 'Third Year'
-            },
-            {
-                sno: 2,
-                name: 'Sem 2',
-                url: 'https://www.google.com/',
-                batch: 'Third Year'
-            },
-            {
-                sno: 3,
-                name: 'Sem 3',
-                url: 'https://www.google.com/',
-                batch: 'Third Year'
-            },
-            {
-                sno: 4,
-                name: 'Sem 4',
-                url: 'https://www.google.com/',
-                batch: 'Third Year'
-            },
-            {
-                sno: 5,
-                name: 'Sem 5',
-                url: 'https://www.google.com/',
-                batch: 'Third Year'
-            },
-        ],
-        []
-    )
-
     const columns = useMemo(
         () => [
             {
@@ -57,18 +23,49 @@ export default function Notes() {
                 accessor: 'sno', // accessor is the "key" in the data
             },
             {
-                Header: 'Name',
-                accessor: 'name',
+                Header: 'Title',
+                accessor: 'title',
+            },
+            {
+                Header: 'Subject Code',
+                accessor: 'subjectCode',
+            },
+            {
+                Header: 'Subject',
+                accessor: 'subject',
             },
             {
                 Header: 'URL',
                 accessor: 'url',
             },
             {
+                Header: 'Class',
+                accessor: 'class',
+            },
+            {
                 Header: 'Batch',
                 accessor: 'batch',
             },
+            {
+                Header: 'Branch',
+                accessor: 'branch',
+            },
         ],
+        []
+    )
+    const data = useMemo(
+        () => notes.map((note: any) => {
+            return {
+                sno: `${note.id + 1}.`,
+                title: note.title,
+                subjectCode: note.subject,
+                subject: 'hii',
+                url: note.url,
+                class: note.class,
+                batch: note.batch,
+                branch: note.branch
+            }
+        }),
         []
     )
 
@@ -82,6 +79,11 @@ export default function Notes() {
     } = tableInstance
 
 
+    //? effects
+    useEffect(() => {
+        getNotes()
+            .then(res => setNotes(res))
+    }, [])
     return (
         <div className="w-full bg-bg-primary flex flex-col">
             <AddNoteModal showAddNoteModal={showAddNoteModal} setShowAddNoteModal={setShowAddNoteModal} />

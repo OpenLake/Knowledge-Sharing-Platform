@@ -8,6 +8,19 @@ export default async function noteHandler(req: NextApiRequest, res: NextApiRespo
 
     switch (method) {
         case 'GET':
+            try {
+                const notes = await prisma.note.findMany()
+                res.status(200).json({
+                    message: "Notes Fetched",
+                    result: notes
+                })
+            }
+            catch (err: any) {
+                console.log(err)
+                res.status(405).json({
+                    err
+                })
+            }
             break
 
         case 'POST':
@@ -18,7 +31,6 @@ export default async function noteHandler(req: NextApiRequest, res: NextApiRespo
                 if (user) {
                     const { title, subjectCode, studyingClass, branch, batch, url } = body
                     try {
-                        console.log('first')
                         const result = await prisma.note.create({
                             data: {
                                 title,
@@ -30,7 +42,6 @@ export default async function noteHandler(req: NextApiRequest, res: NextApiRespo
                                 created_by_id: user.user_id
                             }
                         })
-                        console.log(result)
                         res.status(201).json({
                             message: "Notes Created"
                         })
