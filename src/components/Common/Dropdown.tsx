@@ -1,7 +1,7 @@
 import { Dispatch, FC, Ref, SetStateAction } from "react";
 
 export const Dropdown: FC<{
-    ref: Ref<any>
+    ref?: Ref<any>
     items: Array<any>
     setSelectedItem: Dispatch<SetStateAction<string>>
     showDropdown: boolean

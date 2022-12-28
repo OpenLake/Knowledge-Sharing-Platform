@@ -263,12 +263,12 @@ export const AddNoteModal: FC<{
                                         Year
                                     </span>
                                 </label>
-                                <Dropdown ref={classDropdownRef} setSelectedItem={setSelectedClass} showDropdown={showClassDropdown} setShowDropdown={setShowClassDropdown} items={classes} />
+                                <Dropdown setSelectedItem={setSelectedClass} showDropdown={showClassDropdown} setShowDropdown={setShowClassDropdown} items={classes} />
                             </div>
                             <div className="flex flex-col space-y-1 relative">
                                 <span className="font-semibold">Branch</span>
                                 <input placeholder="e.g. Computer Science and Engineering" onFocus={() => setShowBranchDropdown(true)} value={selectedBranch !== "" ? selectedBranch : selectedBranchInput} onChange={(e) => setSelectedBranchInput(e.target.value)} type="text" className="relative p-1 ring-1 ring-gray-400 rounded-sm shadow-md" />
-                                <Dropdown ref={branchDropdownRef} setSelectedItem={setSelectedBranch} showDropdown={showBranchDropdown} setShowDropdown={setShowBranchDropdown} items={branches} />
+                                <Dropdown setSelectedItem={setSelectedBranch} showDropdown={showBranchDropdown} setShowDropdown={setShowBranchDropdown} items={branches} />
                             </div>
                             <div className="flex flex-col space-y-1">
                                 <span className="font-semibold">URL</span>
