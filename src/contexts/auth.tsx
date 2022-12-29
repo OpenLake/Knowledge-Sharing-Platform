@@ -97,6 +97,7 @@ export const AuthProvider = ({ children }: any) => {
         }
         setLoading(false)
     }
+
     //? effects
     useEffect(() => {
         if (loading)

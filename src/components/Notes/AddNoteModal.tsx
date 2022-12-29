@@ -3,26 +3,29 @@ import { Dropdown } from "../Common/Dropdown"
 import { batches } from "../../constants/batches"
 import { branches } from "../../constants/branches"
 import useOutsideClick from "../../hooks/useOutsideClick"
-import Select from 'react-tailwindcss-select'
 import { IoMdClose } from 'react-icons/io'
-import { api } from "../../utils/api"
 import { addNote } from "../../services/db/addNote"
 import { addSubject } from "../../services/db/addSubject"
 import { getSubjects } from "../../services/db/getSubjects"
 import { toast } from "react-hot-toast"
 import { classes } from "../../constants/classes"
+import { getNotes } from "../../services/db/getNotes"
 
 export const AddNoteModal: FC<{
     showAddNoteModal: boolean
+    refetchNotes: Function
     setShowAddNoteModal: Dispatch<SetStateAction<boolean>>
 }> = ({
+    refetchNotes,
     showAddNoteModal,
     setShowAddNoteModal
 }) => {
+        //? contexts 
+
         //? constants
 
-
         //? refs
+        const addNoteModalRef = useRef(null)
         const batchDropdownRef = useRef(null)
         const branchDropdownRef = useRef(null)
         const classDropdownRef = useRef(null)
@@ -33,6 +36,7 @@ export const AddNoteModal: FC<{
         const [isLoading, setIsLoading] = useState<boolean>(false)
         const [title, setTitle] = useState<string>('')
         const [url, setUrl] = useState<string>('')
+        const [isAnonymous, setIsAnonymous] = useState<boolean>(false)
         const [showBatchDropdown, setShowBatchDropdown] = useState<boolean>(false)
         const [showSubjectNameDropdown, setShowSubjectNameDropdown] = useState<boolean>(false)
         const [showSubjectCodeDropdown, setShowSubjectCodeDropdown] = useState<boolean>(false)
@@ -50,42 +54,66 @@ export const AddNoteModal: FC<{
         const [selectedSubjectName, setSelectedSubjectName] = useState<string>('')
         const [subjects, setSubjects] = useState<any[]>([])
 
+
+
+        //? functions
+        useOutsideClick([addNoteModalRef, batchDropdownRef, branchDropdownRef, subjectNameDropdownRef, subjectCodeDropdownRef],
+            () => {
+                setShowSubjectCodeDropdown(false)
+                setShowSubjectNameDropdown(false)
+                setShowBranchDropdown(false)
+                setShowBatchDropdown(false)
+                setShowClassDropdown(false)
+                setShowAddNoteModal(false)
+            }
+        )
+
+        const addNoteHandler = (e: any) => {
+            if (title === "" || selectedSubjectCode === "" || selectedSubjectName === "" || selectedBatch === "" || selectedBranch === "" || url === "")
+                toast.error("Please fill all the details!")
+            else {
+                setIsLoading(true)
+                if (!subjects.find((subject) => subject.code === selectedSubjectCode)) {
+                    addSubject(selectedSubjectName, selectedSubjectCode)
+                    getSubjects()
+                        .then((res) => setSubjects(res))
+                }
+                addNote(title, selectedSubjectCode, selectedBatch, selectedClass, selectedBranch, url, isAnonymous)
+                setTitle('')
+                setUrl('')
+                setSelectedBatch('')
+                setSelectedBranch('')
+                setSelectedClass('')
+                setSelectedSubjectCode('')
+                setSelectedSubjectName('')
+                setIsAnonymous(false)
+                setShowAddNoteModal(false)
+                setIsLoading(false)
+                refetchNotes()
+            }
+        }
+
         //? effects
         useEffect(() => {
             getSubjects()
                 .then((res) => setSubjects(res))
         }, [])
 
-        //? functions
-        useOutsideClick([batchDropdownRef, branchDropdownRef, subjectNameDropdownRef, subjectCodeDropdownRef],
-            () => {
-                setShowSubjectCodeDropdown(false)
-                setShowSubjectNameDropdown(false)
-                // setShowBranchDropdown(false)
-                // setShowBatchDropdown(false)
+        useEffect(() => {
+            const keyPressHandler = (event: any) => {
+                if (event.key === "Escape") {
+                    setShowAddNoteModal(false)
+                }
             }
-        )
+            document.addEventListener('keydown', keyPressHandler, false)
 
-        const addNoteHandler = (e: any) => {
-            setIsLoading(true)
-            if (!subjects.find((subject) => subject.code === selectedSubjectCode)) {
-                addSubject(selectedSubjectName, selectedSubjectCode)
-            }
-            else {
-                if (title === "" || selectedSubjectCode === "" || selectedSubjectName === "" || selectedBatch === "" || selectedBranch === "" || url === "")
-                    toast.error("Please fill all the details!")
-                else
-                    addNote(title, selectedSubjectCode, selectedBatch, selectedClass, selectedBranch, url)
-            }
-            setIsLoading(false)
-            setShowAddNoteModal(false)
-        }
+            return () => document.removeEventListener('keydown', keyPressHandler, false)
+        }, [setShowAddNoteModal])
 
         return (
-            <div
-                className={`${!showAddNoteModal && 'hidden'} flex justify-center items-center fixed top-0 left-0 right-0 z-50 w-full p-4 bg-black/50 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full`}>
-                <div className="relative w-full h-full max-w-2xl md:h-auto">
-                    <div className={`relative bg-white rounded-lg shadow`}>
+            <div className={`${!showAddNoteModal && 'hidden'} flex justify-center items-center fixed top-0 left-0 right-0 z-50 w-full bg-black/50 overflow-x-hidden overflow-y-auto h-full`}>
+                <div className="relative w-full pt-32 md:pt-8 px-5 h-full max-w-2xl md:h-auto">
+                    <div ref={addNoteModalRef} className={`relative bg-white rounded-lg shadow`}>
                         <div className="flex items-start justify-between p-4 border-b rounded-t">
                             <h3 className="text-xl font-semibold text-gray-900">
                                 Add New Notes
@@ -127,7 +155,7 @@ export const AddNoteModal: FC<{
                                         </div>
                                     }
                                 </label>
-                                <ul ref={subjectCodeDropdownRef} className={`${(showSubjectCodeDropdown) ? 'absolute' : 'hidden'} max-h-56 overflow-x-clip border-2 z-50 top-16 overflow-y-auto w-1/3 border-gray-400 bg-white rounded shadow-md flex flex-col`}>
+                                <ul ref={subjectCodeDropdownRef} className={`${(showSubjectCodeDropdown) ? 'absolute' : 'hidden'} max-h-56 overflow-x-clip border z-50 top-16 overflow-y-auto w-1/3 border-gray-400 bg-gray-50 rounded shadow-xl flex flex-col`}>
                                     {
                                         subjects
                                             .map((subject: any) => {
@@ -137,7 +165,7 @@ export const AddNoteModal: FC<{
                                                     return (
                                                         <li
                                                             key={subject.id}
-                                                            className="font-semibold p-3 border-b bg-white hover:bg-gray-100 cursor-pointer"
+                                                            className="p-3 border-b hover:bg-gray-100 cursor-pointer"
                                                             onClick={() => {
                                                                 setShowSubjectCodeDropdown(false)
                                                                 setSelectedSubjectCode(subject.code)
@@ -192,7 +220,7 @@ export const AddNoteModal: FC<{
                                         </div>
                                     }
                                 </label>
-                                <ul ref={subjectNameDropdownRef} className={`${(showSubjectNameDropdown) ? 'absolute' : 'hidden'} max-h-56 overflow-x-clip border-2 top-[60px] z-50 overflow-y-auto w-1/2 border-gray-400 bg-white rounded shadow-md flex flex-col`}>
+                                <ul ref={subjectNameDropdownRef} className={`${(showSubjectNameDropdown) ? 'absolute' : 'hidden'} max-h-56 overflow-x-clip border top-[60px] z-50 overflow-y-auto w-1/2 border-gray-400 bg-gray-50 rounded shadow-xl flex flex-col`}>
                                     {
                                         subjects
                                             .map((subject: any) => {
@@ -202,7 +230,7 @@ export const AddNoteModal: FC<{
                                                     return (
                                                         <li
                                                             key={subject.id}
-                                                            className="text-sm border-b px-1 py-2 bg-white hover:bg-gray-100 cursor-pointer"
+                                                            className="border-b p-3 hover:bg-gray-100 cursor-pointer"
                                                             onClick={() => {
                                                                 setShowSubjectNameDropdown(false)
                                                                 setSubjectNameInput('')
@@ -263,16 +291,23 @@ export const AddNoteModal: FC<{
                                         Year
                                     </span>
                                 </label>
-                                <Dropdown setSelectedItem={setSelectedClass} showDropdown={showClassDropdown} setShowDropdown={setShowClassDropdown} items={classes} />
+                                <Dropdown ref={classDropdownRef} setSelectedItem={setSelectedClass} showDropdown={showClassDropdown} setShowDropdown={setShowClassDropdown} items={classes} />
                             </div>
                             <div className="flex flex-col space-y-1 relative">
                                 <span className="font-semibold">Branch</span>
                                 <input placeholder="e.g. Computer Science and Engineering" onFocus={() => setShowBranchDropdown(true)} value={selectedBranch !== "" ? selectedBranch : selectedBranchInput} onChange={(e) => setSelectedBranchInput(e.target.value)} type="text" className="relative p-1 ring-1 ring-gray-400 rounded-sm shadow-md" />
-                                <Dropdown setSelectedItem={setSelectedBranch} showDropdown={showBranchDropdown} setShowDropdown={setShowBranchDropdown} items={branches} />
+                                <Dropdown ref={branchDropdownRef} setSelectedItem={setSelectedBranch} showDropdown={showBranchDropdown} setShowDropdown={setShowBranchDropdown} items={branches} />
                             </div>
                             <div className="flex flex-col space-y-1">
                                 <span className="font-semibold">URL</span>
                                 <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://www.drive.google.com/" type="text" className="p-1 ring-1 ring-gray-400 rounded-sm shadow-md" />
+                            </div>
+                            <div className="flex flex-col space-y-1">
+                                <span className="font-semibold">Do you want it post as Anonymous?</span>
+                                <label className="inline-flex relative items-center cursor-pointer">
+                                    <input type="checkbox" checked={isAnonymous} onChange={() => setIsAnonymous(!isAnonymous)} className="sr-only peer" />
+                                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                </label>
                             </div>
                             <button disabled={isLoading} onClick={addNoteHandler} type="submit" className="flex items-center w-fit space-x-2 p-2 duration-200 transition-all rounded-md shadow-md hover:shadow-xl disabled:cursor-not-allowed disabled:bg-primary/70 bg-primary text-white font-semibold">
                                 <p>

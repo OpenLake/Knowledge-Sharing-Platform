@@ -7,16 +7,18 @@ export const addNote = (
     batch: string,
     studyingClass: string,
     branch: string,
-    url: string
+    url: string,
+    isAnonymous: boolean
 ) => {
     toast.promise(
         api.post('/api/db/notes', {
             title,
             subjectCode,
             batch,
-            studyingClass: studyingClass,
+            studyingClass,
             branch,
-            url
+            url,
+            isAnonymous
         }),
         {
             loading: 'Adding...',

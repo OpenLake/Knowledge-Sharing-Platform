@@ -24,34 +24,34 @@ export const Navbar: FC<{}> = ({ }) => {
     }, [router, activeRef, activeRef.current?.offsetWidth])
 
     return (
-        <div className="w-full fixed top-0 right-0 left-0 z-50 bg-bg-primary shadow-md px-8 py-6 flex flex-col">
+        <div className="w-full fixed top-0 right-0 left-0 z-50 bg-bg-primary shadow-md px-5 md:px-8 py-3 md:py-6 space-y-3 md:space-y-0 flex flex-col">
             <div className="flex justify-between items-center">
                 <Logo />
                 {
                     user ?
                         <div onClick={() => setShowOptions(!showOptions)} className="rounded-full bg-white cursor-pointer flex space-x-2 items-center pl-2 pr-3 py-2">
                             <Image className="rounded-full" src={photoURL} width={40} height={40} alt="user" />
-                            <span className="text-lg font-semibold">{displayName}</span>
+                            <span className="font-semibold">{displayName}</span>
                             <BsThreeDotsVertical className="h-6 w-6 text-primary" />
                             {
                                 showOptions &&
                                 <div onClick={logout} className="absolute top-[5.5rem] z-50 bg-white py-2 rounded-xl flex flex-col items-center justify-center">
                                     <div className="px-5 py-3 cursor-pointer group hover:bg-black/10 flex space-x-2 items-center justify-between">
-                                        <p className="font-semibold text-lg">Logout</p>
+                                        <p className="font-semibold ">Logout</p>
                                         <FiLogOut className="h-6 w-6 text-gray-800" />
                                     </div>
                                 </div>
                             }
                         </div>
                         :
-                        <button disabled={loading} onClick={login} className="disabled:cursor-wait rounded-full bg-white cursor-pointer flex space-x-2 items-center p-3">
+                        <button disabled={loading} onClick={login} className="disabled:cursor-wait rounded-full bg-white cursor-pointer flex space-x-2 items-center py-2 px-3">
                             <FcGoogle className="h-7 w-7 text-primary" />
-                            <span className="text-lg font-semibold">Login with Google</span>
+                            <span className="font-semibold">Login</span>
                         </button>
                 }
             </div>
 
-            <div className="inline-flex gap-3 overflow-hidden relative justify-center items-center font-semibold text-xl">
+            <div className="flex gap-3 overflow-hidden relative justify-center items-center font-semibold">
                 <span
                     ref={router.asPath === '/' ? activeRef : null}
                     onClick={(e) => {

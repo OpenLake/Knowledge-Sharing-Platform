@@ -1,25 +1,7 @@
 import Head from 'next/head'
-import { Inter } from '@next/font/google'
-import { useEffect, useState } from 'react'
-import { Player } from '@lottiefiles/react-lottie-player';
-const inter = Inter({ subsets: ['latin'] })
+import { Player } from '@lottiefiles/react-lottie-player'
 
 export default function Home() {
-  //? states
-  const [animationData, setAnimationData] = useState();
-
-
-  useEffect(() => {
-    const script = document.createElement('script')
-    script.src = "https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"
-    script.async = true
-    script.defer = true
-    document.body.appendChild(script)
-
-    return () => {
-      document.body.removeChild(script);
-    }
-  }, [])
 
   return (
     <div className='w-full bg-bg-primary  flex flex-col'>
@@ -29,10 +11,10 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="grid grid-cols-5 gap-0 h-screen items-center px-14">
+      <div className="grid grid-cols-5 gap-0 h-screen items-center py-48 md:py-0 px-6 md:px-14">
         <div className="col-span-5 md:col-span-3 flex flex-col space-y-2 ">
           <p className='font-bold text-base text-gray-600'>WELCOME TO</p>
-          <h1 className='font-extrabold text-5xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-light'>KNOWLEDGE SHARING PLATFORM</h1>
+          <h1 className='font-extrabold text-3xl md:text-5xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-light'>KNOWLEDGE SHARING PLATFORM</h1>
           <p className='font-semibold text-lg text-gray-700'>NOTES | COURSES | PYQs</p>
         </div>
         <div className='col-span-5 md:col-span-2'>
@@ -43,13 +25,17 @@ export default function Home() {
           />
         </div>
       </div>
-      <div className="col-span-5 p-10">
-        <div className="shadow-2xl rounded-2xl bg-white grid grid-cols-5 items-center pl-0">
-          <h2 className="font-bold underline col-span-2 text-5xl justify-self-center pl-0">
-            About
-          </h2>
-          <p className='font-semibold col-span-3 p-5 m-0'> Knowledge sharing platform application aims to get the students acquainted with the courses, professors, evaluation schemes. This webapp does the said things i.e. gathering notes, PYQs, course feedback, professor feedback, and previous year grading schemes. Here people can share their honest reviews without being scrutinized much. Getting reviews from mass makes it easy for one to choose the particular course and get the right information about that course. Moreover, students can also get relevant course resources from the students who already opted for the course. This platform might also act as a general guidance portal.</p>
-        </div>
+      <div className="col-span-5 p-5 md:p-10 grid grid-cols-5 items-center space-y-6 md:space-y-10">
+        <h2 className="text-primary font-bold col-span-5 text-3xl md:text-5xl justify-self-center">
+          About
+          <hr className='col-span-5 mt-1 md:mt-2 bg-primary-light p-0.5 rounded' />
+        </h2>
+        <p className='text-gray-700 font-semibold col-span-5 m-0'>
+          Knowledge sharing platform application aims to get the students acquainted with the courses, professors, evaluation schemes. This webapp does the said things i.e. gathering notes, PYQs, course feedback, professor feedback, and previous year grading schemes.
+          <br />
+          Here people can share their honest reviews without being scrutinized much. Getting reviews from mass makes it easy for one to choose the particular course and get the right information about that course.
+          <br />
+          Moreover, students can also get relevant course resources from the students who already opted for the course. This platform might also act as a general guidance portal.</p>
       </div>
     </div>
   )

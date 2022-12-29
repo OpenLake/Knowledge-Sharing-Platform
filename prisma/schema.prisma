@@ -34,13 +34,13 @@ model subject {
 model note {
   id            Int           @id @unique @default(autoincrement())
   title         String        @db.VarChar(255)
-  desc          String?       @db.Text
   url           String        @db.VarChar(255)
   subjects      subject       @relation(fields: [subject], references: [code])
   subject       String        @db.VarChar(255)
   batch         String        @db.VarChar(255)
   branch        String        @db.VarChar(255)
   class         String        @db.VarChar(100)
+  anonymous     Boolean
   created_by    user          @relation(fields: [created_by_id], references: [user_id], onDelete: Restrict)
   created_by_id String
   created_at    DateTime      @default(now())
@@ -59,7 +59,7 @@ model note_upvote {
 model course {
   id            Int             @id @unique @default(autoincrement())
   title         String          @db.VarChar(255)
-  desc          String?         @db.Text
+  anonymous     Boolean
   created_by    user            @relation(fields: [created_by_id], references: [user_id], onDelete: Restrict)
   created_by_id String
   created_at    DateTime        @default(now())
@@ -81,6 +81,7 @@ model pyq {
   batch         String       @db.VarChar(255)
   branch        String       @db.VarChar(255)
   year          String       @db.VarChar(100)
+  anonymous     Boolean
   created_by    user         @relation(fields: [created_by_id], references: [user_id], onDelete: Restrict)
   created_by_id String
   created_at    DateTime     @default(now())
