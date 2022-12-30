@@ -57,17 +57,6 @@ export const AddNoteModal: FC<{
 
 
         //? functions
-        useOutsideClick([addNoteModalRef, batchDropdownRef, branchDropdownRef, subjectNameDropdownRef, subjectCodeDropdownRef],
-            () => {
-                setShowSubjectCodeDropdown(false)
-                setShowSubjectNameDropdown(false)
-                setShowBranchDropdown(false)
-                setShowBatchDropdown(false)
-                setShowClassDropdown(false)
-                setShowAddNoteModal(false)
-            }
-        )
-
         const addNoteHandler = (e: any) => {
             if (title === "" || selectedSubjectCode === "" || selectedSubjectName === "" || selectedBatch === "" || selectedBranch === "" || url === "")
                 toast.error("Please fill all the details!")
@@ -109,6 +98,22 @@ export const AddNoteModal: FC<{
 
             return () => document.removeEventListener('keydown', keyPressHandler, false)
         }, [setShowAddNoteModal])
+
+        useOutsideClick([subjectNameDropdownRef, subjectCodeDropdownRef, batchDropdownRef, branchDropdownRef, classDropdownRef],
+            () => {
+                setShowSubjectCodeDropdown(false)
+                setShowSubjectNameDropdown(false)
+                setShowBranchDropdown(false)
+                setShowBatchDropdown(false)
+                setShowClassDropdown(false)
+            }
+        )
+
+        useOutsideClick([addNoteModalRef],
+            () => {
+                setShowAddNoteModal(false)
+            }
+        )
 
         return (
             <div className={`${!showAddNoteModal && 'hidden'} flex justify-center items-center fixed top-0 left-0 right-0 z-50 w-full bg-black/50 overflow-x-hidden overflow-y-auto h-full`}>

@@ -1,13 +1,19 @@
-import { Dispatch, FC, Ref, SetStateAction, forwardRef } from "react";
+import { Dispatch, FC, RefAttributes, SetStateAction, forwardRef } from "react";
 
-export const Dropdown: FC<{
-    ref: Ref<any>
+interface PropsType {
     items: Array<any>
-    setSelectedItem: Dispatch<SetStateAction<string>>
     showDropdown: boolean
+    setSelectedItem: Dispatch<SetStateAction<string>>
     setShowDropdown: Dispatch<SetStateAction<boolean>>
-}> = forwardRef(
-    function Dropdown({ items, showDropdown, setShowDropdown, setSelectedItem }, ref) {
+}
+
+export const Dropdown: FC<PropsType & RefAttributes<HTMLUListElement>> =
+    forwardRef<HTMLUListElement, PropsType>(({
+        items,
+        showDropdown,
+        setSelectedItem,
+        setShowDropdown
+    }, ref) => {
         return (
             <ul ref={ref} className={`${showDropdown ? 'absolute' : 'hidden'} max-h-44 top-16 overflow-x-clip z-50 border overflow-y-auto items-center min-w-[20%] border-gray-400 bg-gray-50 rounded shadow-xl flex flex-col`}>
                 {
@@ -28,5 +34,6 @@ export const Dropdown: FC<{
                 }
             </ul>
         )
-    }
-)
+    })
+
+Dropdown.displayName = "Dropdown"
