@@ -135,20 +135,20 @@ export const Table: FC<{
             [isDataFetching, setSelectedPYQ, refetchPYQs, user]
         )
         const data = useMemo(
-            () => (isDataFetching ? Array(8).fill({}) : pyqs && pyqs.map((note: any) => {
+            () => (isDataFetching ? Array(8).fill({}) : pyqs && pyqs.map((pyq: any) => {
                 return {
-                    sno: `${note.id}.`,
-                    title: note.title,
-                    subjectCode: note.subject_code,
-                    subject: note.subject.name,
-                    url: note.url,
-                    class: note.class,
-                    fromYear: note.from_year,
-                    toYear: note.to_year,
-                    branch: note.branch,
-                    uploadedBy: note.created_by.name,
-                    anonymous: note.anonymous,
-                    actions: note
+                    sno: `${pyq.id}.`,
+                    title: pyq.title,
+                    subjectCode: pyq.subject_code,
+                    subject: pyq.subject.name,
+                    url: pyq.url,
+                    class: pyq.class,
+                    fromYear: pyq.from_year,
+                    toYear: pyq.to_year,
+                    branch: pyq.branch,
+                    uploadedBy: pyq.created_by.name,
+                    anonymous: pyq.anonymous,
+                    actions: pyq
                 }
             })),
             [isDataFetching, pyqs]
