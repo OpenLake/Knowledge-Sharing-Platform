@@ -1,20 +1,23 @@
 import { toast } from "react-hot-toast"
-import { api } from "../../utils/api"
+import { api } from "../../../utils/api"
 
-export const addNote = (
+export const addPyq = (
     title: string,
     subjectCode: string,
-    batch: string,
+    fromYear: string,
+    toYear: string,
     studyingClass: string,
     branch: string,
     url: string,
-    isAnonymous: boolean
+    isAnonymous: boolean,
+    refetchPYQs: Function
 ) => {
     toast.promise(
-        api.post('/api/db/notes', {
+        api.post('/api/db/pyqs', {
             title,
             subjectCode,
-            batch,
+            fromYear,
+            toYear,
             studyingClass,
             branch,
             url,
@@ -22,7 +25,10 @@ export const addNote = (
         }),
         {
             loading: 'Adding...',
-            success: (res) => `${res.data.message}`,
+            success: (res) => {
+                refetchPYQs()
+                return `${res.data.message}`
+            },
             error: (err) => `Error: ${err.message}`
         }
     )

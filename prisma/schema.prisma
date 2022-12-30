@@ -29,14 +29,15 @@ model subject {
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
   notes         note[]
+  pyqs          pyq[]
 }
 
 model note {
   id            Int           @id @unique @default(autoincrement())
   title         String        @db.VarChar(255)
   url           String        @db.VarChar(255)
-  subjects      subject       @relation(fields: [subject], references: [code])
-  subject       String        @db.VarChar(255)
+  subject       subject       @relation(fields: [subject_code], references: [code])
+  subject_code  String        @db.VarChar(255)
   batch         String        @db.VarChar(255)
   branch        String        @db.VarChar(255)
   class         String        @db.VarChar(100)
@@ -50,9 +51,9 @@ model note {
 
 model note_upvote {
   id      Int    @id @unique @default(autoincrement())
-  users   user   @relation(fields: [user_id], references: [user_id], onDelete: Restrict)
+  user    user   @relation(fields: [user_id], references: [user_id], onDelete: Restrict)
   user_id String @unique
-  notes   note   @relation(fields: [note_id], references: [id], onDelete: Restrict)
+  notes   note   @relation(fields: [note_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
   note_id Int    @unique
 }
 
@@ -71,16 +72,20 @@ model course_upvote {
   id        Int    @id @unique @default(autoincrement())
   user      user   @relation(fields: [user_id], references: [user_id], onDelete: Restrict)
   user_id   String @unique
-  course    course @relation(fields: [course_id], references: [id], onDelete: Restrict)
+  course    course @relation(fields: [course_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
   course_id Int    @unique
 }
 
 model pyq {
   id            Int          @id @unique @default(autoincrement())
-  subject       String       @db.VarChar(255)
-  batch         String       @db.VarChar(255)
+  title         String       @db.VarChar(255)
+  url           String       @db.VarChar(255)
+  subject       subject      @relation(fields: [subject_code], references: [code])
+  subject_code  String       @db.VarChar(255)
+  from_year     String       @db.VarChar(50)
+  to_year       String       @db.VarChar(50)
   branch        String       @db.VarChar(255)
-  year          String       @db.VarChar(100)
+  class         String       @db.VarChar(100)
   anonymous     Boolean
   created_by    user         @relation(fields: [created_by_id], references: [user_id], onDelete: Restrict)
   created_by_id String
@@ -93,6 +98,6 @@ model pyq_upvote {
   id      Int    @id @unique @default(autoincrement())
   user    user   @relation(fields: [user_id], references: [user_id], onDelete: Restrict)
   user_id String @unique
-  pyq     pyq    @relation(fields: [pyq_id], references: [id], onDelete: Restrict)
+  pyq     pyq    @relation(fields: [pyq_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
   pyq_id  Int    @unique
 }

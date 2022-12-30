@@ -3,13 +3,13 @@ import { adminAuth } from '../../../../utils/firebaseAdminInit';
 import { prisma } from '../../../../utils/prismaClientInit';
 
 
-export default async function noteHandler(req: NextApiRequest, res: NextApiResponse) {
+export default async function pyqHandler(req: NextApiRequest, res: NextApiResponse) {
     const { method, headers, body, query } = req
 
     switch (method) {
         case 'GET':
             try {
-                const notes = await prisma.note.findMany({
+                const pyqs = await prisma.pyq.findMany({
                     include: {
                         subject: {
                             select: {
@@ -24,8 +24,8 @@ export default async function noteHandler(req: NextApiRequest, res: NextApiRespo
                     }
                 })
                 res.status(200).json({
-                    message: "Notes Fetched",
-                    result: notes
+                    message: "PYQs Fetched",
+                    result: pyqs
                 })
             }
             catch (err: any) {
@@ -42,22 +42,23 @@ export default async function noteHandler(req: NextApiRequest, res: NextApiRespo
                 const user = await adminAuth.verifyIdToken(accessToken!)
 
                 if (user) {
-                    const { title, subjectCode, studyingClass, branch, batch, url, isAnonymous } = body
+                    const { title, subjectCode, studyingClass, branch, fromYear, toYear, url, isAnonymous } = body
                     try {
-                        await prisma.note.create({
+                        await prisma.pyq.create({
                             data: {
                                 title,
+                                url,
                                 subject_code: subjectCode,
-                                batch,
+                                from_year: fromYear,
+                                to_year: toYear,
                                 branch,
                                 class: studyingClass,
-                                url,
                                 anonymous: isAnonymous,
                                 created_by_id: user.user_id
                             }
                         })
                         res.status(201).json({
-                            message: "Notes Created"
+                            message: "PYQ Created"
                         })
                     }
                     catch (err: any) {
@@ -89,33 +90,34 @@ export default async function noteHandler(req: NextApiRequest, res: NextApiRespo
                     try {
                         const { id } = query
 
-                        const { title, subjectCode, studyingClass, branch, batch, url, isAnonymous } = body
-                        const notes = await prisma.note.findUnique({
+                        const { title, subjectCode, studyingClass, branch, fromYear, toYear, url, isAnonymous } = body
+                        const pyqs = await prisma.pyq.findUnique({
                             where: {
                                 id: parseInt(id as string)
                             }
                         })
 
-                        if (notes) {
-                            if (user.user_id === notes.created_by_id) {
-                                await prisma.note.update({
+                        if (pyqs) {
+                            if (user.user_id === pyqs.created_by_id) {
+                                await prisma.pyq.update({
                                     where: {
                                         id: parseInt(id as string)
                                     },
                                     data: {
                                         title,
+                                        url,
                                         subject_code: subjectCode,
-                                        batch,
+                                        from_year: fromYear,
+                                        to_year: toYear,
                                         branch,
                                         class: studyingClass,
-                                        url,
                                         anonymous: isAnonymous,
                                         created_by_id: user.user_id
                                     }
                                 })
 
                                 res.status(200).json({
-                                    message: "Notes Updated"
+                                    message: "PYQ Updated"
                                 })
                             }
                             else {
@@ -126,7 +128,7 @@ export default async function noteHandler(req: NextApiRequest, res: NextApiRespo
                         }
                         else {
                             res.status(404).json({
-                                message: "No Notes Found"
+                                message: "No PYQ Found"
                             })
                         }
                     }
@@ -153,22 +155,22 @@ export default async function noteHandler(req: NextApiRequest, res: NextApiRespo
                     try {
                         const { id } = query
 
-                        const notes = await prisma.note.findUnique({
+                        const pyqs = await prisma.pyq.findUnique({
                             where: {
                                 id: parseInt(id as string)
                             }
                         })
 
-                        if (notes) {
-                            if (user.user_id === notes.created_by_id) {
-                                await prisma.note.delete({
+                        if (pyqs) {
+                            if (user.user_id === pyqs.created_by_id) {
+                                await prisma.pyq.delete({
                                     where: {
                                         id: parseInt(id as string)
                                     }
                                 })
 
                                 res.status(200).json({
-                                    message: "Notes Deleted Successfully"
+                                    message: "PYQ Deleted Successfully"
                                 })
                             }
                             else {
@@ -179,7 +181,7 @@ export default async function noteHandler(req: NextApiRequest, res: NextApiRespo
                         }
                         else {
                             res.status(404).json({
-                                message: "No Notes Found"
+                                message: "No PYQ Found"
                             })
                         }
                     }

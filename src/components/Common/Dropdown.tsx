@@ -17,7 +17,7 @@ export const Dropdown: FC<PropsType & RefAttributes<HTMLUListElement>> =
         return (
             <ul ref={ref} className={`${showDropdown ? 'absolute' : 'hidden'} max-h-44 top-16 overflow-x-clip z-50 border overflow-y-auto items-center min-w-[20%] border-gray-400 bg-gray-50 rounded shadow-xl flex flex-col`}>
                 {
-                    items.map((item) => {
+                    items.length ? items.map((item) => {
                         return (
                             <li
                                 key={item.id}
@@ -31,6 +31,10 @@ export const Dropdown: FC<PropsType & RefAttributes<HTMLUListElement>> =
                             </li>
                         )
                     })
+                        :
+                        <li className="w-full text-center font-semibold p-2 bg-white">
+                            No records found
+                        </li>
                 }
             </ul>
         )

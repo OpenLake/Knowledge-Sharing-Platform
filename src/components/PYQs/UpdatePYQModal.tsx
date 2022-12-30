@@ -1,25 +1,24 @@
 import React, { Dispatch, FC, SetStateAction, useEffect, useRef, useState } from "react"
 import { Dropdown } from "../Common/Dropdown"
-import { batches } from "../../constants/batches"
 import { branches } from "../../constants/branches"
 import useOutsideClick from "../../hooks/useOutsideClick"
 import { IoMdClose } from 'react-icons/io'
-import { addSubject } from "../../services/db/subjects/addSubject"
-import { toast } from "react-hot-toast"
 import { classes } from "../../constants/classes"
 import { getSubjects } from "../../services/db/subjects/getSubjects"
-import { addNotes } from "../../services/db/notes/addNotes"
-import { addPyq } from "../../services/db/pyqs/addPyq"
-import { generateYears } from "../../utils/generateYears"
 
-export const AddPYQModal: FC<{
-    showAddPYQModal: boolean
+import { generateYears } from "../../utils/generateYears"
+import { addSubject } from "../../services/db/subjects/addSubject"
+import { toast } from "react-hot-toast"
+import { updatePyq } from "../../services/db/pyqs/updatePyq"
+
+export const UpdatePYQModal: FC<{
+    selectedPYQ: any
     refetchPYQs: Function
-    setShowAddPYQModal: Dispatch<SetStateAction<boolean>>
+    setSelectedPYQ: Dispatch<SetStateAction<any>>
 }> = ({
+    selectedPYQ,
+    setSelectedPYQ,
     refetchPYQs,
-    showAddPYQModal,
-    setShowAddPYQModal
 }) => {
         //? contexts 
 
@@ -62,48 +61,6 @@ export const AddPYQModal: FC<{
 
 
         //? functions
-        const addPYQHandler = (e: any) => {
-            if (title === "" || selectedSubjectCode === "" || selectedSubjectName === "" || selectedFromYear === "" || selectedToYear === "" || selectedBranch === "" || url === "")
-                toast.error("Please fill all the details!")
-            else {
-                setIsLoading(true)
-                if (!subjects.find((subject) => subject.code === selectedSubjectCode)) {
-                    addSubject(selectedSubjectName, selectedSubjectCode)
-                    getSubjects()
-                        .then((res) => setSubjects(res))
-                }
-                addPyq(title, selectedSubjectCode, selectedFromYear, selectedToYear, selectedClass, selectedBranch, url, isAnonymous, refetchPYQs)
-                setTitle('')
-                setUrl('')
-                setSelectedFromYear('')
-                setSelectedToYear('')
-                setSelectedBranch('')
-                setSelectedClass('')
-                setSelectedSubjectCode('')
-                setSelectedSubjectName('')
-                setIsAnonymous(false)
-                setShowAddPYQModal(false)
-                setIsLoading(false)
-            }
-        }
-
-        //? effects
-        useEffect(() => {
-            getSubjects()
-                .then((res) => setSubjects(res))
-        }, [])
-
-        useEffect(() => {
-            const keyPressHandler = (event: any) => {
-                if (event.key === "Escape") {
-                    setShowAddPYQModal(false)
-                }
-            }
-            document.addEventListener('keydown', keyPressHandler, false)
-
-            return () => document.removeEventListener('keydown', keyPressHandler, false)
-        }, [setShowAddPYQModal])
-
         useOutsideClick([subjectNameDropdownRef, subjectCodeDropdownRef, fromYearDropdownRef, toYearDropdownRef, branchDropdownRef, classDropdownRef],
             () => {
                 setShowSubjectCodeDropdown(false)
@@ -117,9 +74,62 @@ export const AddPYQModal: FC<{
 
         useOutsideClick([addNoteModalRef],
             () => {
-                setShowAddPYQModal(false)
+                setSelectedPYQ(null)
             }
         )
+
+        const updatePYQHandler = () => {
+            if (title === "" || selectedSubjectCode === "" || selectedSubjectName === "" || selectedFromYear === "" || selectedToYear === "" || selectedBranch === "" || url === "")
+                toast.error("Please fill all the details!")
+            else {
+                setIsLoading(true)
+                if (!subjects.find((subject) => subject.code === selectedSubjectCode)) {
+                    addSubject(selectedSubjectName, selectedSubjectCode)
+                    getSubjects()
+                        .then((res) => setSubjects(res))
+                }
+                updatePyq(selectedPYQ.id, title, selectedSubjectCode, selectedFromYear, selectedToYear, selectedClass, selectedBranch, url, isAnonymous, refetchPYQs)
+                setTitle('')
+                setUrl('')
+                setSelectedFromYear('')
+                setSelectedToYear('')
+                setSelectedBranch('')
+                setSelectedClass('')
+                setSelectedSubjectCode('')
+                setSelectedSubjectName('')
+                setIsAnonymous(false)
+                setSelectedPYQ(null)
+                setIsLoading(false)
+            }
+        }
+        //? effects
+        useEffect(() => {
+            getSubjects()
+                .then((res) => setSubjects(res))
+        }, [])
+
+        useEffect(() => {
+            setTitle(selectedPYQ.title)
+            setUrl(selectedPYQ.url)
+            setSelectedFromYear(selectedPYQ.from_year)
+            setSelectedToYear(selectedPYQ.to_year)
+            setSelectedBranch(selectedPYQ.branch)
+            setSelectedClass(selectedPYQ.class)
+            setSelectedSubjectCode(selectedPYQ.subject_code)
+            setSelectedSubjectName(selectedPYQ.subject.name)
+            setIsAnonymous(selectedPYQ.anonymous)
+        }, [selectedPYQ])
+
+        useEffect(() => {
+            const keyPressHandler = (event: any) => {
+                if (event.key === "Escape") {
+                    setSelectedPYQ(null)
+                }
+            }
+            document.addEventListener('keydown', keyPressHandler, false)
+
+            return () => document.removeEventListener('keydown', keyPressHandler, false)
+        }, [setSelectedPYQ])
 
         useEffect(() => {
             subjectNameInput === "" ? setShowSubjectNameDropdown(false) : setShowSubjectNameDropdown(true)
@@ -127,7 +137,7 @@ export const AddPYQModal: FC<{
         }, [subjectNameInput, subjectCodeInput])
 
         return (
-            <div className={`${!showAddPYQModal && 'hidden'} flex justify-center items-center fixed top-0 left-0 right-0 z-50 w-full bg-black/50 overflow-x-hidden overflow-y-auto h-full`}>
+            <div className={`${!selectedPYQ && 'hidden'} flex justify-center items-center fixed top-0 left-0 right-0 z-50 w-full bg-black/50 overflow-x-hidden overflow-y-auto h-full`}>
                 <div className="relative w-full pt-32 md:pt-48 px-5 h-full max-w-2xl md:h-auto">
                     <div ref={addNoteModalRef} className={`relative bg-white rounded-lg shadow`}>
                         <div className="flex items-start justify-between p-4 border-b rounded-t">
@@ -136,7 +146,7 @@ export const AddPYQModal: FC<{
                             </h3>
                             <button
                                 type="button"
-                                onClick={() => setShowAddPYQModal(false)}
+                                onClick={() => setSelectedPYQ(null)}
                                 className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
                             >
                                 <svg aria-hidden="true" className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
@@ -356,9 +366,9 @@ export const AddPYQModal: FC<{
                                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                                 </label>
                             </div>
-                            <button disabled={isLoading} onClick={addPYQHandler} type="submit" className="flex items-center w-fit space-x-2 p-2 duration-200 transition-all rounded-md shadow-md hover:shadow-xl disabled:cursor-not-allowed disabled:bg-primary/70 bg-primary text-white font-semibold">
+                            <button disabled={isLoading} onClick={updatePYQHandler} type="submit" className="flex items-center w-fit space-x-2 p-2 duration-200 transition-all rounded-md shadow-md hover:shadow-xl disabled:cursor-not-allowed disabled:bg-primary/70 bg-primary text-white font-semibold">
                                 <p>
-                                    Add PYQ
+                                    Update PYQ
                                 </p>
                             </button>
                         </div>

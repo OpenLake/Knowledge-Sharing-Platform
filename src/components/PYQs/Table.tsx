@@ -2,25 +2,25 @@ import { Dispatch, FC, SetStateAction, useEffect, useMemo } from "react"
 import Link from "next/link"
 import { Column, useTable } from "react-table"
 import { RiDeleteBin6Line } from 'react-icons/ri'
-import { notesColumnData } from "../../types/notesColumnData"
 import { BsPencilSquare } from "react-icons/bs";
 import { Player } from "@lottiefiles/react-lottie-player"
 import { useAuth } from "../../contexts/auth"
-import { deleteNotes } from "../../services/db/notes/deleteNotes"
+import { pyqsColumnData } from "../../types/pyqsColumnData"
+import { deletePyq } from "../../services/db/pyqs/deletePyq";
 
 export const Table: FC<{
-    notes: notesColumnData[]
-    setSelectedNote: Dispatch<SetStateAction<any>>
+    pyqs: pyqsColumnData[]
+    setSelectedPYQ: Dispatch<SetStateAction<any>>
     isDataFetching: boolean
-    refetchNotes: Function
+    refetchPYQs: Function
 }> = ({
-    notes,
-    refetchNotes,
-    setSelectedNote,
+    pyqs,
+    refetchPYQs,
+    setSelectedPYQ,
     isDataFetching
 }) => {
         const { user, loading }: any = useAuth()
-        const columns = useMemo<Column<notesColumnData>[]>(
+        const columns = useMemo<Column<pyqsColumnData>[]>(
             () =>
                 [
                     {
@@ -82,8 +82,15 @@ export const Table: FC<{
                         }
                     },
                     {
-                        Header: 'Batch',
-                        accessor: 'batch',
+                        Header: 'From',
+                        accessor: 'fromYear',
+                        Cell: (row: any) => (
+                            isDataFetching ? <div className="h-2.5 bg-gray-200 w-24"></div> : row.value
+                        )
+                    },
+                    {
+                        Header: 'To',
+                        accessor: 'toYear',
                         Cell: (row: any) => (
                             isDataFetching ? <div className="h-2.5 bg-gray-200 w-24"></div> : row.value
                         )
@@ -111,12 +118,12 @@ export const Table: FC<{
                             user && (row.value.created_by_id === user.user_id) ?
                                 <div className="flex items-center justify-center">
                                     <button className="p-2 rounded-full hover:bg-gray-200 duration-150" onClick={e => {
-                                        setSelectedNote(row.value)
+                                        setSelectedPYQ(row.value)
                                     }}>
                                         <BsPencilSquare className="h-5 w-5 text-primary" />
                                     </button>
                                     <button className="p-2 rounded-full hover:bg-gray-200 duration-150" onClick={e => {
-                                        deleteNotes(row.value.id, refetchNotes)
+                                        deletePyq(row.value.id, refetchPYQs)
                                     }}>
                                         <RiDeleteBin6Line className="h-5 w-5 text-red-500" />
                                     </button>
@@ -125,25 +132,26 @@ export const Table: FC<{
                     }
                 ]
             ,
-            [isDataFetching, setSelectedNote, refetchNotes, user]
+            [isDataFetching, setSelectedPYQ, refetchPYQs, user]
         )
         const data = useMemo(
-            () => (isDataFetching ? Array(8).fill({}) : notes && notes.map((note: any) => {
+            () => (isDataFetching ? Array(8).fill({}) : pyqs && pyqs.map((note: any) => {
                 return {
                     sno: `${note.id}.`,
                     title: note.title,
                     subjectCode: note.subject_code,
-                    subjectName: note.subject.name,
+                    subject: note.subject.name,
                     url: note.url,
                     class: note.class,
-                    batch: note.batch,
+                    fromYear: note.from_year,
+                    toYear: note.to_year,
                     branch: note.branch,
                     uploadedBy: note.created_by.name,
                     anonymous: note.anonymous,
                     actions: note
                 }
             })),
-            [isDataFetching, notes]
+            [isDataFetching, pyqs]
         )
 
         const tableInstance = useTable({ columns, data })
@@ -216,7 +224,7 @@ export const Table: FC<{
                 </tbody>
             </table>
             :
-            !loading && notes.length ?
+            !loading && pyqs.length ?
                 <table className="col-span-5 overflow-x-auto" {...getTableProps()}>
                     <thead>
                         {

@@ -1,11 +1,12 @@
-export interface notesColumnData {
+export interface pyqsColumnData {
     sno: string;
     title: string;
     subjectCode: string;
     subjectName: string;
     url: string;
     class: string;
-    batch: string;
+    fromYear: string;
+    toYear: string;
     branch: string;
     uploadedBy: string;
     actions: JSX.Element;

@@ -4,12 +4,11 @@ import { batches } from "../../constants/batches"
 import { branches } from "../../constants/branches"
 import useOutsideClick from "../../hooks/useOutsideClick"
 import { IoMdClose } from 'react-icons/io'
-import { addNote } from "../../services/db/addNote"
-import { addSubject } from "../../services/db/addSubject"
-import { getSubjects } from "../../services/db/getSubjects"
+import { addSubject } from "../../services/db/subjects/addSubject"
 import { toast } from "react-hot-toast"
 import { classes } from "../../constants/classes"
-import { getNotes } from "../../services/db/getNotes"
+import { getSubjects } from "../../services/db/subjects/getSubjects"
+import { addNotes } from "../../services/db/notes/addNotes"
 
 export const AddNoteModal: FC<{
     showAddNoteModal: boolean
@@ -67,7 +66,7 @@ export const AddNoteModal: FC<{
                     getSubjects()
                         .then((res) => setSubjects(res))
                 }
-                addNote(title, selectedSubjectCode, selectedBatch, selectedClass, selectedBranch, url, isAnonymous)
+                addNotes(title, selectedSubjectCode, selectedBatch, selectedClass, selectedBranch, url, isAnonymous, refetchNotes)
                 setTitle('')
                 setUrl('')
                 setSelectedBatch('')
@@ -78,7 +77,6 @@ export const AddNoteModal: FC<{
                 setIsAnonymous(false)
                 setShowAddNoteModal(false)
                 setIsLoading(false)
-                refetchNotes()
             }
         }
 
@@ -115,9 +113,14 @@ export const AddNoteModal: FC<{
             }
         )
 
+        useEffect(() => {
+            subjectNameInput === "" ? setShowSubjectNameDropdown(false) : setShowSubjectNameDropdown(true)
+            subjectCodeInput === "" ? setShowSubjectCodeDropdown(false) : setShowSubjectCodeDropdown(true)
+        }, [subjectNameInput, subjectCodeInput])
+
         return (
             <div className={`${!showAddNoteModal && 'hidden'} flex justify-center items-center fixed top-0 left-0 right-0 z-50 w-full bg-black/50 overflow-x-hidden overflow-y-auto h-full`}>
-                <div className="relative w-full pt-32 md:pt-8 px-5 h-full max-w-2xl md:h-auto">
+                <div className="relative w-full pt-32 md:pt-48 px-5 h-full max-w-2xl md:h-auto">
                     <div ref={addNoteModalRef} className={`relative bg-white rounded-lg shadow`}>
                         <div className="flex items-start justify-between p-4 border-b rounded-t">
                             <h3 className="text-xl font-semibold text-gray-900">
@@ -143,9 +146,12 @@ export const AddNoteModal: FC<{
                                     <input
                                         name="subjectCode"
                                         type="text"
+                                        disabled={!!selectedSubjectCode}
                                         placeholder={selectedSubjectCode ? '' : 'e.g. MS0101'}
                                         value={subjectCodeInput}
-                                        onFocus={() => setShowSubjectCodeDropdown(true)}
+                                        onFocus={() => {
+                                            subjects.length ? setShowSubjectCodeDropdown(true) : setShowSubjectCodeDropdown(false)
+                                        }}
                                         onChange={(e) => {
                                             setShowSubjectCodeDropdown(true)
                                             setSubjectCodeInput(e.target.value)
@@ -160,7 +166,7 @@ export const AddNoteModal: FC<{
                                         </div>
                                     }
                                 </label>
-                                <ul ref={subjectCodeDropdownRef} className={`${(showSubjectCodeDropdown) ? 'absolute' : 'hidden'} max-h-56 overflow-x-clip border z-50 top-16 overflow-y-auto w-1/3 border-gray-400 bg-gray-50 rounded shadow-xl flex flex-col`}>
+                                <ul ref={subjectCodeDropdownRef} className={`${(showSubjectCodeDropdown && subjects.length) ? 'absolute' : 'hidden'} max-h-56 overflow-x-clip border z-50 top-16 overflow-y-auto w-1/3 border-gray-400 bg-gray-50 rounded shadow-xl flex flex-col`}>
                                     {
                                         subjects
                                             .map((subject: any) => {
@@ -203,14 +209,17 @@ export const AddNoteModal: FC<{
                                 </ul>
                             </div>
                             <div className="flex flex-col space-y-1 relative">
-                                <span className="font-semibold">Subject</span>
+                                <span className="font-semibold">Subject Name</span>
                                 <label htmlFor="subjectName" className="flex items-center">
                                     <input
                                         name="subjectName"
                                         type="text"
+                                        disabled={!!selectedSubjectName}
                                         placeholder={selectedSubjectName ? '' : 'e.g. Mathematics-II'}
                                         value={subjectNameInput}
-                                        onFocus={() => setShowSubjectNameDropdown(true)}
+                                        onFocus={() => {
+                                            subjects.length ? setShowSubjectNameDropdown(true) : setShowSubjectNameDropdown(false)
+                                        }}
                                         onChange={(e) => {
                                             setShowSubjectNameDropdown(true)
                                             setSubjectNameInput(e.target.value)
@@ -225,7 +234,7 @@ export const AddNoteModal: FC<{
                                         </div>
                                     }
                                 </label>
-                                <ul ref={subjectNameDropdownRef} className={`${(showSubjectNameDropdown) ? 'absolute' : 'hidden'} max-h-56 overflow-x-clip border top-[60px] z-50 overflow-y-auto w-1/2 border-gray-400 bg-gray-50 rounded shadow-xl flex flex-col`}>
+                                <ul ref={subjectNameDropdownRef} className={`${(showSubjectNameDropdown && subjects.length) ? 'absolute' : 'hidden'} max-h-56 overflow-x-clip border top-[60px] z-50 overflow-y-auto w-1/2 border-gray-400 bg-gray-50 rounded shadow-xl flex flex-col`}>
                                     {
                                         subjects
                                             .map((subject: any) => {
@@ -279,7 +288,12 @@ export const AddNoteModal: FC<{
                             <div className="flex flex-col space-y-1 relative">
                                 <span className="font-semibold">Batch</span>
                                 <input placeholder="e.g. 2019-20" value={selectedBatch !== "" ? selectedBatch : selectedBatchInput} onChange={(e) => setSelectedBatchInput(e.target.value)} onFocus={() => setShowBatchDropdown(true)} type="text" className="p-1 ring-1 relative ring-gray-400 rounded-sm shadow-md" />
-                                <Dropdown ref={batchDropdownRef} setSelectedItem={setSelectedBatch} showDropdown={showBatchDropdown} setShowDropdown={setShowBatchDropdown} items={batches} />
+                                <Dropdown ref={batchDropdownRef} setSelectedItem={setSelectedBatch} showDropdown={showBatchDropdown} setShowDropdown={setShowBatchDropdown} items={batches.filter((batch: any) => {
+                                    var exp = new RegExp(selectedBatchInput, 'i')
+
+                                    if (batch.name.search(exp) !== -1) return true
+                                    else return false
+                                })} />
                             </div>
                             <div className="flex flex-col space-y-1 relative">
                                 <span className="font-semibold">Class</span>
@@ -296,12 +310,22 @@ export const AddNoteModal: FC<{
                                         Year
                                     </span>
                                 </label>
-                                <Dropdown ref={classDropdownRef} setSelectedItem={setSelectedClass} showDropdown={showClassDropdown} setShowDropdown={setShowClassDropdown} items={classes} />
+                                <Dropdown ref={classDropdownRef} setSelectedItem={setSelectedClass} showDropdown={showClassDropdown} setShowDropdown={setShowClassDropdown} items={classes.filter((item: any) => {
+                                    var exp = new RegExp(selectedClassInput, 'i')
+
+                                    if (item.name.search(exp) !== -1) return true
+                                    else return false
+                                })} />
                             </div>
                             <div className="flex flex-col space-y-1 relative">
                                 <span className="font-semibold">Branch</span>
                                 <input placeholder="e.g. Computer Science and Engineering" onFocus={() => setShowBranchDropdown(true)} value={selectedBranch !== "" ? selectedBranch : selectedBranchInput} onChange={(e) => setSelectedBranchInput(e.target.value)} type="text" className="relative p-1 ring-1 ring-gray-400 rounded-sm shadow-md" />
-                                <Dropdown ref={branchDropdownRef} setSelectedItem={setSelectedBranch} showDropdown={showBranchDropdown} setShowDropdown={setShowBranchDropdown} items={branches} />
+                                <Dropdown ref={branchDropdownRef} setSelectedItem={setSelectedBranch} showDropdown={showBranchDropdown} setShowDropdown={setShowBranchDropdown} items={branches.filter((batch: any) => {
+                                    var exp = new RegExp(selectedBranchInput, 'i')
+
+                                    if (batch.name.search(exp) !== -1) return true
+                                    else return false
+                                })} />
                             </div>
                             <div className="flex flex-col space-y-1">
                                 <span className="font-semibold">URL</span>
