@@ -136,11 +136,12 @@ export const Table: FC<{
         )
         const data = useMemo(
             () => (isDataFetching ? Array(8).fill({}) : pyqs && pyqs.map((pyq: any) => {
+                console.log(pyq)
                 return {
                     sno: `${pyq.id}.`,
                     title: pyq.title,
                     subjectCode: pyq.subject_code,
-                    subject: pyq.subject.name,
+                    subjectName: pyq.subject.name,
                     url: pyq.url,
                     class: pyq.class,
                     fromYear: pyq.from_year,
