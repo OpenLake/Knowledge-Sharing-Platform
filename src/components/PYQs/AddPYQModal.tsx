@@ -11,6 +11,7 @@ import { getSubjects } from "../../services/db/subjects/getSubjects"
 import { addNotes } from "../../services/db/notes/addNotes"
 import { addPyq } from "../../services/db/pyqs/addPyq"
 import { generateYears } from "../../utils/generateYears"
+import { validateYearRange } from "../../utils/validateYearRange"
 
 export const AddPYQModal: FC<{
     showAddPYQModal: boolean
@@ -62,27 +63,33 @@ export const AddPYQModal: FC<{
 
 
         //? functions
-        const addPYQHandler = (e: any) => {
+        const addPYQHandler = async (e: any) => {
             if (title === "" || selectedSubjectCode === "" || selectedSubjectName === "" || selectedFromYear === "" || selectedToYear === "" || selectedBranch === "" || url === "")
                 toast.error("Please fill all the details!")
             else {
                 setIsLoading(true)
                 if (!subjects.find((subject) => subject.code === selectedSubjectCode)) {
-                    addSubject(selectedSubjectName, selectedSubjectCode)
-                    getSubjects()
-                        .then((res) => setSubjects(res))
+                    await addSubject(selectedSubjectName, selectedSubjectCode)
+                    const res = await getSubjects()
+                    setSubjects(res)
                 }
-                addPyq(title, selectedSubjectCode, selectedFromYear, selectedToYear, selectedClass, selectedBranch, url, isAnonymous, refetchPYQs)
-                setTitle('')
-                setUrl('')
-                setSelectedFromYear('')
-                setSelectedToYear('')
-                setSelectedBranch('')
-                setSelectedClass('')
-                setSelectedSubjectCode('')
-                setSelectedSubjectName('')
-                setIsAnonymous(false)
-                setShowAddPYQModal(false)
+                if (validateYearRange(selectedFromYear, selectedToYear)) {
+                    addPyq(title, selectedSubjectCode, selectedFromYear, selectedToYear, selectedClass, selectedBranch, url, isAnonymous, refetchPYQs)
+                    setTitle('')
+                    setUrl('')
+                    setSelectedFromYear('')
+                    setSelectedToYear('')
+                    setSelectedBranch('')
+                    setSelectedClass('')
+                    setSelectedSubjectCode('')
+                    setSelectedSubjectName('')
+                    setIsAnonymous(false)
+                    setShowAddPYQModal(false)
+                }
+                else {
+                    toast.error("Invalid Range of From and To Years")
+
+                }
                 setIsLoading(false)
             }
         }

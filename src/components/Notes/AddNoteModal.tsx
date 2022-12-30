@@ -56,15 +56,15 @@ export const AddNoteModal: FC<{
 
 
         //? functions
-        const addNoteHandler = (e: any) => {
+        const addNoteHandler = async (e: any) => {
             if (title === "" || selectedSubjectCode === "" || selectedSubjectName === "" || selectedBatch === "" || selectedBranch === "" || url === "")
                 toast.error("Please fill all the details!")
             else {
                 setIsLoading(true)
                 if (!subjects.find((subject) => subject.code === selectedSubjectCode)) {
-                    addSubject(selectedSubjectName, selectedSubjectCode)
-                    getSubjects()
-                        .then((res) => setSubjects(res))
+                    await addSubject(selectedSubjectName, selectedSubjectCode)
+                    const res = await getSubjects()
+                    setSubjects(res)
                 }
                 addNotes(title, selectedSubjectCode, selectedBatch, selectedClass, selectedBranch, url, isAnonymous, refetchNotes)
                 setTitle('')

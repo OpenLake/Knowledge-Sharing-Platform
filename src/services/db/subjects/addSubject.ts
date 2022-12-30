@@ -1,15 +1,16 @@
 import { toast } from "react-hot-toast"
 import { api } from "../../../utils/api"
 
-export const addSubject = (subjectName: string, subjectCode: string) => {
-    api.post('/api/db/subjects', {
-        subjectCode,
-        subjectName
-    })
-        .then((res) => {
-            toast.success(res.data.message)
+export const addSubject = async (subjectName: string, subjectCode: string) => {
+    try {
+        const { data } = await api.post('/api/db/subjects', {
+            subjectCode,
+            subjectName
         })
-        .catch((err) => {
-            toast.error(err.message)
-        })
+        toast.success(data.message)
+    }
+
+    catch (err: any) {
+        toast.error(err.message)
+    }
 }

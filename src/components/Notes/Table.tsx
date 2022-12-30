@@ -128,9 +128,9 @@ export const Table: FC<{
             [isDataFetching, setSelectedNote, refetchNotes, user]
         )
         const data = useMemo(
-            () => (isDataFetching ? Array(8).fill({}) : notes && notes.map((note: any) => {
+            () => (isDataFetching ? Array(8).fill({}) : notes && notes.map((note: any, index) => {
                 return {
-                    sno: `${note.id}.`,
+                    sno: `${index + 1}.`,
                     title: note.title,
                     subjectCode: note.subject_code,
                     subjectName: note.subject.name,

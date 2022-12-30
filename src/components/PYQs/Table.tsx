@@ -135,10 +135,10 @@ export const Table: FC<{
             [isDataFetching, setSelectedPYQ, refetchPYQs, user]
         )
         const data = useMemo(
-            () => (isDataFetching ? Array(8).fill({}) : pyqs && pyqs.map((pyq: any) => {
+            () => (isDataFetching ? Array(8).fill({}) : pyqs && pyqs.map((pyq: any, index) => {
                 console.log(pyq)
                 return {
-                    sno: `${pyq.id}.`,
+                    sno: `${index + 1}.`,
                     title: pyq.title,
                     subjectCode: pyq.subject_code,
                     subjectName: pyq.subject.name,
