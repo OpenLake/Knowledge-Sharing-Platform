@@ -191,6 +191,7 @@ export const UpdateNoteModal: FC<{
                         </button>
                     </div>
                     <div className="flex flex-col p-10 space-y-2">
+                        {/* Title */}
                         <div className="flex flex-col space-y-1">
                             <span className="font-semibold">Title</span>
                             <input
@@ -201,6 +202,8 @@ export const UpdateNoteModal: FC<{
                                 className="p-1 ring-1 ring-gray-400 rounded-sm shadow-md"
                             />
                         </div>
+
+                        {/* Subject Code */}
                         <div className="flex flex-col space-y-1 relative">
                             <span className="font-semibold">Subject Code</span>
                             <label
@@ -230,8 +233,10 @@ export const UpdateNoteModal: FC<{
                                     className="p-1 ring-1 relative ring-gray-400 rounded-sm w-full shadow-md"
                                 />
                                 {selectedSubjectCode && (
-                                    <div className="absolute flex items-center left-1 space-x-1 p-0.5 rounded-sm bg-primary/20 text-primary">
-                                        <span>{selectedSubjectCode}</span>
+                                    <div className="absolute flex items-center left-1 max-w-[90%] space-x-1 p-0.5 rounded-sm bg-primary/20 text-primary">
+                                        <span className="truncate">
+                                            {selectedSubjectCode}
+                                        </span>
                                         <IoMdClose
                                             onClick={() =>
                                                 setSelectedSubjectCode('')
@@ -300,11 +305,13 @@ export const UpdateNoteModal: FC<{
                                     )}
                             </ul>
                         </div>
+
+                        {/* Subject Name */}
                         <div className="flex flex-col space-y-1 relative">
                             <span className="font-semibold">Subject Name</span>
                             <label
                                 htmlFor="subjectName"
-                                className="flex items-center"
+                                className="flex items-center relative"
                             >
                                 <input
                                     type="text"
@@ -330,8 +337,10 @@ export const UpdateNoteModal: FC<{
                                     className="p-1 ring-1 relative ring-gray-400 rounded-sm w-full shadow-md"
                                 />
                                 {selectedSubjectName && (
-                                    <div className="absolute flex items-center left-1 space-x-1 p-0.5 rounded-sm bg-primary/20 text-primary">
-                                        <span>{selectedSubjectName}</span>
+                                    <div className="absolute flex items-center left-1 max-w-[90%] space-x-1 p-0.5 rounded-sm bg-primary/20 text-primary">
+                                        <span className="truncate">
+                                            {selectedSubjectName}
+                                        </span>
                                         <IoMdClose
                                             onClick={() =>
                                                 setSelectedSubjectName('')
@@ -400,6 +409,8 @@ export const UpdateNoteModal: FC<{
                                     )}
                             </ul>
                         </div>
+
+                        {/* Batch */}
                         <div className="flex flex-col space-y-1 relative">
                             <span className="font-semibold">Batch</span>
                             <label
@@ -421,8 +432,10 @@ export const UpdateNoteModal: FC<{
                                     className="p-1 w-full ring-1 relative ring-gray-400 rounded-sm shadow-md"
                                 />
                                 {selectedBatch && (
-                                    <div className="absolute flex items-center left-1 space-x-1 p-0.5 rounded-sm bg-primary/20 text-primary">
-                                        <span>{selectedBatch}</span>
+                                    <div className="absolute flex items-center left-1 max-w-[90%] space-x-1 p-0.5 rounded-sm bg-primary/20 text-primary">
+                                        <span className="truncate">
+                                            {selectedBatch}
+                                        </span>
                                         <IoMdClose
                                             onClick={() => setSelectedBatch('')}
                                             className="h-5 w-5 cursor-pointer"
@@ -444,6 +457,8 @@ export const UpdateNoteModal: FC<{
                                 )}
                             />
                         </div>
+
+                        {/* Class */}
                         <div className="flex flex-col space-y-1 relative">
                             <span className="font-semibold">Class</span>
                             <label
@@ -466,7 +481,7 @@ export const UpdateNoteModal: FC<{
                                     Year
                                 </span>
                                 {selectedClass && (
-                                    <div className="absolute flex items-center left-1 space-x-1 p-0.5 rounded-sm bg-primary/20 text-primary">
+                                    <div className="absolute flex items-center left-1 space-x-1 max-w-[90%] p-0.5 rounded-sm bg-primary/20 text-primary">
                                         <span>{selectedClass}</span>
                                         <IoMdClose
                                             onClick={() => setSelectedClass('')}
@@ -486,6 +501,8 @@ export const UpdateNoteModal: FC<{
                                 )}
                             />
                         </div>
+
+                        {/* Branch */}
                         <div className="flex flex-col space-y-1 relative">
                             <span className="font-semibold">Branch</span>
                             <label
@@ -509,8 +526,10 @@ export const UpdateNoteModal: FC<{
                                     className="relative w-full p-1 ring-1 ring-gray-400 rounded-sm shadow-md"
                                 />
                                 {selectedBranch && (
-                                    <div className="absolute flex items-center left-1 space-x-1 p-0.5 rounded-sm bg-primary/20 text-primary">
-                                        <span>{selectedBranch}</span>
+                                    <div className="absolute flex items-center left-1 w-4/5 space-x-1 max-w-[90%] p-0.5 rounded-sm bg-primary/20 text-primary">
+                                        <span className="truncate">
+                                            {selectedBranch}
+                                        </span>
                                         <IoMdClose
                                             onClick={() =>
                                                 setSelectedBranch('')
@@ -534,6 +553,8 @@ export const UpdateNoteModal: FC<{
                                 )}
                             />
                         </div>
+
+                        {/* URL */}
                         <div className="flex flex-col space-y-1">
                             <span className="font-semibold">URL</span>
                             <input
@@ -544,6 +565,8 @@ export const UpdateNoteModal: FC<{
                                 className="p-1 ring-1 ring-gray-400 rounded-sm shadow-md"
                             />
                         </div>
+
+                        {/* Anonymous */}
                         <div className="flex flex-col space-y-1">
                             <span className="font-semibold">
                                 Do you want it post as Anonymous?
@@ -560,6 +583,7 @@ export const UpdateNoteModal: FC<{
                                 <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
+
                         <button
                             disabled={isLoading}
                             onClick={updateNoteHandler}
