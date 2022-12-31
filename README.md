@@ -19,13 +19,14 @@ This project is in its secomd iteration. We might have NodeJS as backend. In fut
 
 Please go through the Wiki. The success of our vision to bring knowledge to every single hand depends on you. Even a small contribution helps. All forms of contributions are highly welcomed and valued.
 
-- [How to create a PR?](https://github.com/OpenLake/Knowledge-Sharing-Platform/wiki/How-to-create-a-PR%3F)
-- [PR Format Guidelines](https://github.com/OpenLake/Knowledge-Sharing-Platform/wiki/PR-Format-Guidelines)
+-   [How to create a PR?](https://github.com/OpenLake/Knowledge-Sharing-Platform/wiki/How-to-create-a-PR%3F)
+-   [PR Format Guidelines](https://github.com/OpenLake/Knowledge-Sharing-Platform/wiki/PR-Format-Guidelines)
 
 ## Set-up the project 💻
 
-### Environment Variables 
-Make a ```.env``` file like ```.env.example```.
+### Environment Variables
+
+Make a `.env` file like `.env.example`.
 
 ### Install the dependencies
 

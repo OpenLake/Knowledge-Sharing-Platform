@@ -1,5 +1,5 @@
-import { toast } from "react-hot-toast"
-import { api } from "../../../utils/api"
+import { toast } from 'react-hot-toast'
+import { api } from '../../../utils/api'
 
 export const updateNote = (
     id: number,
@@ -20,7 +20,7 @@ export const updateNote = (
             studyingClass,
             branch,
             url,
-            isAnonymous
+            isAnonymous,
         }),
         {
             loading: 'Updating...',
@@ -28,7 +28,7 @@ export const updateNote = (
                 refetchNotes()
                 return `${res.data.message}`
             },
-            error: (err) => `Error: ${err.message}`
+            error: (err) => `Error: ${err.message}`,
         }
     )
 }

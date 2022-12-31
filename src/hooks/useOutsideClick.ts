@@ -1,4 +1,4 @@
-import { useEffect, RefObject } from 'react';
+import { useEffect, RefObject } from 'react'
 
 /**
  * Hook that handles outside click event of the passed refs
@@ -8,38 +8,38 @@ import { useEffect, RefObject } from 'react';
  */
 export default function useOutsideClick(
     refs: Array<RefObject<HTMLElement> | undefined>,
-    handler?: () => void,
+    handler?: () => void
 ) {
     useEffect(() => {
         function handleClickOutside(event: any) {
-            if (!handler) return;
+            if (!handler) return
 
             // Clicked browser's scrollbar
             if (
                 event.target === document.getElementsByTagName('html')[0] &&
                 event.clientX >= document.documentElement.offsetWidth
             )
-                return;
+                return
 
-            let containedToAnyRefs = false;
+            let containedToAnyRefs = false
             for (const rf of refs) {
                 if (rf && rf.current && rf.current.contains(event.target)) {
-                    containedToAnyRefs = true;
-                    break;
+                    containedToAnyRefs = true
+                    break
                 }
             }
 
             // Not contained to any given refs
             if (!containedToAnyRefs) {
-                handler();
+                handler()
             }
         }
 
         // Bind the event listener
-        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('mousedown', handleClickOutside)
         return () => {
             // Unbind the event listener on clean up
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [refs, handler]);
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, [refs, handler])
 }

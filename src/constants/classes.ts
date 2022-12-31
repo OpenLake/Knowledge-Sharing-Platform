@@ -17,6 +17,6 @@ export const classes = [
     },
     {
         id: '4',
-        name: '5'
-    }
+        name: '5',
+    },
 ]

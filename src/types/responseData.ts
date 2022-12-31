@@ -1,4 +1,4 @@
 export interface responseData {
-    message: string,
+    message: string
     result?: any
 }

@@ -1,8 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { adminAuth } from '../../../../utils/firebaseAdminInit';
+import { adminAuth } from '../../../../utils/firebaseAdminInit'
 import { prisma } from '../../../../utils/prismaClientInit'
 
-export default async function authHandler(req: NextApiRequest, res: NextApiResponse) {
+export default async function authHandler(
+    req: NextApiRequest,
+    res: NextApiResponse
+) {
     const { method, headers, body } = req
 
     switch (method) {
@@ -15,24 +18,21 @@ export default async function authHandler(req: NextApiRequest, res: NextApiRespo
                         const subjects = await prisma.subject.findMany()
                         res.status(200).json({
                             message: 'Subjects Fetched',
-                            result: subjects
+                            result: subjects,
                         })
-                    }
-                    catch (err: any) {
+                    } catch (err: any) {
                         res.status(405).json({
-                            err
+                            err,
                         })
                     }
-                }
-                else {
+                } else {
                     res.status(401).json({
-                        message: 'Unauthorized Access'
+                        message: 'Unauthorized Access',
                     })
                 }
-            }
-            else {
+            } else {
                 res.status(401).json({
-                    message: 'Unauthorized Access'
+                    message: 'Unauthorized Access',
                 })
             }
             break
@@ -45,52 +45,48 @@ export default async function authHandler(req: NextApiRequest, res: NextApiRespo
                     const { subjectName, subjectCode } = body
                     const subject = await prisma.subject.findUnique({
                         where: {
-                            code: subjectCode
-                        }
+                            code: subjectCode,
+                        },
                     })
 
                     if (subject) {
                         console.log(subject)
                         res.status(405).json({
-                            message: 'Subject Code already exists'
+                            message: 'Subject Code already exists',
                         })
-                    }
-                    else {
+                    } else {
                         try {
                             await prisma.subject.create({
                                 data: {
                                     name: subjectName,
                                     code: subjectCode,
-                                    created_by_id: user.user_id
-                                }
+                                    created_by_id: user.user_id,
+                                },
                             })
 
                             res.status(201).json({
-                                message: 'New Subject Created'
+                                message: 'New Subject Created',
                             })
-                        }
-                        catch (err: any) {
+                        } catch (err: any) {
                             res.status(404).json({
-                                message: err
+                                message: err,
                             })
                         }
                     }
-                }
-                else {
+                } else {
                     res.status(401).json({
-                        message: 'Unauthorized Access'
+                        message: 'Unauthorized Access',
                     })
                 }
-            }
-            else {
+            } else {
                 res.status(401).json({
-                    message: 'Unauthorized Access'
+                    message: 'Unauthorized Access',
                 })
             }
             break
         default:
             res.status(405).json({
-                message: "Method Not Allowed"
+                message: 'Method Not Allowed',
             })
     }
 }

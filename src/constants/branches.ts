@@ -17,14 +17,14 @@ export const branches = [
     },
     {
         id: '5',
-        name: 'Agriculture Engineering'
+        name: 'Agriculture Engineering',
     },
     {
         id: '6',
-        name: 'Mining Engineering'
+        name: 'Mining Engineering',
     },
     {
         id: '7',
-        name: 'Artificial Intelligence and Data Science'
-    }
+        name: 'Artificial Intelligence and Data Science',
+    },
 ]

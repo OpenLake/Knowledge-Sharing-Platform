@@ -1,21 +1,20 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from 'react'
 import cookies from 'js-cookie'
-import { api } from "../utils/api";
+import { api } from '../utils/api'
 import { signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth'
-import { firebaseAuth } from "../utils/firebaseInit";
+import { firebaseAuth } from '../utils/firebaseInit'
 import { useRouter } from 'next/router'
-import { toast } from "react-hot-toast";
+import { toast } from 'react-hot-toast'
 
 const AuthContext = createContext({
     isAuthenticated: false,
     user: null,
     photoURL: '',
     displayName: '',
-    login: () => { },
-    logout: () => { },
+    login: () => {},
+    logout: () => {},
     loading: true,
 })
-
 
 export const AuthProvider = ({ children }: any) => {
     //? router
@@ -43,7 +42,7 @@ export const AuthProvider = ({ children }: any) => {
     }
 
     const login = () => {
-        const provider = new GoogleAuthProvider
+        const provider = new GoogleAuthProvider()
 
         signInWithPopup(firebaseAuth, provider)
             .then(async (res) => {
@@ -84,10 +83,9 @@ export const AuthProvider = ({ children }: any) => {
                     setPhotoURL(picture)
                     setDisplayName(name)
                 }
-            }
-            catch (err: any) {
+            } catch (err: any) {
                 console.log(err)
-                if (err.response.data.err.code === "auth/id-token-expired") {
+                if (err.response.data.err.code === 'auth/id-token-expired') {
                     console.log('cookie removed')
                     cookies.remove('accessToken')
                     setUser(null)
@@ -100,9 +98,9 @@ export const AuthProvider = ({ children }: any) => {
 
     //? effects
     useEffect(() => {
-        if (loading)
-            loadUserFromCookie()
-    }), [loading]
+        if (loading) loadUserFromCookie()
+    }),
+        [loading]
 
     return (
         <AuthContext.Provider
@@ -113,8 +111,9 @@ export const AuthProvider = ({ children }: any) => {
                 displayName,
                 login,
                 logout,
-                loading
-            }}>
+                loading,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     )
@@ -127,5 +126,5 @@ export const ProtectRoute = ({ children }: any) => {
 
     // if (loading || (!isAuthenticated && window.location.pathname !== "/login"))
     //     return <h1>Loading...</h1>
-    return children;
+    return children
 }

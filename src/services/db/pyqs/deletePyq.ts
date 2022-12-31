@@ -1,5 +1,5 @@
-import { toast } from "react-hot-toast"
-import { api } from "../../../utils/api"
+import { toast } from 'react-hot-toast'
+import { api } from '../../../utils/api'
 
 export const deletePyq = (id: number, refetchPYQs: Function) => {
     api.delete('/api/db/pyqs?id=' + id)

@@ -7,15 +7,15 @@ import { AuthProvider } from '../contexts/auth'
 import { Toaster } from 'react-hot-toast'
 
 export default function App({ Component, pageProps }: AppProps) {
-  return (
-    <>
-      <AuthProvider>
-        <Toaster />
-        <NextNProgress options={{ showSpinner: false }} />
-        <Navbar />
-        <Component {...pageProps} />
-        <Footer />
-      </AuthProvider>
-    </>
-  )
+    return (
+        <>
+            <AuthProvider>
+                <Toaster />
+                <NextNProgress options={{ showSpinner: false }} />
+                <Navbar />
+                <Component {...pageProps} />
+                <Footer />
+            </AuthProvider>
+        </>
+    )
 }

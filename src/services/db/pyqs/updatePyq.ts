@@ -1,5 +1,5 @@
-import { toast } from "react-hot-toast"
-import { api } from "../../../utils/api"
+import { toast } from 'react-hot-toast'
+import { api } from '../../../utils/api'
 
 export const updatePyq = (
     id: number,
@@ -22,7 +22,7 @@ export const updatePyq = (
             studyingClass,
             branch,
             url,
-            isAnonymous
+            isAnonymous,
         }),
         {
             loading: 'Updating...',
@@ -30,7 +30,7 @@ export const updatePyq = (
                 refetchPYQs()
                 return `${res.data.message}`
             },
-            error: (err) => `Error: ${err.message}`
+            error: (err) => `Error: ${err.message}`,
         }
     )
 }

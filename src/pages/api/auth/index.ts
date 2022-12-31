@@ -1,11 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { getAuth } from 'firebase-admin/auth';
-import { initializeApp } from 'firebase-admin/app';
-import { adminAuth } from '../../../utils/firebaseAdminInit';
-import { responseData } from '../../../types/responseData';
+import { getAuth } from 'firebase-admin/auth'
+import { initializeApp } from 'firebase-admin/app'
+import { adminAuth } from '../../../utils/firebaseAdminInit'
+import { responseData } from '../../../types/responseData'
 import { prisma } from '../../../utils/prismaClientInit'
 
-export default async function authHandler(req: NextApiRequest, res: NextApiResponse) {
+export default async function authHandler(
+    req: NextApiRequest,
+    res: NextApiResponse
+) {
     const { method, headers } = req
 
     switch (method) {
@@ -19,7 +22,7 @@ export default async function authHandler(req: NextApiRequest, res: NextApiRespo
 
                     const result = await prisma.user.findUnique({
                         where: {
-                            user_id: user_id
+                            user_id: user_id,
                         },
                     })
 
@@ -28,26 +31,25 @@ export default async function authHandler(req: NextApiRequest, res: NextApiRespo
                             data: {
                                 user_id,
                                 email: email as string,
-                                name
-                            }
+                                name,
+                            },
                         })
                     }
 
                     res.status(200).json({
                         message: 'User fetched',
-                        result: user
+                        result: user,
                     })
-                }
-                catch (err: any) {
+                } catch (err: any) {
                     res.status(405).json({
-                        err
+                        err,
                     })
                 }
             }
             break
         default:
             res.status(405).json({
-                message: "Method Not Allowed"
+                message: 'Method Not Allowed',
             })
     }
 }

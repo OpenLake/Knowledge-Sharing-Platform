@@ -6,7 +6,7 @@ export const generateYears = () => {
     for (var i = max; i >= min; i--) {
         years.push({
             id: index,
-            name: i.toString()
+            name: i.toString(),
         })
     }
     return years
