@@ -61,6 +61,7 @@ export const UpdateNoteModal: FC<{
 
     //? functions
     const updateNoteHandler = (e: any) => {
+        e.preventDefault()
         if (
             title === '' ||
             selectedSubjectCode === '' ||

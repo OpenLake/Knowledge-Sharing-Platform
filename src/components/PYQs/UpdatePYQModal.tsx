@@ -90,7 +90,8 @@ export const UpdatePYQModal: FC<{
         setSelectedPYQ(null)
     })
 
-    const updatePYQHandler = () => {
+    const updatePYQHandler = (e: any) => {
+        e.preventDefault()
         if (
             title === '' ||
             selectedSubjectCode === '' ||

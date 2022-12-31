@@ -61,6 +61,7 @@ export const AddNoteModal: FC<{
 
     //? functions
     const addNoteHandler = async (e: any) => {
+        e.preventDefault()
         if (
             title === '' ||
             selectedSubjectCode === '' ||
@@ -68,9 +69,9 @@ export const AddNoteModal: FC<{
             selectedBatch === '' ||
             selectedBranch === '' ||
             url === ''
-        )
+        ) {
             toast.error('Please fill all the details!')
-        else {
+        } else {
             setIsLoading(true)
             if (
                 !subjects.find(

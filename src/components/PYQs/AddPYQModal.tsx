@@ -70,6 +70,7 @@ export const AddPYQModal: FC<{
 
     //? functions
     const addPYQHandler = async (e: any) => {
+        e.preventDefault()
         if (
             title === '' ||
             selectedSubjectCode === '' ||
