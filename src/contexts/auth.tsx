@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }: any) => {
                         setPhotoURL(picture)
                         setDisplayName(name)
                     }
-                    toast.success('Login Successfull')
+                    toast.success('Login Successful')
                 }
             })
             .catch((err: any) => {

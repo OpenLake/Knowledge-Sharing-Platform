@@ -231,6 +231,8 @@ export const UpdatePYQModal: FC<{
                                     onFocus={() => {
                                         subjects.length
                                             ? setShowSubjectCodeDropdown(true)
+                                            : subjectCodeInput !== ''
+                                            ? setShowSubjectCodeDropdown(true)
                                             : setShowSubjectCodeDropdown(false)
                                     }}
                                     onChange={(e) => {
@@ -254,7 +256,7 @@ export const UpdatePYQModal: FC<{
                             <ul
                                 ref={subjectCodeDropdownRef}
                                 className={`${
-                                    showSubjectCodeDropdown && subjects.length
+                                    showSubjectCodeDropdown
                                         ? 'absolute'
                                         : 'hidden'
                                 } max-h-56 overflow-x-clip border z-50 top-16 overflow-y-auto w-1/2 border-gray-400 bg-gray-50 rounded shadow-xl flex flex-col`}
@@ -286,11 +288,14 @@ export const UpdatePYQModal: FC<{
                                         )
                                     })}
                                 {!subjects.find((item: any) =>
-                                    isStringMatch(subjectCodeInput, item.code)
+                                    isStringMatch(subjectCodeInput, item.name)
                                 ) &&
                                     subjectCodeInput !== '' && (
                                         <li
                                             onClick={() => {
+                                                setShowSubjectCodeDropdown(
+                                                    false
+                                                )
                                                 setSelectedSubjectCode(
                                                     subjectCodeInput
                                                 )
@@ -326,6 +331,8 @@ export const UpdatePYQModal: FC<{
                                     onFocus={() => {
                                         subjects.length
                                             ? setShowSubjectNameDropdown(true)
+                                            : subjectNameInput !== ''
+                                            ? setShowSubjectNameDropdown(true)
                                             : setShowSubjectNameDropdown(false)
                                     }}
                                     onChange={(e) => {
@@ -349,7 +356,7 @@ export const UpdatePYQModal: FC<{
                             <ul
                                 ref={subjectNameDropdownRef}
                                 className={`${
-                                    showSubjectNameDropdown && subjects.length
+                                    showSubjectNameDropdown
                                         ? 'absolute'
                                         : 'hidden'
                                 } max-h-56 overflow-x-clip border top-[60px] z-50 overflow-y-auto w-1/2 border-gray-400 bg-gray-50 rounded shadow-xl flex flex-col`}
@@ -370,10 +377,10 @@ export const UpdatePYQModal: FC<{
                                                     setShowSubjectNameDropdown(
                                                         false
                                                     )
-                                                    setSubjectNameInput('')
                                                     setSelectedSubjectName(
                                                         subject.name
                                                     )
+                                                    setSubjectNameInput('')
                                                 }}
                                             >
                                                 {subject.name}
@@ -386,6 +393,9 @@ export const UpdatePYQModal: FC<{
                                     subjectNameInput !== '' && (
                                         <li
                                             onClick={() => {
+                                                setShowSubjectNameDropdown(
+                                                    false
+                                                )
                                                 setSelectedSubjectName(
                                                     subjectNameInput
                                                 )
