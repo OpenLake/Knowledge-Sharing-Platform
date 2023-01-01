@@ -75,26 +75,18 @@ export const Table: FC<{
                     ),
             },
             {
-                Header: 'Class',
-                accessor: 'class',
-                Cell: (row: any) => {
-                    let suffix = 'th'
-                    if (!isDataFetching) {
-                        if (row.value === '1') suffix = 'st'
-                        else if (row.value === '2') suffix = 'nd'
-                        else if (row.value === '3') suffix = 'rd'
-                    }
-
-                    return isDataFetching ? (
+                Header: 'Semester',
+                accessor: 'semester',
+                Cell: (row: any) =>
+                    isDataFetching ? (
                         <div className="h-2.5 bg-gray-200 w-24"></div>
                     ) : (
-                        <span>{row.value + suffix} Year</span>
-                    )
-                },
+                        row.value
+                    ),
             },
             {
-                Header: 'Batch',
-                accessor: 'batch',
+                Header: 'Instructor',
+                accessor: 'instructor',
                 Cell: (row: any) =>
                     isDataFetching ? (
                         <div className="h-2.5 bg-gray-200 w-24"></div>
@@ -168,8 +160,8 @@ export const Table: FC<{
                           subjectCode: note.subject_code,
                           subjectName: note.subject.name,
                           url: note.url,
-                          class: note.class,
-                          batch: note.batch,
+                          semester: note.semester,
+                          instructor: note.instructor.name,
                           branch: note.branch,
                           uploadedBy: note.created_by.name,
                           anonymous: note.anonymous,

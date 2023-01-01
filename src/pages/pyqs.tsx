@@ -2,12 +2,13 @@ import { useAuth } from '../contexts/auth'
 import { useEffect, useMemo, useState } from 'react'
 import Head from 'next/head'
 import { BsPlus } from 'react-icons/bs'
-import { AddPYQModal } from '../components/PYQs/AddPYQModal'
 import { toast } from 'react-hot-toast'
 import { Table } from '../components/PYQs/Table'
 import { getPyqs } from '../services/db/pyqs/getPyqs'
 import { pyqsColumnData } from '../types/pyqsColumnData'
-import { UpdatePYQModal } from '../components/PYQs/UpdatePYQModal'
+import { Modal } from '../components/Common/Modal'
+import { addPyq } from '../services/db/pyqs/addPyq'
+import { updatePyq } from '../services/db/pyqs/updatePyq'
 
 export default function PYQs() {
     //? contexts
@@ -18,6 +19,7 @@ export default function PYQs() {
     const [pyqs, setPYQs] = useState<pyqsColumnData[]>([])
     const [selectedPYQ, setSelectedPYQ] = useState<any>(null)
     const [showAddPYQModal, setShowAddPYQModal] = useState<boolean>(false)
+    const [showUpdatePYQModal, setShowUpdatePYQModal] = useState<boolean>(false)
 
     const refetchPYQs = () => {
         setIsDataFetching(true)
@@ -37,20 +39,31 @@ export default function PYQs() {
         })
     }, [])
 
+    useEffect(() => {
+        if (selectedPYQ) setShowUpdatePYQModal(true)
+        else setShowUpdatePYQModal(false)
+    }, [selectedPYQ])
+
     return (
         <div className={`w-full bg-white flex flex-col`}>
             {user && (
-                <AddPYQModal
-                    refetchPYQs={refetchPYQs}
-                    showAddPYQModal={showAddPYQModal}
-                    setShowAddPYQModal={setShowAddPYQModal}
+                <Modal
+                    header="Add New PYQ"
+                    actionButtonText="Add PYQ"
+                    actionFunction={addPyq}
+                    refetch={refetchPYQs}
+                    showModal={showAddPYQModal}
+                    setShowModal={setShowAddPYQModal}
                 />
             )}
             {selectedPYQ && (
-                <UpdatePYQModal
-                    selectedPYQ={selectedPYQ}
-                    setSelectedPYQ={setSelectedPYQ}
-                    refetchPYQs={refetchPYQs}
+                <Modal
+                    header="Add New PYQ"
+                    actionButtonText="Add PYQ"
+                    actionFunction={updatePyq}
+                    refetch={refetchPYQs}
+                    showModal={showAddPYQModal}
+                    setShowModal={setShowAddPYQModal}
                 />
             )}
             <Head>

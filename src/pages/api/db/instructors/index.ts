@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { adminAuth } from '../../../../utils/firebaseAdminInit'
 import { prisma } from '../../../../utils/prismaClientInit'
 
-export default async function subjectsHandler(
+export default async function instructorsHandler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
@@ -15,10 +15,10 @@ export default async function subjectsHandler(
                 const user = await adminAuth.verifyIdToken(accessToken!)
                 if (user) {
                     try {
-                        const subjects = await prisma.subject.findMany()
+                        const instructors = await prisma.instructor.findMany()
                         res.status(200).json({
-                            message: 'Subjects Fetched',
-                            result: subjects,
+                            message: 'Instructors Fetched',
+                            result: instructors,
                         })
                     } catch (err: any) {
                         res.status(405).json({
@@ -42,36 +42,23 @@ export default async function subjectsHandler(
                 const user = await adminAuth.verifyIdToken(accessToken!)
 
                 if (user) {
-                    const { subjectName, subjectCode } = body
-                    const subject = await prisma.subject.findUnique({
-                        where: {
-                            code: subjectCode,
-                        },
-                    })
-
-                    if (subject) {
-                        console.log(subject)
-                        res.status(405).json({
-                            message: 'Subject Code already exists',
+                    const { instructorName } = body
+                    try {
+                        const instructor = await prisma.instructor.create({
+                            data: {
+                                name: instructorName,
+                                created_by_id: user.user_id,
+                            },
                         })
-                    } else {
-                        try {
-                            await prisma.subject.create({
-                                data: {
-                                    name: subjectName,
-                                    code: subjectCode,
-                                    created_by_id: user.user_id,
-                                },
-                            })
 
-                            res.status(201).json({
-                                message: 'New Subject Created',
-                            })
-                        } catch (err: any) {
-                            res.status(404).json({
-                                message: err,
-                            })
-                        }
+                        res.status(201).json({
+                            message: 'New Instructor Created',
+                            result: instructor,
+                        })
+                    } catch (err: any) {
+                        res.status(404).json({
+                            message: err,
+                        })
                     }
                 } else {
                     res.status(401).json({

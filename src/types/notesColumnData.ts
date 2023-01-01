@@ -4,8 +4,8 @@ export interface notesColumnData {
     subjectCode: string
     subjectName: string
     url: string
-    class: string
-    batch: string
+    semester: string
+    instructor: string
     branch: string
     uploadedBy: string
     actions: JSX.Element

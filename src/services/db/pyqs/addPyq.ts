@@ -4,9 +4,8 @@ import { api } from '../../../utils/api'
 export const addPyq = (
     title: string,
     subjectCode: string,
-    fromYear: string,
-    toYear: string,
-    studyingClass: string,
+    semester: string,
+    instructorId: number,
     branch: string,
     url: string,
     isAnonymous: boolean,
@@ -16,9 +15,8 @@ export const addPyq = (
         api.post('/api/db/pyqs', {
             title,
             subjectCode,
-            fromYear,
-            toYear,
-            studyingClass,
+            semester,
+            instructorId,
             branch,
             url,
             isAnonymous,

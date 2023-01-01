@@ -4,9 +4,8 @@ export interface pyqsColumnData {
     subjectCode: string
     subjectName: string
     url: string
-    class: string
-    fromYear: string
-    toYear: string
+    semester: string
+    instructor: string
     branch: string
     uploadedBy: string
     actions: JSX.Element

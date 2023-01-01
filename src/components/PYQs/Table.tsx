@@ -75,26 +75,8 @@ export const Table: FC<{
                     ),
             },
             {
-                Header: 'Class',
-                accessor: 'class',
-                Cell: (row: any) => {
-                    let suffix = 'th'
-                    if (!isDataFetching) {
-                        if (row.value === '1') suffix = 'st'
-                        else if (row.value === '2') suffix = 'nd'
-                        else if (row.value === '3') suffix = 'rd'
-                    }
-
-                    return isDataFetching ? (
-                        <div className="h-2.5 bg-gray-200 w-24"></div>
-                    ) : (
-                        <span>{row.value + suffix} Year</span>
-                    )
-                },
-            },
-            {
-                Header: 'From',
-                accessor: 'fromYear',
+                Header: 'Semester',
+                accessor: 'semester',
                 Cell: (row: any) =>
                     isDataFetching ? (
                         <div className="h-2.5 bg-gray-200 w-24"></div>
@@ -103,8 +85,8 @@ export const Table: FC<{
                     ),
             },
             {
-                Header: 'To',
-                accessor: 'toYear',
+                Header: 'Instructor',
+                accessor: 'instructor',
                 Cell: (row: any) =>
                     isDataFetching ? (
                         <div className="h-2.5 bg-gray-200 w-24"></div>
@@ -179,9 +161,8 @@ export const Table: FC<{
                           subjectCode: pyq.subject_code,
                           subjectName: pyq.subject.name,
                           url: pyq.url,
-                          class: pyq.class,
-                          fromYear: pyq.from_year,
-                          toYear: pyq.to_year,
+                          semester: pyq.semester,
+                          instructor: pyq.instructor.name,
                           branch: pyq.branch,
                           uploadedBy: pyq.created_by.name,
                           anonymous: pyq.anonymous,

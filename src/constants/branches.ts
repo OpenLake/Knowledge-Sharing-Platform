@@ -1,30 +1,30 @@
 export const branches = [
     {
         id: '0',
-        name: 'Computer Science Engineering',
+        branch: 'Computer Science Engineering',
     },
     {
         id: '1',
-        name: 'Electronics and Communication Engineering',
+        branch: 'Electronics and Communication Engineering',
     },
     {
         id: '3',
-        name: 'Electrical Engineering',
+        branch: 'Electrical Engineering',
     },
     {
         id: '4',
-        name: 'Mechanical Engineering',
+        branch: 'Mechanical Engineering',
     },
     {
         id: '5',
-        name: 'Agriculture Engineering',
+        branch: 'Agriculture Engineering',
     },
     {
         id: '6',
-        name: 'Mining Engineering',
+        branch: 'Mining Engineering',
     },
     {
         id: '7',
-        name: 'Artificial Intelligence and Data Science',
+        branch: 'Artificial Intelligence and Data Science',
     },
 ]

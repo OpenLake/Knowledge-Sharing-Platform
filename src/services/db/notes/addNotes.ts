@@ -4,8 +4,8 @@ import { api } from '../../../utils/api'
 export const addNotes = (
     title: string,
     subjectCode: string,
-    batch: string,
-    studyingClass: string,
+    semester: string,
+    instructorId: number,
     branch: string,
     url: string,
     isAnonymous: boolean,
@@ -15,8 +15,8 @@ export const addNotes = (
         api.post('/api/db/notes', {
             title,
             subjectCode,
-            batch,
-            studyingClass,
+            semester,
+            instructorId,
             branch,
             url,
             isAnonymous,

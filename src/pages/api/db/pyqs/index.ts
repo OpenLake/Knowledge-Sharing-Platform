@@ -13,6 +13,11 @@ export default async function pyqHandler(
             try {
                 const pyqs = await prisma.pyq.findMany({
                     include: {
+                        instructor: {
+                            select: {
+                                name: true,
+                            },
+                        },
                         subject: {
                             select: {
                                 name: true,
@@ -46,10 +51,9 @@ export default async function pyqHandler(
                     const {
                         title,
                         subjectCode,
-                        studyingClass,
+                        semester,
                         branch,
-                        fromYear,
-                        toYear,
+                        instructorId,
                         url,
                         isAnonymous,
                     } = body
@@ -57,12 +61,11 @@ export default async function pyqHandler(
                         await prisma.pyq.create({
                             data: {
                                 title,
-                                url,
                                 subject_code: subjectCode,
-                                from_year: fromYear,
-                                to_year: toYear,
                                 branch,
-                                class: studyingClass,
+                                semester,
+                                instructor_id: parseInt(instructorId),
+                                url,
                                 anonymous: isAnonymous,
                                 created_by_id: user.user_id,
                             },
@@ -100,10 +103,9 @@ export default async function pyqHandler(
                         const {
                             title,
                             subjectCode,
-                            studyingClass,
+                            semester,
                             branch,
-                            fromYear,
-                            toYear,
+                            instructorId,
                             url,
                             isAnonymous,
                         } = body
@@ -121,12 +123,11 @@ export default async function pyqHandler(
                                     },
                                     data: {
                                         title,
-                                        url,
                                         subject_code: subjectCode,
-                                        from_year: fromYear,
-                                        to_year: toYear,
                                         branch,
-                                        class: studyingClass,
+                                        semester,
+                                        instructor_id: instructorId,
+                                        url,
                                         anonymous: isAnonymous,
                                         created_by_id: user.user_id,
                                     },

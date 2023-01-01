@@ -3,13 +3,14 @@ import { toast } from 'react-hot-toast'
 import { useEffect, useState } from 'react'
 
 import { useAuth } from '../contexts/auth'
-import { AddNoteModal } from '../components/Notes/AddNoteModal'
+import { Modal } from '../components/Common/Modal'
 
 import { BsPlus } from 'react-icons/bs'
 import { Table } from '../components/Notes/Table'
 import { notesColumnData } from '../types/notesColumnData'
-import { UpdateNoteModal } from '../components/Notes/UpdateNoteModal'
 import { getNotes } from '../services/db/notes/getNotes'
+import { addNotes } from '../services/db/notes/addNotes'
+import { updateNote } from '../services/db/notes/updateNote'
 
 export default function Notes() {
     //? contexts
@@ -18,6 +19,8 @@ export default function Notes() {
     //? states
     const [isDataFetching, setIsDataFetching] = useState<boolean>(false)
     const [showAddNoteModal, setShowAddNoteModal] = useState<boolean>(false)
+    const [showUpdateNoteModal, setShowUpdateNoteModal] =
+        useState<boolean>(false)
     const [selectedNote, setSelectedNote] = useState<any>(null)
     const [notes, setNotes] = useState<notesColumnData[]>([])
 
@@ -39,20 +42,32 @@ export default function Notes() {
         })
     }, [])
 
+    useEffect(() => {
+        if (selectedNote) setShowUpdateNoteModal(true)
+        else setShowUpdateNoteModal(false)
+    }, [selectedNote])
+
     return (
         <div className={`w-full bg-white flex flex-col`}>
             {user && (
-                <AddNoteModal
-                    refetchNotes={refetchNotes}
-                    showAddNoteModal={showAddNoteModal}
-                    setShowAddNoteModal={setShowAddNoteModal}
+                <Modal
+                    header="Add New Notes"
+                    actionButtonText="Add Notes"
+                    actionFunction={addNotes}
+                    refetch={refetchNotes}
+                    showModal={showAddNoteModal}
+                    setShowModal={setShowAddNoteModal}
                 />
             )}
             {selectedNote && (
-                <UpdateNoteModal
-                    selectedNote={selectedNote}
-                    setSelectedNote={setSelectedNote}
-                    refetchNotes={refetchNotes}
+                <Modal
+                    header="Update Notes"
+                    actionButtonText="Update Notes"
+                    actionFunction={updateNote}
+                    refetch={refetchNotes}
+                    showModal={showUpdateNoteModal}
+                    setShowModal={setShowUpdateNoteModal}
+                    selectedEntity={selectedNote}
                 />
             )}
             <Head>

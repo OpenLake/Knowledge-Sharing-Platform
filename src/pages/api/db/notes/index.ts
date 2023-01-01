@@ -18,6 +18,11 @@ export default async function noteHandler(
                                 name: true,
                             },
                         },
+                        instructor: {
+                            select: {
+                                name: true,
+                            },
+                        },
                         created_by: {
                             select: {
                                 name: true,
@@ -46,9 +51,9 @@ export default async function noteHandler(
                     const {
                         title,
                         subjectCode,
-                        studyingClass,
+                        semester,
                         branch,
-                        batch,
+                        instructorId,
                         url,
                         isAnonymous,
                     } = body
@@ -57,9 +62,9 @@ export default async function noteHandler(
                             data: {
                                 title,
                                 subject_code: subjectCode,
-                                batch,
                                 branch,
-                                class: studyingClass,
+                                semester,
+                                instructor_id: parseInt(instructorId),
                                 url,
                                 anonymous: isAnonymous,
                                 created_by_id: user.user_id,
@@ -98,12 +103,13 @@ export default async function noteHandler(
                         const {
                             title,
                             subjectCode,
-                            studyingClass,
+                            semester,
                             branch,
-                            batch,
+                            instructorId,
                             url,
                             isAnonymous,
                         } = body
+
                         const notes = await prisma.note.findUnique({
                             where: {
                                 id: parseInt(id as string),
@@ -119,9 +125,9 @@ export default async function noteHandler(
                                     data: {
                                         title,
                                         subject_code: subjectCode,
-                                        batch,
                                         branch,
-                                        class: studyingClass,
+                                        semester,
+                                        instructor_id: instructorId,
                                         url,
                                         anonymous: isAnonymous,
                                         created_by_id: user.user_id,

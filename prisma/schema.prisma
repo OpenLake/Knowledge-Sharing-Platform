@@ -15,6 +15,7 @@ model user {
   courses        course[]
   subjects       subject[]
   pyqs           pyq[]
+  instructors    instructor[]
   note_upvotes   note_upvote[]
   course_upvotes course_upvote[]
   pyq_upvotes    pyq_upvote[]
@@ -32,15 +33,27 @@ model subject {
   pyqs          pyq[]
 }
 
+model instructor {
+  id            Int      @id @unique @default(autoincrement())
+  name          String   @db.VarChar(255)
+  created_by    user     @relation(fields: [created_by_id], references: [user_id], onDelete: Restrict)
+  created_by_id String
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  notes         note[]
+  pyqs          pyq[]
+}
+
 model note {
   id            Int           @id @unique @default(autoincrement())
   title         String        @db.VarChar(255)
   url           String        @db.VarChar(255)
   subject       subject       @relation(fields: [subject_code], references: [code])
   subject_code  String        @db.VarChar(255)
-  batch         String        @db.VarChar(255)
+  semester      String        @db.VarChar(255)
+  instructor    instructor    @relation(fields: [instructor_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  instructor_id Int
   branch        String        @db.VarChar(255)
-  class         String        @db.VarChar(100)
   anonymous     Boolean
   created_by    user          @relation(fields: [created_by_id], references: [user_id], onDelete: Restrict)
   created_by_id String
@@ -82,10 +95,10 @@ model pyq {
   url           String       @db.VarChar(255)
   subject       subject      @relation(fields: [subject_code], references: [code])
   subject_code  String       @db.VarChar(255)
-  from_year     String       @db.VarChar(50)
-  to_year       String       @db.VarChar(50)
   branch        String       @db.VarChar(255)
-  class         String       @db.VarChar(100)
+  semester      String       @db.VarChar(100)
+  instructor    instructor   @relation(fields: [instructor_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  instructor_id Int
   anonymous     Boolean
   created_by    user         @relation(fields: [created_by_id], references: [user_id], onDelete: Restrict)
   created_by_id String
