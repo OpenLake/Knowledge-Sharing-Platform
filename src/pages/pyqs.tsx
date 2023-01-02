@@ -59,8 +59,8 @@ export default function PYQs() {
                 <Modal
                     isUpdateModal={true}
                     selectedEntity={selectedPYQ}
-                    header="Add New PYQ"
-                    actionButtonText="Add PYQ"
+                    header="Update PYQ"
+                    actionButtonText="Update PYQ"
                     actionFunction={updatePyq}
                     refetch={refetchPYQs}
                     showModal={showUpdatePYQModal}
