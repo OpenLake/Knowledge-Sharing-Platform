@@ -61,6 +61,7 @@ export default function Notes() {
             )}
             {selectedNote && (
                 <Modal
+                    isUpdateModal={true}
                     header="Update Notes"
                     actionButtonText="Update Notes"
                     actionFunction={updateNote}

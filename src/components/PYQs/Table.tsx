@@ -154,7 +154,6 @@ export const Table: FC<{
                 ? Array(8).fill({})
                 : pyqs &&
                   pyqs.map((pyq: any, index) => {
-                      console.log(pyq)
                       return {
                           sno: `${index + 1}.`,
                           title: pyq.title,

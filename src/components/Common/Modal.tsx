@@ -11,6 +11,7 @@ import { getInstructors } from '../../services/db/instructors/getInstructors'
 import { addInstructor } from '../../services/db/instructors/addInstructor'
 
 export const Modal: FC<{
+    isUpdateModal?: boolean
     header: string
     actionButtonText: string
     actionFunction: Function
@@ -26,6 +27,7 @@ export const Modal: FC<{
     actionFunction,
     setShowModal,
     selectedEntity,
+    isUpdateModal = false,
 }) => {
     //? states
     const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -88,6 +90,7 @@ export const Modal: FC<{
             ) {
                 const instructor = await addInstructor(selectedInstructorName)
                 await actionFunction(
+                    isUpdateModal ? selectedEntity.id : null,
                     title,
                     selectedSubjectCode,
                     selectedSemester,
@@ -102,6 +105,7 @@ export const Modal: FC<{
                 setSelectedInstructorId(instructor.id)
             } else {
                 await actionFunction(
+                    isUpdateModal ? selectedEntity.id : null,
                     title,
                     selectedSubjectCode,
                     selectedSemester,

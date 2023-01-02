@@ -33,7 +33,6 @@ export default function PYQs() {
     useEffect(() => {
         setIsDataFetching(true)
         getPyqs().then((res) => {
-            console.log(res)
             setPYQs(res)
             setIsDataFetching(false)
         })
@@ -58,12 +57,14 @@ export default function PYQs() {
             )}
             {selectedPYQ && (
                 <Modal
+                    isUpdateModal={true}
+                    selectedEntity={selectedPYQ}
                     header="Add New PYQ"
                     actionButtonText="Add PYQ"
                     actionFunction={updatePyq}
                     refetch={refetchPYQs}
-                    showModal={showAddPYQModal}
-                    setShowModal={setShowAddPYQModal}
+                    showModal={showUpdatePYQModal}
+                    setShowModal={setShowUpdatePYQModal}
                 />
             )}
             <Head>
