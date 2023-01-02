@@ -22,15 +22,6 @@ export const addPyq = ({
     semester,
     url,
 }: Props) => {
-    console.log(
-        title,
-        subjectCode,
-        semester,
-        instructorId,
-        branch,
-        url,
-        isAnonymous
-    )
     toast.promise(
         api.post('/api/db/pyqs', {
             title,

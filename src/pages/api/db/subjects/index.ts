@@ -50,7 +50,6 @@ export default async function subjectsHandler(
                     })
 
                     if (subject) {
-                        console.log(subject)
                         res.status(405).json({
                             message: 'Subject Code already exists',
                         })

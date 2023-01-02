@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }: any) => {
                 }
             })
             .catch((err: any) => {
-                console.log(err)
+                toast.error(err.message)
             })
     }
 
@@ -84,9 +84,7 @@ export const AuthProvider = ({ children }: any) => {
                     setDisplayName(name)
                 }
             } catch (err: any) {
-                console.log(err)
                 if (err.response.data.err.code === 'auth/id-token-expired') {
-                    console.log('cookie removed')
                     cookies.remove('accessToken')
                     setUser(null)
                     delete api.defaults.headers.Authorization
