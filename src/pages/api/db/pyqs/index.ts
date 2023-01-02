@@ -57,8 +57,9 @@ export default async function pyqHandler(
                         url,
                         isAnonymous,
                     } = body
+
                     try {
-                        await prisma.pyq.create({
+                        const re = await prisma.pyq.create({
                             data: {
                                 title,
                                 subject_code: subjectCode,
@@ -70,6 +71,7 @@ export default async function pyqHandler(
                                 created_by_id: user.user_id,
                             },
                         })
+                        console.log(re)
                         res.status(201).json({
                             message: 'PYQ Created',
                         })

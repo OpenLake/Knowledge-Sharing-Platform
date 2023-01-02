@@ -5,7 +5,7 @@ export const semesters = [
     },
     {
         id: 1,
-        semester: '2022-23F',
+        semester: '2022-23M',
     },
     {
         id: 2,
@@ -13,7 +13,7 @@ export const semesters = [
     },
     {
         id: 3,
-        semester: '2021-22F',
+        semester: '2021-22M',
     },
     {
         id: 4,
@@ -21,7 +21,7 @@ export const semesters = [
     },
     {
         id: 5,
-        semester: '2020-21F',
+        semester: '2020-21M',
     },
     {
         id: 6,
@@ -29,7 +29,7 @@ export const semesters = [
     },
     {
         id: 7,
-        semester: '2019-20F',
+        semester: '2019-20M',
     },
     {
         id: 8,
@@ -37,7 +37,7 @@ export const semesters = [
     },
     {
         id: 9,
-        semester: '2018-19F',
+        semester: '2018-19M',
     },
     {
         id: 10,
@@ -45,7 +45,7 @@ export const semesters = [
     },
     {
         id: 11,
-        semester: '2017-18F',
+        semester: '2017-18M',
     },
     {
         id: 12,
@@ -53,7 +53,7 @@ export const semesters = [
     },
     {
         id: 13,
-        semester: '2016-17F',
+        semester: '2016-17M',
     },
     {
         id: 14,
@@ -61,6 +61,6 @@ export const semesters = [
     },
     {
         id: 15,
-        semester: '2015-16F',
+        semester: '2015-16M',
     },
 ]

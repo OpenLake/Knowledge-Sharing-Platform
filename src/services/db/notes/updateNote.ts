@@ -1,17 +1,29 @@
 import { toast } from 'react-hot-toast'
 import { api } from '../../../utils/api'
 
-export const updateNote = (
-    id: number,
-    title: string,
-    subjectCode: string,
-    semester: string,
-    instructorId: number,
-    branch: string,
-    url: string,
-    isAnonymous: boolean,
-    refetchNotes: Function
-) => {
+interface Props {
+    id: number
+    title: string
+    subjectCode: string
+    semester: string
+    instructorId: number
+    branch: string
+    url: string
+    isAnonymous: boolean
+    refetch: Function
+}
+
+export const updateNote = ({
+    id,
+    title,
+    subjectCode,
+    branch,
+    instructorId,
+    isAnonymous,
+    refetch,
+    semester,
+    url,
+}: Props) => {
     toast.promise(
         api.put('/api/db/notes?id=' + id, {
             title,
@@ -25,7 +37,7 @@ export const updateNote = (
         {
             loading: 'Updating...',
             success: (res) => {
-                refetchNotes()
+                refetch()
                 return `${res.data.message}`
             },
             error: (err) => `Error: ${err.message}`,

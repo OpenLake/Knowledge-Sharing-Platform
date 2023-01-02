@@ -1,16 +1,27 @@
 import { toast } from 'react-hot-toast'
 import { api } from '../../../utils/api'
 
-export const addNotes = (
-    title: string,
-    subjectCode: string,
-    semester: string,
-    instructorId: number,
-    branch: string,
-    url: string,
-    isAnonymous: boolean,
-    refetchNotes: Function
-) => {
+interface Props {
+    title: string
+    subjectCode: string
+    semester: string
+    instructorId: number
+    branch: string
+    url: string
+    isAnonymous: boolean
+    refetch: Function
+}
+
+export const addNotes = ({
+    title,
+    subjectCode,
+    branch,
+    instructorId,
+    isAnonymous,
+    refetch,
+    semester,
+    url,
+}: Props) => {
     toast.promise(
         api.post('/api/db/notes', {
             title,
@@ -24,7 +35,7 @@ export const addNotes = (
         {
             loading: 'Adding...',
             success: (res) => {
-                refetchNotes()
+                refetch()
                 return `${res.data.message}`
             },
             error: (err) => `Error: ${err.message}`,

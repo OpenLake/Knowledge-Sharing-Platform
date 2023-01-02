@@ -89,32 +89,32 @@ export const Modal: FC<{
                 )
             ) {
                 const instructor = await addInstructor(selectedInstructorName)
-                await actionFunction(
-                    isUpdateModal ? selectedEntity.id : null,
-                    title,
-                    selectedSubjectCode,
-                    selectedSemester,
-                    instructor.id,
-                    selectedBranch,
-                    url,
-                    isAnonymous,
-                    refetch
-                )
+                await actionFunction({
+                    id: isUpdateModal ? selectedEntity.id : null,
+                    title: title,
+                    subjectCode: selectedSubjectCode,
+                    semester: selectedSemester,
+                    instructorId: instructor.id,
+                    branch: selectedBranch,
+                    url: url,
+                    isAnonymous: isAnonymous,
+                    refetch: refetch,
+                })
                 const res = await getInstructors()
                 setInstructors(res)
                 setSelectedInstructorId(instructor.id)
             } else {
-                await actionFunction(
-                    isUpdateModal ? selectedEntity.id : null,
-                    title,
-                    selectedSubjectCode,
-                    selectedSemester,
-                    selectedInstructorId,
-                    selectedBranch,
-                    url,
-                    isAnonymous,
-                    refetch
-                )
+                await actionFunction({
+                    id: isUpdateModal ? selectedEntity.id : null,
+                    title: title,
+                    subjectCode: selectedSubjectCode,
+                    semester: selectedSemester,
+                    instructorId: selectedInstructorId,
+                    branch: selectedBranch,
+                    url: url,
+                    isAnonymous: isAnonymous,
+                    refetch: refetch,
+                })
             }
             setTitle('')
             setUrl('')
