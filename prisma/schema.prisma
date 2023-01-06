@@ -73,6 +73,7 @@ model note_upvote {
 model course {
   id            Int             @id @unique @default(autoincrement())
   title         String          @db.VarChar(255)
+  code          String          @unique @db.VarChar(100)
   anonymous     Boolean
   created_by    user            @relation(fields: [created_by_id], references: [user_id], onDelete: Restrict)
   created_by_id String
