@@ -95,6 +95,16 @@ export const Navbar: FC<{}> = ({}) => {
                 </span>
 
                 <span
+                    ref={router.asPath === '/courses' ? activeRef : null}
+                    onClick={(e) => {
+                        router.push('/courses')
+                    }}
+                    className={`cursor-pointer p-3 relative before:content-[''] before:absolute before:bottom-[-7px] before:left-0 before:w-full before:h-[5px] before:bg-primary/40 before:rounded-[8px_8px_0_0] before:opacity-0 before:duration-100 text-gray-600 hover:before:opacity-100 hover:before:bottom-0 hover:text-gray-800`}
+                >
+                    Courses
+                </span>
+
+                <span
                     style={{
                         width: `${activeOffsetWidth}px`,
                         left: `${activeOffsetLeft}px`,

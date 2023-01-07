@@ -12,7 +12,15 @@ export default async function coursesHandler(
     switch (method) {
         case 'GET':
             try {
-                const courses = await prisma.course.findMany()
+                const courses = await prisma.course.findMany({
+                    include: {
+                        created_by: {
+                            select: {
+                                name: true,
+                            },
+                        },
+                    },
+                })
                 res.status(200).json({
                     message: 'Courses Fetched',
                     result: courses,
@@ -29,10 +37,10 @@ export default async function coursesHandler(
                 const user = await adminAuth.verifyIdToken(accessToken!)
 
                 if (user) {
-                    const { courseTitle, courseCode, isAnonymous } = body
+                    const { title, code, isAnonymous } = body
                     const course = await prisma.course.findUnique({
                         where: {
-                            code: courseCode,
+                            code: code,
                         },
                     })
 
@@ -44,8 +52,8 @@ export default async function coursesHandler(
                         try {
                             await prisma.course.create({
                                 data: {
-                                    title: courseTitle,
-                                    code: courseCode,
+                                    title: title,
+                                    code: code,
                                     anonymous: isAnonymous,
                                     created_by_id: user.user_id,
                                 },
@@ -78,7 +86,7 @@ export default async function coursesHandler(
 
                 if (user) {
                     const { id } = query
-                    const { courseTitle, courseCode, isAnonymous } = body
+                    const { title, code, isAnonymous } = body
 
                     try {
                         await prisma.course.update({
@@ -86,8 +94,8 @@ export default async function coursesHandler(
                                 id: parseInt(id as string),
                             },
                             data: {
-                                title: courseTitle,
-                                code: courseCode,
+                                title: title,
+                                code: code,
                                 anonymous: isAnonymous,
                             },
                         })
