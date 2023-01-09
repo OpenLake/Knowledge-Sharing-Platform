@@ -197,7 +197,7 @@ export const Table: FC<{
         </table>
     ) : !loading && courses.length ? (
         <table
-            className="col-span-5 overflow-x-auto"
+            className="w-full"
             {...getTableProps()}
         >
             <thead>
