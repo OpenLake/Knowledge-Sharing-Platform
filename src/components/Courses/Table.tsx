@@ -1,21 +1,20 @@
 import { Dispatch, FC, SetStateAction, useEffect, useMemo } from 'react'
-import Link from 'next/link'
 import { Column, useTable } from 'react-table'
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import { BsPencilSquare } from 'react-icons/bs'
 import { Player } from '@lottiefiles/react-lottie-player'
 import { useAuth } from '../../contexts/auth'
-import { pyqsColumnData } from '../../types/pyqsColumnData'
-import { deletePyq } from '../../services/db/pyqs/deletePyq'
+import { coursesColumnData } from '../../types/coursesColumnData'
+import { deleteCourse } from '../../services/db/courses/deleteCourse'
 
 export const Table: FC<{
-    pyqs: pyqsColumnData[]
-    setSelectedPYQ: Dispatch<SetStateAction<any>>
+    courses: coursesColumnData[]
+    setSelectedCourse: Dispatch<SetStateAction<any>>
     isDataFetching: boolean
-    refetchPYQs: Function
-}> = ({ pyqs, refetchPYQs, setSelectedPYQ, isDataFetching }) => {
+    refetchCourses: Function
+}> = ({ courses, refetchCourses, setSelectedCourse, isDataFetching }) => {
     const { user, loading }: any = useAuth()
-    const columns = useMemo<Column<pyqsColumnData>[]>(
+    const columns = useMemo<Column<coursesColumnData>[]>(
         () => [
             {
                 Header: 'S.No.',
@@ -38,65 +37,8 @@ export const Table: FC<{
                     ),
             },
             {
-                Header: 'Subject Code',
-                accessor: 'subjectCode',
-                Cell: (row: any) =>
-                    isDataFetching ? (
-                        <div className="h-2.5 bg-gray-200 w-24"></div>
-                    ) : (
-                        row.value
-                    ),
-            },
-            {
-                Header: 'Subject',
-                accessor: 'subjectName',
-                Cell: (row: any) =>
-                    isDataFetching ? (
-                        <div className="h-2.5 bg-gray-200 w-24"></div>
-                    ) : (
-                        row.value
-                    ),
-            },
-            {
-                Header: 'URL',
-                accessor: 'url',
-                Cell: (row: any) =>
-                    isDataFetching ? (
-                        <div className="h-2.5 bg-gray-200 w-24"></div>
-                    ) : (
-                        <Link
-                            target={'_blank'}
-                            href={row.value}
-                        >
-                            <span className="text-ellipsis text-blue-500 hover:underline">
-                                URL
-                            </span>
-                        </Link>
-                    ),
-            },
-            {
-                Header: 'Semester',
-                accessor: 'semester',
-                Cell: (row: any) =>
-                    isDataFetching ? (
-                        <div className="h-2.5 bg-gray-200 w-24"></div>
-                    ) : (
-                        row.value
-                    ),
-            },
-            {
-                Header: 'Instructor',
-                accessor: 'instructor',
-                Cell: (row: any) =>
-                    isDataFetching ? (
-                        <div className="h-2.5 bg-gray-200 w-24"></div>
-                    ) : (
-                        row.value
-                    ),
-            },
-            {
-                Header: 'Branch',
-                accessor: 'branch',
+                Header: 'Course Code',
+                accessor: 'courseCode',
                 Cell: (row: any) =>
                     isDataFetching ? (
                         <div className="h-2.5 bg-gray-200 w-24"></div>
@@ -127,7 +69,7 @@ export const Table: FC<{
                             <button
                                 className="p-2 rounded-full hover:bg-gray-200 duration-150"
                                 onClick={(e) => {
-                                    setSelectedPYQ(row.value)
+                                    setSelectedCourse(row.value)
                                 }}
                             >
                                 <BsPencilSquare className="h-5 w-5 text-primary" />
@@ -135,7 +77,7 @@ export const Table: FC<{
                             <button
                                 className="p-2 rounded-full hover:bg-gray-200 duration-150"
                                 onClick={(e) => {
-                                    deletePyq(row.value.id, refetchPYQs)
+                                    deleteCourse(row.value.id, refetchCourses)
                                 }}
                             >
                                 <RiDeleteBin6Line className="h-5 w-5 text-red-500" />
@@ -146,29 +88,24 @@ export const Table: FC<{
                     ),
             },
         ],
-        [isDataFetching, setSelectedPYQ, refetchPYQs, user]
+        [isDataFetching, setSelectedCourse, refetchCourses, user]
     )
     const data = useMemo(
         () =>
             isDataFetching
                 ? Array(8).fill({})
-                : pyqs &&
-                  pyqs.map((pyq: any, index) => {
+                : courses &&
+                  courses?.map((course: any, index) => {
                       return {
                           sno: `${index + 1}.`,
-                          title: pyq.title,
-                          subjectCode: pyq.subject_code,
-                          subjectName: pyq.subject.name,
-                          url: pyq.url,
-                          semester: pyq.semester,
-                          instructor: pyq.instructor.name,
-                          branch: pyq.branch,
-                          uploadedBy: pyq.created_by.name,
-                          anonymous: pyq.anonymous,
-                          actions: pyq,
+                          title: course.title,
+                          courseCode: course.code,
+                          uploadedBy: course.created_by.name,
+                          anonymous: course.anonymous,
+                          actions: course,
                       }
                   }),
-        [isDataFetching, pyqs]
+        [isDataFetching, courses]
     )
 
     const tableInstance = useTable({ columns, data })
@@ -258,9 +195,9 @@ export const Table: FC<{
                 })}
             </tbody>
         </table>
-    ) : !loading && pyqs.length ? (
+    ) : !loading && courses.length ? (
         <table
-            className="w-full overflow-x-auto"
+            className="w-full"
             {...getTableProps()}
         >
             <thead>

@@ -69,7 +69,7 @@ export const Table: FC<{
                             href={row.value}
                         >
                             <span className="text-ellipsis text-blue-500 hover:underline">
-                                {row.value}
+                                URL
                             </span>
                         </Link>
                     ),
@@ -260,7 +260,7 @@ export const Table: FC<{
         </table>
     ) : !loading && notes.length ? (
         <table
-            className="col-span-5 overflow-x-auto"
+            className="w-full"
             {...getTableProps()}
         >
             <thead>
