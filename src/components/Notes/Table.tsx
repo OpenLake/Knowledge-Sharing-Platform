@@ -7,6 +7,9 @@ import { BsPencilSquare } from 'react-icons/bs'
 import { Player } from '@lottiefiles/react-lottie-player'
 import { useAuth } from '../../contexts/auth'
 import { deleteNotes } from '../../services/db/notes/deleteNotes'
+import { UpvoteButton } from '../Common/UpvoteButton'
+import { removeNotesUpvote } from '../../services/db/notes/removeNotesUpvote'
+import { upvoteNotes } from '../../services/db/notes/upvoteNotes'
 
 export const Table: FC<{
     notes: notesColumnData[]
@@ -25,6 +28,24 @@ export const Table: FC<{
                         <div className="h-2.5 bg-gray-200 w-24"></div>
                     ) : (
                         row.value
+                    ),
+            },
+            {
+                Header: 'Upvotes',
+                accessor: 'upvotes',
+                Cell: (row: any) =>
+                    isDataFetching ? (
+                        <div className="h-2.5 bg-gray-200 w-24"></div>
+                    ) : (
+                        row.value && (
+                            <UpvoteButton
+                                id={row.row.original.id}
+                                users={row.value.users}
+                                upvotesCount={row.value.count}
+                                removeUpvoteHandler={removeNotesUpvote}
+                                upvoteHandler={upvoteNotes}
+                            />
+                        )
                     ),
             },
             {
@@ -156,6 +177,11 @@ export const Table: FC<{
                   notes.map((note: any, index) => {
                       return {
                           sno: `${index + 1}.`,
+                          id: note.id,
+                          upvotes: {
+                              count: note._count.upvotes,
+                              users: note.upvotes,
+                          },
                           title: note.title,
                           subjectCode: note.subject_code,
                           subjectName: note.subject.name,

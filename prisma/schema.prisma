@@ -64,10 +64,12 @@ model note {
 
 model note_upvote {
   id      Int    @id @unique @default(autoincrement())
-  user    user   @relation(fields: [user_id], references: [user_id], onDelete: Restrict)
-  user_id String @unique
-  notes   note   @relation(fields: [note_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  note_id Int    @unique
+  user    user   @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: Cascade)
+  user_id String
+  notes   note   @relation(fields: [note_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  note_id Int
+
+  @@unique([user_id, note_id])
 }
 
 model course {
@@ -84,10 +86,12 @@ model course {
 
 model course_upvote {
   id        Int    @id @unique @default(autoincrement())
-  user      user   @relation(fields: [user_id], references: [user_id], onDelete: Restrict)
-  user_id   String @unique
-  course    course @relation(fields: [course_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  course_id Int    @unique
+  user      user   @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: Cascade)
+  user_id   String
+  course    course @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  course_id Int
+
+  @@unique([user_id, course_id])
 }
 
 model pyq {
@@ -110,8 +114,10 @@ model pyq {
 
 model pyq_upvote {
   id      Int    @id @unique @default(autoincrement())
-  user    user   @relation(fields: [user_id], references: [user_id], onDelete: Restrict)
-  user_id String @unique
-  pyq     pyq    @relation(fields: [pyq_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  pyq_id  Int    @unique
+  user    user   @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: Cascade)
+  user_id String
+  pyq     pyq    @relation(fields: [pyq_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  pyq_id  Int
+
+  @@unique([user_id, pyq_id])
 }

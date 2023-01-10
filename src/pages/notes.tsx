@@ -10,7 +10,7 @@ import { Table } from '../components/Notes/Table'
 import { notesColumnData } from '../types/notesColumnData'
 import { getNotes } from '../services/db/notes/getNotes'
 import { addNotes } from '../services/db/notes/addNotes'
-import { updateNote } from '../services/db/notes/updateNote'
+import { updateNote } from '../services/db/notes/updateNotes'
 
 export default function Notes() {
     //? contexts
@@ -24,6 +24,7 @@ export default function Notes() {
     const [selectedNote, setSelectedNote] = useState<any>(null)
     const [notes, setNotes] = useState<notesColumnData[]>([])
 
+    console.log(notes)
     //? functions
     const refetchNotes = () => {
         setIsDataFetching(true)

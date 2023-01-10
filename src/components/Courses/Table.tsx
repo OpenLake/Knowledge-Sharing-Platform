@@ -6,6 +6,9 @@ import { Player } from '@lottiefiles/react-lottie-player'
 import { useAuth } from '../../contexts/auth'
 import { coursesColumnData } from '../../types/coursesColumnData'
 import { deleteCourse } from '../../services/db/courses/deleteCourse'
+import { UpvoteButton } from '../Common/UpvoteButton'
+import { upvoteCourse } from '../../services/db/courses/upvoteCourse'
+import { removeCourseUpvote } from '../../services/db/courses/removeCourseUpvote'
 
 export const Table: FC<{
     courses: coursesColumnData[]
@@ -24,6 +27,24 @@ export const Table: FC<{
                         <div className="h-2.5 bg-gray-200 w-24"></div>
                     ) : (
                         row.value
+                    ),
+            },
+            {
+                Header: 'Upvotes',
+                accessor: 'upvotes',
+                Cell: (row: any) =>
+                    isDataFetching ? (
+                        <div className="h-2.5 bg-gray-200 w-24"></div>
+                    ) : (
+                        row.value && (
+                            <UpvoteButton
+                                id={row.row.original.id}
+                                users={row.value.users}
+                                upvotesCount={row.value.count}
+                                removeUpvoteHandler={removeCourseUpvote}
+                                upvoteHandler={upvoteCourse}
+                            />
+                        )
                     ),
             },
             {
@@ -98,7 +119,12 @@ export const Table: FC<{
                   courses?.map((course: any, index) => {
                       return {
                           sno: `${index + 1}.`,
+                          id: course.id,
                           title: course.title,
+                          upvotes: {
+                              count: course._count.upvotes,
+                              users: course.upvotes,
+                          },
                           courseCode: course.code,
                           uploadedBy: course.created_by.name,
                           anonymous: course.anonymous,

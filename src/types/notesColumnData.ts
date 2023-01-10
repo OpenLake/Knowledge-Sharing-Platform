@@ -1,5 +1,6 @@
 export interface notesColumnData {
     sno: string
+    upvotes: string
     title: string
     subjectCode: string
     subjectName: string
