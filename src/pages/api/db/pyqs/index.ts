@@ -28,6 +28,16 @@ export default async function pyqHandler(
                                 name: true,
                             },
                         },
+                        upvotes: {
+                            select: {
+                                user_id: true,
+                            },
+                        },
+                        _count: {
+                            select: {
+                                upvotes: true,
+                            },
+                        },
                     },
                 })
                 res.status(200).json({

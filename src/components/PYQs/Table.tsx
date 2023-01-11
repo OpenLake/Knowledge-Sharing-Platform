@@ -7,6 +7,9 @@ import { Player } from '@lottiefiles/react-lottie-player'
 import { useAuth } from '../../contexts/auth'
 import { pyqsColumnData } from '../../types/pyqsColumnData'
 import { deletePyq } from '../../services/db/pyqs/deletePyq'
+import { UpvoteButton } from '../Common/UpvoteButton'
+import { removePyqUpvote } from '../../services/db/pyqs/removePyqUpvote'
+import { upvotePyq } from '../../services/db/pyqs/upvotePyq'
 
 export const Table: FC<{
     pyqs: pyqsColumnData[]
@@ -25,6 +28,24 @@ export const Table: FC<{
                         <div className="h-2.5 bg-gray-200 w-24"></div>
                     ) : (
                         row.value
+                    ),
+            },
+            {
+                Header: 'Upvotes',
+                accessor: 'upvotes',
+                Cell: (row: any) =>
+                    isDataFetching ? (
+                        <div className="h-2.5 bg-gray-200 w-24"></div>
+                    ) : (
+                        row.value && (
+                            <UpvoteButton
+                                id={row.row.original.id}
+                                users={row.value.users}
+                                upvotesCount={row.value.count}
+                                removeUpvoteHandler={removePyqUpvote}
+                                upvoteHandler={upvotePyq}
+                            />
+                        )
                     ),
             },
             {
@@ -156,7 +177,12 @@ export const Table: FC<{
                   pyqs.map((pyq: any, index) => {
                       return {
                           sno: `${index + 1}.`,
+                          id: pyq.id,
                           title: pyq.title,
+                          upvotes: {
+                              count: pyq._count.upvotes,
+                              users: pyq.upvotes,
+                          },
                           subjectCode: pyq.subject_code,
                           subjectName: pyq.subject.name,
                           url: pyq.url,

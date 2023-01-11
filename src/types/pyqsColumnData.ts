@@ -1,5 +1,6 @@
 export interface pyqsColumnData {
     sno: string
+    upvotes: number
     title: string
     subjectCode: string
     subjectName: string
