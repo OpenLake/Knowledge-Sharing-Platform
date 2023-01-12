@@ -106,7 +106,7 @@ export default function Notes() {
                         <span className="">Add Notes</span>
                     </button>
                 </div>
-                <div className="col-span-5 flex w-full h-fit overflow-x-auto">
+                <div className="col-span-5 flex w-full h-fit">
                     <Table
                         notes={notes}
                         setSelectedNote={setSelectedNote}
