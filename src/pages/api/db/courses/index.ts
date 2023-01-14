@@ -37,10 +37,20 @@ export default async function coursesHandler(
                                             name: true,
                                         },
                                     },
+                                    upvotes: {
+                                        select: {
+                                            user_id: true,
+                                        },
+                                    },
                                     anonymous: true,
                                     user_id: true,
                                     rating: true,
                                     id: true,
+                                    _count: {
+                                        select: {
+                                            upvotes: true,
+                                        },
+                                    },
                                 },
                             },
                             created_by: {
@@ -100,7 +110,10 @@ export default async function coursesHandler(
                     const { title, code, instructorId, isAnonymous } = body
                     const course = await prisma.course.findUnique({
                         where: {
-                            code: code,
+                            instructor_id_code: {
+                                code: code,
+                                instructor_id: instructorId,
+                            },
                         },
                     })
 

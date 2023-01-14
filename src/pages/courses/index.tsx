@@ -27,6 +27,7 @@ export default function Courses() {
         useState<boolean>(false)
     const [selectedCourse, setSelectedCourse] = useState<any>(null)
     const [courses, setCourses] = useState<coursesColumnData[]>([])
+    const [searchInput, setSearchInput] = useState<string>('')
 
     //? functions
     const refetchCourses = () => {
@@ -91,7 +92,7 @@ export default function Courses() {
                 />
             </Head>
             <div className="grid grid-cols-5 gap-0 justify-center py-48 px-5 md:px-14 space-y-8 min-h-screen">
-                <div className="col-span-5 flex flex-row items-center justify-between">
+                <div className="col-span-5 flex flex-row items-center gap-4 justify-between">
                     <h3 className="font-bold text-xl md:text-3xl">Courses</h3>
                     <button
                         disabled={loading}
@@ -108,6 +109,45 @@ export default function Courses() {
                         <BsPlus className="h-8 w-8" />
                         <span className="">Add Course</span>
                     </button>
+                </div>
+                <div className="flex col-span-5 w-full px-2 py-3">
+                    <label
+                        htmlFor="search"
+                        className="mb-2 text-sm font-medium text-gray-900 sr-only"
+                    >
+                        Search
+                    </label>
+                    <div className="relative w-full">
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <svg
+                                aria-hidden="true"
+                                className="w-5 h-5 text-primary"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                ></path>
+                            </svg>
+                        </div>
+                        <input
+                            value={searchInput}
+                            onChange={(e) => {
+                                setSearchInput(e.target.value)
+                            }}
+                            type="search"
+                            id="search"
+                            className="w-full font-medium text-base pl-12 pr-2 py-2 md:pr-4 md:py-4 text-gray-700 outline-none ring-2 ring-primary/40 focus:border-none rounded-md bg-primary/5 focus:bg-primary/10 focus:ring-primary placeholder:font-medium placeholder:text-gray-600"
+                            placeholder={`Search ${
+                                courses && courses.length
+                            } records...`}
+                        />
+                    </div>
                 </div>
                 <div className="col-span-5 flex flex-wrap md:justify-start justify-center gap-8 h-fit w-full">
                     {isDataFetching ? (
@@ -133,72 +173,76 @@ export default function Courses() {
                                 )
                             })
                     ) : courses.length ? (
-                        courses.map((course: any) => {
-                            return (
-                                <div
-                                    onClick={() =>
-                                        router.push('/courses/' + course.id)
-                                    }
-                                    className="cursor-pointer group bg-primary/5 shadow-md hover:shadow-xl duration-150 transition-all p-6 w-full md:w-auto rounded-md flex flex-col gap-3"
-                                    key={course.id}
-                                >
-                                    <div className="flex gap-7 items-center justify-between">
-                                        <p className="font-semibold text-primary group-hover:underline duration-150 transition-all text-xl">
-                                            {course.title}
-                                        </p>
-                                        {user &&
-                                            user.user_id ===
-                                                course.created_by_id && (
-                                                <div className="flex items-center gap-1">
-                                                    <button
-                                                        className="p-2 rounded-full hover:bg-gray-200 duration-150"
-                                                        onClick={(e) =>
-                                                            setSelectedCourse(
-                                                                course
-                                                            )
-                                                        }
-                                                    >
-                                                        <BsPencilSquare className="h-5 w-5 text-primary" />
-                                                    </button>
-                                                    <button
-                                                        className="p-2 rounded-full hover:bg-gray-200 duration-150"
-                                                        onClick={(e) => {
-                                                            deleteCourse(
-                                                                course.id,
-                                                                refetchCourses
-                                                            )
-                                                        }}
-                                                    >
-                                                        <RiDeleteBin6Line className="h-5 w-5 text-red-500" />
-                                                    </button>
-                                                </div>
-                                            )}
+                        courses
+                            .filter((course: any) => {
+                                const regex = new RegExp(searchInput, 'i')
+                                console.log(regex)
+
+                                if (course.title.match(regex)) return true
+                                else return false
+                            })
+                            .map((course: any) => {
+                                return (
+                                    <div
+                                        onClick={() =>
+                                            router.push('/courses/' + course.id)
+                                        }
+                                        className="cursor-pointer group bg-primary/5 shadow-md hover:shadow-xl duration-150 transition-all p-6 w-full md:w-[20rem] rounded-md flex flex-col gap-3"
+                                        key={course.id}
+                                    >
+                                        <div className="flex gap-7 items-center justify-between">
+                                            <p className="font-semibold text-primary group-hover:underline duration-150 transition-all text-xl">
+                                                {course.title}
+                                            </p>
+                                            {user &&
+                                                user.user_id ===
+                                                    course.created_by_id && (
+                                                    <div className="flex items-center gap-1">
+                                                        <button
+                                                            className="p-2 rounded-full hover:bg-gray-200 duration-150"
+                                                            onClick={(e) =>
+                                                                setSelectedCourse(
+                                                                    course
+                                                                )
+                                                            }
+                                                        >
+                                                            <BsPencilSquare className="h-5 w-5 text-primary" />
+                                                        </button>
+                                                        <button
+                                                            className="p-2 rounded-full hover:bg-gray-200 duration-150"
+                                                            onClick={(e) => {
+                                                                deleteCourse(
+                                                                    course.id,
+                                                                    refetchCourses
+                                                                )
+                                                            }}
+                                                        >
+                                                            <RiDeleteBin6Line className="h-5 w-5 text-red-500" />
+                                                        </button>
+                                                    </div>
+                                                )}
+                                        </div>
+                                        <div className="flex gap-2 items-center">
+                                            <p className="font-semibold">
+                                                Course Code:
+                                            </p>
+                                            <p>{course.code}</p>
+                                        </div>
+                                        <div className="flex gap-2 items-center">
+                                            <p className="font-semibold">
+                                                Instructor:
+                                            </p>
+                                            <p>{course.instructor.name}</p>
+                                        </div>
+                                        <div className="flex gap-2 items-center">
+                                            <p className="font-semibold">
+                                                Total Reviews:
+                                            </p>
+                                            <p>{course._count.reviews}</p>
+                                        </div>
                                     </div>
-                                    <div className="flex gap-2 items-center">
-                                        <p className="font-semibold">
-                                            Instructor:
-                                        </p>
-                                        <p>{course.instructor.name}</p>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                        <p className="font-semibold">
-                                            Created By:
-                                        </p>
-                                        {course.anonymous ? (
-                                            <p>Anonymous</p>
-                                        ) : (
-                                            <p>{course.created_by.name}</p>
-                                        )}
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                        <p className="font-semibold">
-                                            Reviews:
-                                        </p>
-                                        <p>{course._count.reviews}</p>
-                                    </div>
-                                </div>
-                            )
-                        })
+                                )
+                            })
                     ) : (
                         <div className="col-span-5 pt-24 w-full flex flex-col items-center justify-center">
                             <Player

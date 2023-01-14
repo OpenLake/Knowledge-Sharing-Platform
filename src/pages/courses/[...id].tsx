@@ -14,6 +14,9 @@ import { RiDeleteBin6Line } from 'react-icons/ri'
 import { TiTick } from 'react-icons/ti'
 import { deleteCourseReview } from '../../services/db/courses/courseReview/deleteCourseReview'
 import { Player } from '@lottiefiles/react-lottie-player'
+import { UpvoteButton } from '../../components/Common/UpvoteButton'
+import { removeCourseReviewUpvote } from '../../services/db/courses/courseReview/courseReviewUpvote/removeUpvote'
+import { upvoteCourseReview } from '../../services/db/courses/courseReview/courseReviewUpvote/upvote'
 
 const Course: NextPage = ({}) => {
     //? router
@@ -33,6 +36,9 @@ const Course: NextPage = ({}) => {
     const { user, loading }: any = useAuth()
 
     const sortReviews = (reviews: Array<any>) => {
+        reviews.sort((reviewA: any, reviewB: any) =>
+            reviewA.upvotes.length > reviewB.upvotes.length ? -1 : 1
+        )
         if (user) {
             const userReviews = reviews.filter(
                 (review) => user.user_id === review.user_id
@@ -123,7 +129,7 @@ const Course: NextPage = ({}) => {
                     />
                 )}
                 <div className="grid grid-cols-5 gap-0 justify-center py-48 px-5 md:px-14 space-y-8 min-h-screen">
-                    <div className="col-span-5 flex flex-row items-center justify-between">
+                    <div className="col-span-5 flex flex-wrap items-center justify-center gap-4 md:justify-between">
                         <div className="flex items-center gap-4">
                             <h3 className="font-bold text-gray-600 text-xl md:text-3xl">
                                 Course:
@@ -139,7 +145,9 @@ const Course: NextPage = ({}) => {
                                 className="flex items-center space-x-2 px-2 py-1 duration-200 transition-all rounded-md shadow-md bg-primary text-white font-semibold disabled:bg-primary/70 disabled:cursor-not-allowed"
                             >
                                 <TiTick className="h-8 w-8" />
-                                <span className="">Already Reviewed</span>
+                                <span className="text-sm md:text-base">
+                                    Already Reviewed
+                                </span>
                             </button>
                         ) : (
                             <button
@@ -158,14 +166,16 @@ const Course: NextPage = ({}) => {
                                 className="flex items-center space-x-2 px-2 py-1 duration-200 transition-all rounded-md shadow-md hover:shadow-xl bg-primary text-white font-semibold disabled:bg-primary/70 disabled:cursor-wait"
                             >
                                 <BsPlus className="h-8 w-8" />
-                                <span className="">Add Review</span>
+                                <span className="text-sm md:text-base">
+                                    Add Review
+                                </span>
                             </button>
                         )}
                     </div>
                     <h2 className="font-semibold text-lg md:text-2xl">
                         Reviews
                     </h2>
-                    <div className="col-span-5 flex flex-wrap gap-8 h-fit w-full">
+                    <div className="col-span-5 flex flex-wrap justify-evenly gap-6 w-full">
                         {isDataFetching ? (
                             Array(8)
                                 .fill({})
@@ -192,56 +202,59 @@ const Course: NextPage = ({}) => {
                             sortReviews(reviews).map((review: any) => {
                                 return (
                                     <div
-                                        className="shadow-xl min-w-[20rem] duration-150 transition-all p-6 rounded-md flex flex-col space-y-3"
+                                        className="shadow-xl w-[20rem] duration-150 transition-all p-6 rounded-md flex flex-col justify-between space-y-3"
                                         key={review.id}
                                     >
-                                        <div className="flex gap-6 justify-between">
-                                            <ReactStars
-                                                count={5}
-                                                edit={false}
-                                                value={review.rating}
-                                                size={30}
-                                                color2={'#ffd700'}
-                                            />
-                                            {user &&
-                                                user.user_id ===
-                                                    review.user_id && (
-                                                    <div className="flex items-center gap-1">
-                                                        <button
-                                                            className="p-2 rounded-full hover:bg-gray-200 duration-150"
-                                                            onClick={(e) =>
-                                                                setSelectedCourseReview(
-                                                                    review
-                                                                )
-                                                            }
-                                                        >
-                                                            <BsPencilSquare className="h-5 w-5 text-primary" />
-                                                        </button>
-                                                        <button
-                                                            className="p-2 rounded-full hover:bg-gray-200 duration-150"
-                                                            onClick={(e) => {
-                                                                deleteCourseReview(
-                                                                    {
-                                                                        id: review.id,
-                                                                        refetch:
-                                                                            refetchReviews,
-                                                                    }
-                                                                )
-                                                            }}
-                                                        >
-                                                            <RiDeleteBin6Line className="h-5 w-5 text-red-500" />
-                                                        </button>
-                                                    </div>
-                                                )}
-                                        </div>
-                                        <div className="flex justify-between items-end gap-3 w-full">
-                                            <div className="flex flex-col gap-2">
+                                        <div className="flex flex-col gap-4">
+                                            <div className="flex gap-6 justify-between">
+                                                <ReactStars
+                                                    count={5}
+                                                    edit={false}
+                                                    value={review.rating}
+                                                    size={30}
+                                                    color2={'#ffd700'}
+                                                />
+                                                {user &&
+                                                    user.user_id ===
+                                                        review.user_id && (
+                                                        <div className="flex items-center gap-1">
+                                                            <button
+                                                                className="p-2 rounded-full hover:bg-gray-200 duration-150"
+                                                                onClick={(e) =>
+                                                                    setSelectedCourseReview(
+                                                                        review
+                                                                    )
+                                                                }
+                                                            >
+                                                                <BsPencilSquare className="h-5 w-5 text-primary" />
+                                                            </button>
+                                                            <button
+                                                                className="p-2 rounded-full hover:bg-gray-200 duration-150"
+                                                                onClick={(
+                                                                    e
+                                                                ) => {
+                                                                    deleteCourseReview(
+                                                                        {
+                                                                            id: review.id,
+                                                                            refetch:
+                                                                                refetchReviews,
+                                                                        }
+                                                                    )
+                                                                }}
+                                                            >
+                                                                <RiDeleteBin6Line className="h-5 w-5 text-red-500" />
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                            </div>
+                                            <div className="flex flex-col gap-3 w-full">
                                                 <p className="font-semibold">
                                                     Review:
                                                 </p>
                                                 <p>{review.comment}</p>
                                             </div>
-
+                                        </div>
+                                        <div className="flex justify-between w-full">
                                             {review.anonymous ? (
                                                 <p className="font-semibold text-gray-600 italic whitespace-nowrap">
                                                     ~ Anonymous
@@ -251,6 +264,19 @@ const Course: NextPage = ({}) => {
                                                     ~ {review.user.name}
                                                 </p>
                                             )}
+                                            <UpvoteButton
+                                                id={review.id}
+                                                users={review.upvotes}
+                                                upvotesCount={
+                                                    review._count.upvotes
+                                                }
+                                                removeUpvoteHandler={
+                                                    removeCourseReviewUpvote
+                                                }
+                                                upvoteHandler={
+                                                    upvoteCourseReview
+                                                }
+                                            />
                                         </div>
                                     </div>
                                 )
