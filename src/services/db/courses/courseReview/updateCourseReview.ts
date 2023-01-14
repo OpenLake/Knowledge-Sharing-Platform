@@ -1,30 +1,29 @@
 import { toast } from 'react-hot-toast'
-import { api } from '../../../utils/api'
+import { api } from '../../../../utils/api'
 
 interface Props {
-    title: string
-    code: string
-    instructorId: number
+    id: number
+    comment: string
+    rating: number
     isAnonymous: boolean
     refetch: Function
 }
 
-export const addCourse = ({
-    title,
-    code,
-    instructorId,
+export const updateCourseReview = ({
+    id,
+    comment,
+    rating,
     isAnonymous,
     refetch,
 }: Props) => {
     toast.promise(
-        api.post('/api/db/courses', {
-            title,
-            code,
-            instructorId,
+        api.put('/api/db/courses/review?id=' + id, {
+            comment,
             isAnonymous,
+            rating,
         }),
         {
-            loading: 'Adding...',
+            loading: 'Loading...',
             success: (res) => {
                 refetch()
                 return `${res.data.message}`

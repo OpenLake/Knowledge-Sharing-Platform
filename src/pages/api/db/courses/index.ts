@@ -12,29 +12,79 @@ export default async function coursesHandler(
     switch (method) {
         case 'GET':
             try {
-                const courses = await prisma.course.findMany({
-                    include: {
-                        created_by: {
-                            select: {
-                                name: true,
+                if (query.id) {
+                    const course = await prisma.course.findUnique({
+                        where: {
+                            id: parseInt(query.id as string),
+                        },
+                        select: {
+                            id: true,
+                            title: true,
+                            code: true,
+                            anonymous: true,
+                            instructor_id: true,
+                            created_by_id: true,
+                            _count: {
+                                select: {
+                                    reviews: true,
+                                },
+                            },
+                            reviews: {
+                                select: {
+                                    comment: true,
+                                    user: {
+                                        select: {
+                                            name: true,
+                                        },
+                                    },
+                                    anonymous: true,
+                                    user_id: true,
+                                    rating: true,
+                                    id: true,
+                                },
+                            },
+                            created_by: {
+                                select: {
+                                    name: true,
+                                },
+                            },
+                            instructor: {
+                                select: {
+                                    name: true,
+                                },
                             },
                         },
-                        upvotes: {
-                            select: {
-                                user_id: true,
+                    })
+
+                    res.status(200).json({
+                        message: 'Course Fetched',
+                        result: course,
+                    })
+                } else {
+                    const courses = await prisma.course.findMany({
+                        include: {
+                            created_by: {
+                                select: {
+                                    name: true,
+                                },
+                            },
+                            instructor: {
+                                select: {
+                                    name: true,
+                                },
+                            },
+                            _count: {
+                                select: {
+                                    reviews: true,
+                                },
                             },
                         },
-                        _count: {
-                            select: {
-                                upvotes: true,
-                            },
-                        },
-                    },
-                })
-                res.status(200).json({
-                    message: 'Courses Fetched',
-                    result: courses,
-                })
+                    })
+                    res.status(200).json({
+                        message: 'Courses Fetched',
+                        result: courses,
+                    })
+                }
             } catch (err: any) {
                 res.status(404).json({
                     message: err,
@@ -47,7 +97,7 @@ export default async function coursesHandler(
                 const user = await adminAuth.verifyIdToken(accessToken!)
 
                 if (user) {
-                    const { title, code, isAnonymous } = body
+                    const { title, code, instructorId, isAnonymous } = body
                     const course = await prisma.course.findUnique({
                         where: {
                             code: code,
@@ -64,6 +114,7 @@ export default async function coursesHandler(
                                 data: {
                                     title: title,
                                     code: code,
+                                    instructor_id: instructorId,
                                     anonymous: isAnonymous,
                                     created_by_id: user.user_id,
                                 },
@@ -96,7 +147,7 @@ export default async function coursesHandler(
 
                 if (user) {
                     const { id } = query
-                    const { title, code, isAnonymous } = body
+                    const { title, code, instructorId, isAnonymous } = body
 
                     try {
                         await prisma.course.update({
@@ -106,6 +157,7 @@ export default async function coursesHandler(
                             data: {
                                 title: title,
                                 code: code,
+                                instructor_id: instructorId,
                                 anonymous: isAnonymous,
                             },
                         })

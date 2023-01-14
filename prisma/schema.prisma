@@ -17,7 +17,7 @@ model user {
   pyqs           pyq[]
   instructors    instructor[]
   note_upvotes   note_upvote[]
-  course_upvotes course_upvote[]
+  course_reviews course_review[]
   pyq_upvotes    pyq_upvote[]
 }
 
@@ -42,6 +42,7 @@ model instructor {
   updated_at    DateTime @updatedAt
   notes         note[]
   pyqs          pyq[]
+  course        course[]
 }
 
 model note {
@@ -75,21 +76,26 @@ model note_upvote {
 model course {
   id            Int             @id @unique @default(autoincrement())
   title         String          @db.VarChar(255)
+  instructor    instructor      @relation(fields: [instructor_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  instructor_id Int
   code          String          @unique @db.VarChar(100)
   anonymous     Boolean
   created_by    user            @relation(fields: [created_by_id], references: [user_id], onDelete: Restrict)
   created_by_id String
   created_at    DateTime        @default(now())
   updated_at    DateTime        @updatedAt
-  upvotes       course_upvote[]
+  reviews       course_review[]
 }
 
-model course_upvote {
-  id        Int    @id @unique @default(autoincrement())
-  user      user   @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: Cascade)
+model course_review {
+  id        Int     @id @unique @default(autoincrement())
+  user      user    @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: Cascade)
   user_id   String
-  course    course @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  course    course  @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   course_id Int
+  rating    Float   @default(0.0)
+  comment   String
+  anonymous Boolean
 
   @@unique([user_id, course_id])
 }

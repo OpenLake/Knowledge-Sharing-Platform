@@ -24,7 +24,6 @@ export default function Notes() {
     const [selectedNote, setSelectedNote] = useState<any>(null)
     const [notes, setNotes] = useState<notesColumnData[]>([])
 
-    console.log(notes)
     //? functions
     const refetchNotes = () => {
         setIsDataFetching(true)

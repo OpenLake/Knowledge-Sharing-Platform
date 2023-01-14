@@ -2,6 +2,9 @@ import React, { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { ModalContainer } from '../Common/ModalContainer'
 import { Input } from '../Common/Input'
+import { SelectInput } from '../Common/SelectInput'
+import { getInstructors } from '../../services/db/instructors/getInstructors'
+import { addInstructor } from '../../services/db/instructors/addInstructor'
 
 export const Modal: FC<{
     isUpdateModal?: boolean
@@ -27,23 +30,54 @@ export const Modal: FC<{
     const [title, setTitle] = useState<string>('')
     const [code, setCode] = useState<string>('')
     const [isAnonymous, setIsAnonymous] = useState<boolean>(false)
+    const [instructors, setInstructors] = useState<any[]>([])
+
+    const [instructorNameInput, setInstructorNameInput] = useState<string>('')
+    const [selectedInstructorId, setSelectedInstructorId] = useState<number>(0)
+    const [showInstructorNameDropdown, setShowInstructorNameDropdown] =
+        useState<boolean>(false)
+    const [selectedInstructorName, setSelectedInstructorName] =
+        useState<string>('')
 
     //? functions
     const actionHandler = async (e: any) => {
         e.preventDefault()
-        if (title === '' || code === '') {
+        if (
+            title === '' ||
+            code === '' ||
+            (selectedInstructorId === 0 && selectedInstructorName === '')
+        ) {
             toast.error('Please fill all the details!')
         } else {
             setIsLoading(true)
-            await actionFunction({
-                id: isUpdateModal ? selectedEntity.id : null,
-                title: title,
-                code: code,
-                isAnonymous: isAnonymous,
-                refetch: refetch,
-            })
+            if (
+                !instructors.find(
+                    (instructor) => instructor.name === selectedInstructorName
+                )
+            ) {
+                const instructor = await addInstructor(selectedInstructorName)
+                await actionFunction({
+                    id: isUpdateModal ? selectedEntity.id : null,
+                    title: title,
+                    code: code,
+                    instructorId: instructor.id,
+                    isAnonymous: isAnonymous,
+                    refetch: refetch,
+                })
+            } else {
+                await actionFunction({
+                    id: isUpdateModal ? selectedEntity.id : null,
+                    title: title,
+                    code: code,
+                    instructorId: selectedInstructorId,
+                    isAnonymous: isAnonymous,
+                    refetch: refetch,
+                })
+            }
             setTitle('')
             setCode('')
+            setSelectedInstructorName('')
+            setSelectedInstructorId(0)
             setIsAnonymous(false)
             setShowModal(false)
             setIsLoading(false)
@@ -55,6 +89,7 @@ export const Modal: FC<{
         if (selectedEntity) {
             setTitle(selectedEntity.title)
             setCode(selectedEntity.code)
+            setSelectedInstructorName(selectedEntity.instructor.name)
             setIsAnonymous(selectedEntity.anonymous)
         }
     }, [selectedEntity])
@@ -70,6 +105,17 @@ export const Modal: FC<{
         return () =>
             document.removeEventListener('keydown', keyPressHandler, false)
     }, [setShowModal])
+
+    useEffect(() => {
+        getInstructors().then((res) => setInstructors(res))
+    }, [])
+
+    useEffect(() => {
+        instructors.map((instructor) => {
+            if (instructor.name === selectedInstructorName)
+                setSelectedInstructorId(instructor.id)
+        })
+    }, [selectedInstructorName, instructors])
 
     return (
         <ModalContainer
@@ -88,7 +134,7 @@ export const Modal: FC<{
                     }
                     type={'text'}
                 />
-
+                {/* Code */}
                 <Input
                     inputTitle="Code"
                     value={code}
@@ -97,6 +143,23 @@ export const Modal: FC<{
                     type={'text'}
                 />
 
+                {/* Instructor */}
+                {/* Instructor */}
+                <SelectInput
+                    dropdownItems={instructors}
+                    dropdownKey={'name'}
+                    dropdownValue={'name'}
+                    inputName={'instructor'}
+                    inputTitle={'Instructor'}
+                    placeholder={'e.g. Dr. R.S. Sharma'}
+                    selectedValue={selectedInstructorName}
+                    setSelectedValue={setSelectedInstructorName}
+                    inputValue={instructorNameInput}
+                    setInputValue={setInstructorNameInput}
+                    showDropdown={showInstructorNameDropdown}
+                    setShowDropdown={setShowInstructorNameDropdown}
+                    type={'text'}
+                />
                 {/* Anonymous */}
                 <div className="flex flex-col space-y-1">
                     <span className="font-semibold">
