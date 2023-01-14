@@ -6,7 +6,8 @@
         "dev": "next dev",
         "build": "next build",
         "start": "next start",
-        "lint": "next lint"
+        "lint": "next lint",
+        "postinstall": "npx prisma generate"
     },
     "dependencies": {
         "@lottiefiles/react-lottie-player": "^3.5.0",
