@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { adminAuth } from '../../../../utils/firebaseAdminInit'
 import { prisma } from '../../../../utils/prismaClientInit'
 
-export default async function courseUpvoteHandler(
+export default async function courseReviewUpvoteHandler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
@@ -17,11 +17,11 @@ export default async function courseUpvoteHandler(
                 if (user) {
                     try {
                         const { user_id } = user
-                        const { course_id } = body
+                        const { course_review_id } = body
 
-                        await prisma.course_upvote.create({
+                        await prisma.course_review_upvote.create({
                             data: {
-                                course_id,
+                                course_review_id,
                                 user_id,
                             },
                         })
@@ -56,15 +56,15 @@ export default async function courseUpvoteHandler(
                         const { user_id } = user
                         const { id } = query
 
-                        await prisma.course_upvote.deleteMany({
+                        await prisma.course_review_upvote.deleteMany({
                             where: {
+                                course_review_id: parseInt(id as string),
                                 user_id,
-                                course_id: parseInt(id as string),
                             },
                         })
 
                         res.status(200).json({
-                            message: 'Upvote Removed',
+                            message: 'Removed Upvote',
                         })
                     } catch (err: any) {
                         console.log(err)
@@ -83,9 +83,5 @@ export default async function courseUpvoteHandler(
                 })
             }
             break
-        default:
-            res.status(405).json({
-                message: 'Method Not Allowed',
-            })
     }
 }

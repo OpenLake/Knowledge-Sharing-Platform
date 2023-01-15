@@ -13,7 +13,7 @@ export const ModalContainer: FC<{
                 !showModal && 'hidden'
             } flex justify-center items-center fixed top-0 left-0 right-0 z-50 w-full bg-black/50 overflow-x-hidden overflow-y-auto h-full`}
         >
-            <div className="relative w-full pt-32 md:pt-48 px-5 h-full max-w-2xl md:h-auto">
+            <div className="relative w-full h-full mt-16 flex flex-col justify-center max-w-2xl md:h-auto">
                 <div className="relative bg-white rounded-lg shadow">
                     <div className="flex items-start justify-between p-4 border-b rounded-t">
                         <h3 className="text-xl font-semibold text-gray-900">
