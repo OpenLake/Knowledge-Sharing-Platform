@@ -103,7 +103,7 @@ export default function Courses() {
                         <span className="">Add Course</span>
                     </button>
                 </div>
-                <div className="col-span-5 flex w-full h-fit overflow-x-auto">
+                <div className="col-span-5 flex h-fit w-full">
                     <Table
                         courses={courses}
                         refetchCourses={refetchCourses}
