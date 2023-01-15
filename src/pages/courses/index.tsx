@@ -184,7 +184,7 @@ export default function Courses() {
                             .map((course: any) => {
                                 return (
                                     <div
-                                        className="cursor-pointer bg-primary/5 shadow-xl duration-150 transition-all p-6 w-full md:w-[20rem] rounded-md flex flex-col gap-3"
+                                        className=" bg-primary/5 shadow-xl duration-150 transition-all p-6 w-full md:w-[20rem] rounded-md flex flex-col gap-3"
                                         key={course.id}
                                     >
                                         <div className="flex gap-7 items-center justify-between">
@@ -194,7 +194,7 @@ export default function Courses() {
                                                         '/courses/' + course.id
                                                     )
                                                 }
-                                                className="font-semibold text-primary hover:underline duration-150 transition-all text-xl"
+                                                className="font-semibold cursor-pointer text-primary hover:underline duration-150 transition-all text-xl"
                                             >
                                                 {course.title}
                                             </p>
