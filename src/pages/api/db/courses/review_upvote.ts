@@ -58,7 +58,7 @@ export default async function courseReviewUpvoteHandler(
 
                         await prisma.course_review_upvote.deleteMany({
                             where: {
-                                id: parseInt(id as string),
+                                course_review_id: parseInt(id as string),
                                 user_id,
                             },
                         })

@@ -184,14 +184,18 @@ export default function Courses() {
                             .map((course: any) => {
                                 return (
                                     <div
-                                        onClick={() =>
-                                            router.push('/courses/' + course.id)
-                                        }
-                                        className="cursor-pointer group bg-primary/5 shadow-md hover:shadow-xl duration-150 transition-all p-6 w-full md:w-[20rem] rounded-md flex flex-col gap-3"
+                                        className="cursor-pointer bg-primary/5 shadow-xl duration-150 transition-all p-6 w-full md:w-[20rem] rounded-md flex flex-col gap-3"
                                         key={course.id}
                                     >
                                         <div className="flex gap-7 items-center justify-between">
-                                            <p className="font-semibold text-primary group-hover:underline duration-150 transition-all text-xl">
+                                            <p
+                                                onClick={() =>
+                                                    router.push(
+                                                        '/courses/' + course.id
+                                                    )
+                                                }
+                                                className="font-semibold text-primary hover:underline duration-150 transition-all text-xl"
+                                            >
                                                 {course.title}
                                             </p>
                                             {user &&

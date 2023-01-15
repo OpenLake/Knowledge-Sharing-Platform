@@ -35,6 +35,7 @@ const Course: NextPage = ({}) => {
     //? contexts
     const { user, loading }: any = useAuth()
 
+    //? functions
     const sortReviews = (reviews: Array<any>) => {
         reviews.sort((reviewA: any, reviewB: any) =>
             reviewA.upvotes.length > reviewB.upvotes.length ? -1 : 1
@@ -62,6 +63,7 @@ const Course: NextPage = ({}) => {
         }
     }
 
+    //? effects
     useEffect(() => {
         setIsDataFetching(true)
         if (router.query.id) {
