@@ -13,6 +13,79 @@ import { useRouter } from 'next/router'
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import { deleteCourse } from '../../services/db/courses/deleteCourse'
 
+const dummyCourses = [
+    {
+      sno: '1.',
+      upvotes: 10,
+      title: 'Quantum Computing',
+      code: 'CS555',
+      created_by_id: 1,
+      instructor: {name :'Mr.Himan'},
+      reviews: [
+        {
+          id: 1,
+          rating: 4,
+          comment: 'This is a dummy review.',
+          upvotes: [],
+          anonymous: false,
+          user: {
+            name: 'Dummy User',
+          },
+        },
+        {
+            id: 2,
+            rating: 1,
+            comment: 'Galti se bhi mat lena',
+            upvotes: [],
+            anonymous: false,
+            user: {
+              name: 'MOONLIGHT',
+            },
+          },
+      ],
+      actions: (
+        <div>
+          <button>Edit</button>
+          <button>Delete</button>
+        </div>
+      ),
+    },
+    {
+        sno: '2.',
+        upvotes: 5,
+        title: 'Web Development Advanced',
+        code: 'WD102',
+        created_by_id: 2,
+        instructor: { name: 'Mrs. Advanced' },
+        reviews: [
+          {
+            id: 3,
+            rating: 5,
+            comment: 'Excellent content!',
+            upvotes: [],
+            anonymous: false,
+            user: {
+              name: 'Advanced User',
+            },
+          },
+          {
+            id: 4,
+            rating: 3,
+            comment: 'Needs improvement',
+            upvotes: [],
+            anonymous: true,
+            user: null,
+          },
+        ],
+        actions: (
+          <div>
+            <button>Edit</button>
+            <button>Delete</button>
+          </div>
+        ),}
+    // Add more dummy courses as needed
+  ];
+
 export default function Courses() {
     //? router
     const router = useRouter()
@@ -30,6 +103,9 @@ export default function Courses() {
     const [searchInput, setSearchInput] = useState<string>('')
 
     //? functions
+
+    
+      
     const refetchCourses = () => {
         setIsDataFetching(true)
         getCourses().then((res) => {
@@ -40,12 +116,13 @@ export default function Courses() {
 
     //? effects
     useEffect(() => {
-        setIsDataFetching(true)
-        getCourses().then((res) => {
-            setCourses(res)
-            setIsDataFetching(false)
-        })
-    }, [])
+        setIsDataFetching(true);
+        // getCourses().then((res) => {
+        //   setCourses(res);
+        setCourses(dummyCourses); // Use dummy data instead
+        setIsDataFetching(false);
+        // });
+      }, []);
 
     useEffect(() => {
         if (selectedCourse) setShowUpdateCourseModal(true)
@@ -191,7 +268,7 @@ export default function Courses() {
                                             <p
                                                 onClick={() =>
                                                     router.push(
-                                                        '/courses/' + course.id
+                                                        '/courses/' + course.sno
                                                     )
                                                 }
                                                 className="font-semibold cursor-pointer text-primary hover:underline duration-150 transition-all text-xl"
@@ -242,7 +319,7 @@ export default function Courses() {
                                             <p className="font-semibold">
                                                 Total Reviews:
                                             </p>
-                                            <p>{course._count.reviews}</p>
+                                            <p>{course.reviews.length}</p>
                                         </div>
                                     </div>
                                 )

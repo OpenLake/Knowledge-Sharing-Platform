@@ -25,6 +25,48 @@ import { removeNotesUpvote } from '../../services/db/notes/removeNotesUpvote'
 import { upvoteNotes } from '../../services/db/notes/upvoteNotes'
 import { IoMdArrowDropdown, IoMdArrowDropup } from 'react-icons/io'
 import { GlobalFilter } from '../Common/GlobalFilter'
+const dummyNotesData: notesColumnData[] = [
+    {
+      sno: '1.',
+      upvotes: {
+        count: 10,
+        users: [
+            { user_id: 'user1' },
+            { user_id: 'user2' }
+        ],
+    },
+      title: 'Introduction to React',
+      subjectCode: 'CS101',
+      subjectName: 'Web Development',
+      url: 'https://example.com/notes/react-intro',
+      semester: 'Semester 3',
+      instructor: 'Dr. Smith',
+      branch: 'Computer Science',
+      uploadedBy: 'User 1',
+      actions: <button onClick={() => console.log('Edit')}>Edit</button>,
+    },
+    {
+      sno: '2.',
+      upvotes: {
+        count: 10,
+        users: [
+            { user_id: 'user1' },
+            { user_id: 'user2' }
+        ],
+    },
+      title: 'Data Structures Basics',
+      subjectCode: 'CS201',
+      subjectName: 'Algorithms and Data Structures',
+      url: 'https://example.com/notes/data-structures',
+      semester: 'Semester 4',
+      instructor: 'Prof. Johnson',
+      branch: 'Computer Science',
+      uploadedBy: 'User 2',
+      actions: <button onClick={() => console.log('Edit')}>Edit</button>,
+    },
+    // Add more dummy data as needed
+  ];
+  
 
 export const Table: FC<{
     notes: notesColumnData[]
@@ -306,28 +348,28 @@ export const Table: FC<{
         () =>
             isDataFetching
                 ? Array(8).fill({})
-                : notes &&
-                  notes.map((note: any, index) => {
+                : dummyNotesData &&
+                dummyNotesData.map((note: any, index) => {
                       return {
                           sno: `${index + 1}.`,
                           id: note.id,
                           upvotes: {
-                              count: note._count.upvotes,
-                              users: note.upvotes,
+                              count: note.upvotes.count,
+                              users: note.upvotes.users,
                           },
                           title: note.title,
-                          subjectCode: note.subject_code,
-                          subjectName: note.subject.name,
+                          subjectCode: note.subjectCode,
+                          subjectName: note.subjectName,
                           url: note.url,
                           semester: note.semester,
-                          instructor: note.instructor.name,
+                          instructor: note.instructor,
                           branch: note.branch,
-                          uploadedBy: note.created_by.name,
+                          uploadedBy: note.uploadedBy,
                           anonymous: note.anonymous,
                           actions: note,
                       }
                   }),
-        [isDataFetching, notes]
+        [isDataFetching, dummyNotesData]
     )
 
     const {
@@ -354,7 +396,7 @@ export const Table: FC<{
         }
     }, [loading, setHiddenColumns, user])
 
-    return isDataFetching || notes.length ? (
+    return isDataFetching || dummyNotesData.length ? (
         <div className="flex flex-col space-y-2 w-full">
             <GlobalFilter
                 preGlobalFilteredRows={preGlobalFilteredRows}

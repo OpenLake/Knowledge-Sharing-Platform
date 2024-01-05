@@ -22,10 +22,12 @@ export const UpvoteButton: FC<{
     }, [upvotesCount])
 
     useEffect(() => {
-        users.find((user: any) => currentUser?.user_id === user.user_id)
-            ? setIsUpvoted(true)
-            : setIsUpvoted(false)
-    }, [users, currentUser])
+        if (Array.isArray(users)) {
+            users.find((user: any) => currentUser?.user_id === user.user_id)
+                ? setIsUpvoted(true)
+                : setIsUpvoted(false);
+        }
+    }, [users, currentUser]);
 
     return (
         <div className="flex space-x-1 items-center justify-center">
