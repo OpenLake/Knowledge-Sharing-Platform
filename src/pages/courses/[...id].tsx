@@ -18,6 +18,104 @@ import { UpvoteButton } from '../../components/Common/UpvoteButton'
 import { removeCourseReviewUpvote } from '../../services/db/courses/courseReview/courseReviewUpvote/removeUpvote'
 import { upvoteCourseReview } from '../../services/db/courses/courseReview/courseReviewUpvote/upvote'
 
+const dummyCourse = {
+    id: 1,
+    sno: '1.',
+    upvotes: 10,
+    title: 'Quantum Computing',
+    code: 'CS555',
+    uploadedBy: 'John Doe',
+    instructor: 'Mr.Dhiman',
+    reviews: [
+      {
+        user_id: 1,
+        rating: 4,
+        comment: 'This is a dummy review.',
+        upvotes: [
+                { user_id: "3" },
+                { user_id: "2" },
+                { user_id: "1" },
+            ],
+        anonymous: false,
+        user: {
+          name: 'Dummy User',
+        },
+      },
+      {
+        user_id: 2,
+        rating: 1,
+        comment: 'Galti se bhi mat lena',
+        upvotes: [
+            { user_id: "3" },
+            { user_id: "2" },
+            { user_id: "1" },
+        ],
+        anonymous: false,
+        user: {
+          name: 'MOONLIGHT',
+        },
+      },
+      {
+        user_id: 3,
+        rating: 1,
+        comment: 'Best Course Eva',
+        upvotes: [],
+        anonymous: false,
+        user: {
+          name: 'MOONLIGHT',
+        },
+      },
+    ],
+  };
+  
+  const dummyCourse2 = {
+    id: 2,
+    sno: '2.',
+    upvotes: 5,
+    title: 'Web Development Advanced',
+    code: 'WD102',
+    uploadedBy: 'Jane Doe',
+    instructor: 'Mrs. Advanced',
+    reviews: [
+      {
+        user_id: 4,
+        rating: 5,
+        comment: 'Excellent content!',
+        upvotes: [
+            { user_id: "3" },
+            { user_id: "2" },
+        ],
+        anonymous: false,
+        user: {
+          name: 'Advanced User',
+        },
+      },
+      {
+        user_id: 5,
+        rating: 3,
+        comment: 'Needs improvement',
+        upvotes: [],
+        anonymous: true,
+        user: null,
+      },
+      {
+        user_id: 6,
+        rating: 4,
+        comment: 'Very informative',
+        upvotes: [
+            { user_id: "3" },
+            { user_id: "2" },
+            { user_id: "1" },
+        ],
+        anonymous: false,
+        user: {
+          name: 'InfoSeeker',
+        },
+      },
+    ],
+  };
+  
+
 const Course: NextPage = ({}) => {
     //? router
     const router = useRouter()
@@ -51,13 +149,14 @@ const Course: NextPage = ({}) => {
             return [...userReviews, ...restReviews]
         } else return reviews
     }
+    
 
     const refetchReviews = () => {
         setIsDataFetching(true)
         if (router.query.id) {
             const id = parseInt(router.query.id[0])
             getCourseById({ id }).then((res) => {
-                setReviews(res.reviews)
+                setReviews(dummyCourse.reviews)
                 setIsDataFetching(false)
             })
         }
@@ -65,16 +164,19 @@ const Course: NextPage = ({}) => {
 
     //? effects
     useEffect(() => {
-        setIsDataFetching(true)
+        setIsDataFetching(true);
         if (router.query.id) {
-            const id = parseInt(router.query.id[0])
-            getCourseById({ id }).then((res) => {
-                setCourse(res)
-                setReviews(res.reviews)
-                setIsDataFetching(false)
-            })
+          const id = parseInt(router.query.id[0]);
+          if (id === 1) {
+            setCourse(dummyCourse);
+            setReviews(dummyCourse.reviews);
+          } else if (id === 2) {
+            setCourse(dummyCourse2);
+            setReviews(dummyCourse2.reviews);
+          }
+          setIsDataFetching(false);
         }
-    }, [router])
+      }, [router]);
 
     useEffect(() => {
         if (selectedCourseReview) setShowUpdateReviewModal(true)
@@ -269,9 +371,7 @@ const Course: NextPage = ({}) => {
                                             <UpvoteButton
                                                 id={review.id}
                                                 users={review.upvotes}
-                                                upvotesCount={
-                                                    review._count.upvotes
-                                                }
+                                                upvotesCount={review.upvotes.length} 
                                                 removeUpvoteHandler={
                                                     removeCourseReviewUpvote
                                                 }

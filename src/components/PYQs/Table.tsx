@@ -19,6 +19,48 @@ import { upvotePyq } from '../../services/db/pyqs/upvotePyq'
 import { IoMdArrowDropdown, IoMdArrowDropup } from 'react-icons/io'
 import { GlobalFilter } from '../Common/GlobalFilter'
 
+const dummyPyqsData: pyqsColumnData[] = [
+    {
+        sno: '1.',
+        upvotes: {
+            count: 10,
+            users: [
+                { user_id: 'user1' },
+                { user_id: 'user2' }
+            ],
+        },
+        title: 'Sample Title 1',
+        subjectCode: 'SC001',
+        subjectName: 'Sample Subject 1',
+        url: 'https://example.com/sample1',
+        semester: 'Semester 1',
+        instructor: 'Instructor 1',
+        branch: 'Branch 1',
+        uploadedBy: 'User 1',
+        actions: <button onClick={() => console.log('Edit')}>Edit</button>,
+    },
+    {
+        sno: '2.',
+        upvotes: {
+            count: 5,
+            users: [
+                { user_id: 'user3' },
+                { user_id: 'user4' }
+            ],
+        },
+        title: 'Sample Title 2',
+        subjectCode: 'SC002',
+        subjectName: 'Sample Subject 2',
+        url: 'https://example.com/sample2',
+        semester: 'Semester 2',
+        instructor: 'Instructor 2',
+        branch: 'Branch 2',
+        uploadedBy: 'User 2',
+        actions: <button onClick={() => console.log('Edit')}>Edit</button>,
+    },
+];
+
+
 export const Table: FC<{
     pyqs: pyqsColumnData[]
     setSelectedPYQ: Dispatch<SetStateAction<any>>
@@ -299,29 +341,33 @@ export const Table: FC<{
         () =>
             isDataFetching
                 ? Array(8).fill({})
-                : pyqs &&
-                  pyqs.map((pyq: any, index) => {
+                : dummyPyqsData
+                ? dummyPyqsData.map((pyq: any, index) => {
                       return {
                           sno: `${index + 1}.`,
                           id: pyq.id,
                           title: pyq.title,
                           upvotes: {
-                              count: pyq._count.upvotes,
+                              count:  // Replace this with a static value or your logic
+                                  pyq.upvotes ? pyq.upvotes.length : 0, // For example, counting the length of upvotes array
                               users: pyq.upvotes,
                           },
-                          subjectCode: pyq.subject_code,
-                          subjectName: pyq.subject.name,
+                          subjectCode: pyq.subjectCode,
+                          subjectName: pyq.subjectName ? pyq.subjectName : '',
                           url: pyq.url,
                           semester: pyq.semester,
-                          instructor: pyq.instructor.name,
+                          instructor: pyq.instructor ? pyq.instructor: '',
                           branch: pyq.branch,
-                          uploadedBy: pyq.created_by.name,
+                          uploadedBy: pyq.created_by ? pyq.uploadedBy : '',
                           anonymous: pyq.anonymous,
                           actions: pyq,
-                      }
-                  }),
-        [isDataFetching, pyqs]
-    )
+                      };
+                  })
+                : [],
+        [isDataFetching, dummyPyqsData]
+    );
+    
+    
 
     const {
         getTableProps,
@@ -347,7 +393,7 @@ export const Table: FC<{
         }
     }, [loading, setHiddenColumns, user])
 
-    return isDataFetching || pyqs.length ? (
+    return isDataFetching || dummyPyqsData.length ? (
         <div className="flex flex-col space-y-2 w-full">
             <GlobalFilter
                 preGlobalFilteredRows={preGlobalFilteredRows}
