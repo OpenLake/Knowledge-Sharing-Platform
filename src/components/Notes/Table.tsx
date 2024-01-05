@@ -305,9 +305,8 @@ export const Table: FC<{
     const data = useMemo(
         () =>
             isDataFetching
-                ? Array(8).fill({})
-                : notes &&
-                  notes.map((note: any, index) => {
+            ? Array(8).fill({})
+            : (notes || []).map((note: any, index) => {
                       return {
                           sno: `${index + 1}.`,
                           id: note.id,
@@ -341,7 +340,7 @@ export const Table: FC<{
         prepareRow,
         preGlobalFilteredRows,
         setGlobalFilter,
-    } = useTable({ columns, data }, useFilters, useGlobalFilter, useSortBy)
+    } = useTable({ columns, data:data || [] }, useFilters, useGlobalFilter, useSortBy)
 
     //? effects
     useEffect(() => {
@@ -354,7 +353,7 @@ export const Table: FC<{
         }
     }, [loading, setHiddenColumns, user])
 
-    return isDataFetching || notes.length ? (
+    return isDataFetching || (notes && notes.length) ? (
         <div className="flex flex-col space-y-2 w-full">
             <GlobalFilter
                 preGlobalFilteredRows={preGlobalFilteredRows}
@@ -434,12 +433,12 @@ export const Table: FC<{
         </div>
     ) : (
         <div className="col-span-5 pt-24 w-full flex flex-col items-center justify-center">
-            <Player
+            {/* <Player
                 autoplay={true}
                 loop={true}
                 className="h-56 w-56"
                 src="https://assets7.lottiefiles.com/packages/lf20_ttvteyvs.json"
-            />
+            /> */}
             <span className="font-bold text-2xl text-gray-700">
                 No Records Found
             </span>

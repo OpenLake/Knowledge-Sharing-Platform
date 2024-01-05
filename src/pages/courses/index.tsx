@@ -172,7 +172,7 @@ export default function Courses() {
                                     </div>
                                 )
                             })
-                    ) : courses.length ? (
+                    ) : (courses && courses.length) ? (
                         courses
                             .filter((course: any) => {
                                 const regex = new RegExp(searchInput, 'i')
@@ -249,12 +249,12 @@ export default function Courses() {
                             })
                     ) : (
                         <div className="col-span-5 pt-24 w-full flex flex-col items-center justify-center">
-                            <Player
+                            {/* <Player
                                 autoplay={true}
                                 loop={true}
                                 className="h-56 w-56"
                                 src="https://assets7.lottiefiles.com/packages/lf20_ttvteyvs.json"
-                            />
+                            /> */}
                             <span className="font-bold text-2xl text-gray-700">
                                 No Records Found
                             </span>
