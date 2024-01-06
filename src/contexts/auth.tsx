@@ -83,10 +83,10 @@ export const AuthProvider = ({ children }: any) => {
                     setPhotoURL(picture)
                     setDisplayName(name)
                 }
-            } catch (err: any) {
-                if (err.response.data.err.code === 'auth/id-token-expired') {
-                    cookies.remove('accessToken')
-                    setUser(null)
+            } catch (err:any) {
+                if (err.response && err.response.data && err.response.data.err && err.response.data.err.code === 'auth/id-token-expired') {
+                    cookies.remove('accessToken');
+                    setUser(null);
                     delete api.defaults.headers.Authorization
                 }
             }

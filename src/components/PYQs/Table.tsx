@@ -298,9 +298,8 @@ export const Table: FC<{
     const data = useMemo(
         () =>
             isDataFetching
-                ? Array(8).fill({})
-                : pyqs &&
-                  pyqs.map((pyq: any, index) => {
+            ? Array(8).fill({})
+            : (pyqs || []).map((pyq: any, index) => {
                       return {
                           sno: `${index + 1}.`,
                           id: pyq.id,
@@ -347,7 +346,7 @@ export const Table: FC<{
         }
     }, [loading, setHiddenColumns, user])
 
-    return isDataFetching || pyqs.length ? (
+    return isDataFetching || (pyqs && pyqs.length) ? (
         <div className="flex flex-col space-y-2 w-full">
             <GlobalFilter
                 preGlobalFilteredRows={preGlobalFilteredRows}

@@ -172,7 +172,7 @@ export default function Courses() {
                                     </div>
                                 )
                             })
-                    ) : courses.length ? (
+                    ) : (courses && courses.length) ? (
                         courses
                             .filter((course: any) => {
                                 const regex = new RegExp(searchInput, 'i')
