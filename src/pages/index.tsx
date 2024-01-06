@@ -32,11 +32,11 @@ export default function Home() {
                     </p>
                 </div>
                 <div className="col-span-5 md:col-span-2">
-                    {/* <Player
+                    <Player
                         autoplay={true}
                         loop={true}
                         src="https://assets8.lottiefiles.com/private_files/lf30_kmlipp9j.json"
-                    /> */}
+                    />
                 </div>
             </div>
             <div className="col-span-5 p-5 md:p-10 grid grid-cols-5 items-center space-y-6 md:space-y-10">
