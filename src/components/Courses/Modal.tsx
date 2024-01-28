@@ -31,7 +31,6 @@ export const Modal: FC<{
     const [code, setCode] = useState<string>('')
     const [isAnonymous, setIsAnonymous] = useState<boolean>(false)
     const [instructors, setInstructors] = useState<any[]>([])
-
     const [instructorNameInput, setInstructorNameInput] = useState<string>('')
     const [selectedInstructorId, setSelectedInstructorId] = useState<number>(0)
     const [showInstructorNameDropdown, setShowInstructorNameDropdown] =
@@ -45,22 +44,23 @@ export const Modal: FC<{
         if (
             title === '' ||
             code === '' ||
-            (selectedInstructorId === 0 && selectedInstructorName === '')
+            ( selectedInstructorName === '')
         ) {
             toast.error('Please fill all the details!')
         } else {
             setIsLoading(true)
             if (
                 !instructors.find(
-                    (instructor) => instructor.name === selectedInstructorName
+                    (instructor) => instructor.instructorName === selectedInstructorName
                 )
             ) {
+                
                 const instructor = await addInstructor(selectedInstructorName)
                 await actionFunction({
                     id: isUpdateModal ? selectedEntity.id : null,
                     title: title,
                     code: code,
-                    instructorId: instructor.id,
+                    instructorName: selectedInstructorName,
                     isAnonymous: isAnonymous,
                     refetch: refetch,
                 })
@@ -69,7 +69,7 @@ export const Modal: FC<{
                     id: isUpdateModal ? selectedEntity.id : null,
                     title: title,
                     code: code,
-                    instructorId: selectedInstructorId,
+                    instructorName:selectedInstructorName,
                     isAnonymous: isAnonymous,
                     refetch: refetch,
                 })
@@ -83,13 +83,12 @@ export const Modal: FC<{
             setIsLoading(false)
         }
     }
-
     //? effects
     useEffect(() => {
         if (selectedEntity) {
             setTitle(selectedEntity.title)
             setCode(selectedEntity.code)
-            setSelectedInstructorName(selectedEntity.instructor.name)
+            setSelectedInstructorName(selectedEntity.instructor.instructorName)
             setIsAnonymous(selectedEntity.anonymous)
         }
     }, [selectedEntity])
@@ -112,7 +111,7 @@ export const Modal: FC<{
 
     useEffect(() => {
         instructors.map((instructor) => {
-            if (instructor.name === selectedInstructorName)
+            if (instructor.instructorName === selectedInstructorName)
                 setSelectedInstructorId(instructor.id)
         })
     }, [selectedInstructorName, instructors])
@@ -143,7 +142,6 @@ export const Modal: FC<{
                     type={'text'}
                 />
 
-                {/* Instructor */}
                 {/* Instructor */}
                 <SelectInput
                     dropdownItems={instructors}

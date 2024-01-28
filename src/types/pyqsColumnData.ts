@@ -6,7 +6,7 @@ export interface pyqsColumnData {
     subjectName: string
     url: string
     semester: string
-    instructor: string
+    instructorName: string
     branch: string
     uploadedBy: string
     actions: JSX.Element

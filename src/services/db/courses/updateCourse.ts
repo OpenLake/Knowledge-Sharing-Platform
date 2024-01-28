@@ -20,7 +20,7 @@ export const updateCourse = ({
         api.put('/api/db/courses?id=' + id, {
             title,
             code,
-            isAnonymous,
+            anonymous:isAnonymous,
         }),
         {
             loading: 'Updating...',

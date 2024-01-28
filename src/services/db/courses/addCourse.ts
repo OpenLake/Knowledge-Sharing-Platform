@@ -4,7 +4,7 @@ import { api } from '../../../utils/api'
 interface Props {
     title: string
     code: string
-    instructorId: number
+    instructorName:string
     isAnonymous: boolean
     refetch: Function
 }
@@ -12,7 +12,7 @@ interface Props {
 export const addCourse = ({
     title,
     code,
-    instructorId,
+    instructorName,
     isAnonymous,
     refetch,
 }: Props) => {
@@ -20,7 +20,7 @@ export const addCourse = ({
         api.post('/api/db/courses', {
             title,
             code,
-            instructorId,
+            instructorName,
             isAnonymous,
         }),
         {

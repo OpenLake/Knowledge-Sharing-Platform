@@ -6,7 +6,7 @@ import { ModalContainer } from '../../Common/ModalContainer'
 export const Modal: FC<{
     isUpdateModal?: boolean
     header: string
-    courseId: number
+    code: string
     actionButtonText: string
     actionFunction: Function
     showModal: boolean
@@ -15,7 +15,6 @@ export const Modal: FC<{
     selectedEntity?: any
 }> = ({
     header,
-    courseId,
     refetch,
     showModal,
     actionButtonText,
@@ -29,6 +28,7 @@ export const Modal: FC<{
     const [comment, setComment] = useState<string>('')
     const [rating, setRating] = useState<number>(0)
     const [isAnonymous, setIsAnonymous] = useState<boolean>(false)
+    const [code, setCode] = useState<string>('')
 
     //? functions
     const actionHandler = async (e: any) => {
@@ -38,8 +38,8 @@ export const Modal: FC<{
         } else {
             setIsLoading(true)
             actionFunction({
-                id: isUpdateModal ? selectedEntity.id : null,
-                courseId,
+                id: isUpdateModal ? selectedEntity.code : null,
+                code,
                 comment,
                 rating,
                 isAnonymous,
@@ -50,6 +50,7 @@ export const Modal: FC<{
             setIsAnonymous(false)
             setShowModal(false)
             setIsLoading(false)
+            setCode('')
         }
     }
 
@@ -60,11 +61,19 @@ export const Modal: FC<{
     //? effects
     useEffect(() => {
         if (selectedEntity) {
-            setComment(selectedEntity.comment)
-            setRating(selectedEntity.rating)
-            setIsAnonymous(selectedEntity.anonymous)
+            setComment(selectedEntity.comment);
+            setRating(selectedEntity.rating);
+            setIsAnonymous(selectedEntity.anonymous);
+            const urlPath = window.location.pathname;
+            const lastWord = urlPath.split('/').pop();
+            setCode(lastWord || ''); 
+        } else {
+            const urlPath = window.location.pathname;
+            const lastWord = urlPath.split('/').pop();
+            setCode(lastWord || ''); 
         }
-    }, [selectedEntity])
+    }, [selectedEntity]);
+
 
     useEffect(() => {
         const keyPressHandler = (event: any) => {

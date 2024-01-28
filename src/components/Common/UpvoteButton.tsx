@@ -22,7 +22,7 @@ export const UpvoteButton: FC<{
     }, [upvotesCount])
 
     useEffect(() => {
-        users.find((user: any) => currentUser?.user_id === user.user_id)
+        users?.find((user: any) => currentUser?.user_id === user.user_id)
             ? setIsUpvoted(true)
             : setIsUpvoted(false)
     }, [users, currentUser])

@@ -54,9 +54,9 @@ const Course: NextPage = ({}) => {
 
     const refetchReviews = () => {
         setIsDataFetching(true)
-        if (router.query.id) {
-            const id = parseInt(router.query.id[0])
-            getCourseById({ id }).then((res) => {
+        if (router.query.code) {
+            const code = (router.query.code[0])
+            getCourseById({ code }).then((res) => {
                 setReviews(res.reviews)
                 setIsDataFetching(false)
             })
@@ -66,9 +66,9 @@ const Course: NextPage = ({}) => {
     //? effects
     useEffect(() => {
         setIsDataFetching(true)
-        if (router.query.id) {
-            const id = parseInt(router.query.id[0])
-            getCourseById({ id }).then((res) => {
+        if (router.query.code) {
+            const code = (router.query.code[0])
+            getCourseById({ code }).then((res) => {
                 setCourse(res)
                 setReviews(res.reviews)
                 setIsDataFetching(false)
@@ -82,11 +82,19 @@ const Course: NextPage = ({}) => {
     }, [selectedCourseReview])
 
     useEffect(() => {
-        if (user && reviews)
-            reviews.find((review) => user.user_id === review.user_id)
-                ? setAlreadyReviewed(true)
-                : setAlreadyReviewed(false)
-    }, [reviews, user])
+        if (user && reviews) {
+          if (Array.isArray(reviews)) {
+            const userHasReviewed = reviews.find((review: any) => user.user_id === review.user_id);
+            setAlreadyReviewed(!!userHasReviewed);
+          } else if (typeof reviews === 'object' && reviews !== null) {
+            const reviewKeys = Object.keys(reviews);
+            const userHasReviewed = reviewKeys.some((key) => reviews[key].user_id === user.user_id);
+            setAlreadyReviewed(userHasReviewed);
+          }
+        }
+      }, [reviews, user]);
+      
+      
 
     return (
         course && (
@@ -111,7 +119,7 @@ const Course: NextPage = ({}) => {
                         header="Add Review"
                         actionButtonText="Add Review"
                         actionFunction={addCourseReview}
-                        courseId={course.id}
+                        code={course.code}
                         refetch={refetchReviews}
                         showModal={showAddReviewModal}
                         setShowModal={setShowAddReviewModal}
@@ -122,7 +130,7 @@ const Course: NextPage = ({}) => {
                         header="Update Review"
                         actionButtonText="Update Review"
                         isUpdateModal={true}
-                        courseId={course.id}
+                        code={course.code}
                         selectedEntity={selectedCourseReview}
                         actionFunction={updateCourseReview}
                         refetch={refetchReviews}
@@ -200,8 +208,8 @@ const Course: NextPage = ({}) => {
                                         </div>
                                     )
                                 })
-                        ) : reviews.length ? (
-                            sortReviews(reviews).map((review: any) => {
+                        ) : reviews && typeof reviews === 'object' && Object.keys(reviews).length ? (
+                            Object.values(reviews).map((review: any) => {
                                 return (
                                     <div
                                         className="shadow-xl w-[20rem] duration-150 transition-all p-6 rounded-md flex flex-col justify-between space-y-3"
@@ -237,7 +245,7 @@ const Course: NextPage = ({}) => {
                                                                 ) => {
                                                                     deleteCourseReview(
                                                                         {
-                                                                            id: review.id,
+                                                                            code: review.id,
                                                                             refetch:
                                                                                 refetchReviews,
                                                                         }
@@ -263,14 +271,14 @@ const Course: NextPage = ({}) => {
                                                 </p>
                                             ) : (
                                                 <p className="font-semibold text-gray-600 italic whitespace-nowrap">
-                                                    ~ {review.user.name}
+                                                    ~ {review.name}
                                                 </p>
                                             )}
                                             <UpvoteButton
                                                 id={review.id}
                                                 users={review.upvotes}
                                                 upvotesCount={
-                                                    review._count.upvotes
+                                                    review._count?.upvotes
                                                 }
                                                 removeUpvoteHandler={
                                                     removeCourseReviewUpvote

@@ -1,231 +1,197 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { adminAuth } from '../../../../utils/firebaseAdminInit'
-import { prisma } from '../../../../utils/prismaClientInit'
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { adminAuth } from '../../../../utils/firebaseAdminInit';
+import { firestore } from '../../../../utils/firebaseInit';
+import { collection, query as query1, getDocs, addDoc, setDoc, deleteDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore';
+
+const pyqsCollection = 'pyqs';
 
 export default async function pyqHandler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
-    const { method, headers, body, query } = req
+    const { method, headers, body, query } = req;
 
     switch (method) {
         case 'GET':
             try {
-                const pyqs = await prisma.pyq.findMany({
-                    include: {
-                        instructor: {
-                            select: {
-                                name: true,
-                            },
-                        },
-                        subject: {
-                            select: {
-                                name: true,
-                            },
-                        },
-                        created_by: {
-                            select: {
-                                name: true,
-                            },
-                        },
-                        upvotes: {
-                            select: {
-                                user_id: true,
-                            },
-                        },
-                        _count: {
-                            select: {
-                                upvotes: true,
-                            },
-                        },
-                    },
-                })
+                const pyqsQuery = query1(collection(firestore, pyqsCollection));
+                const pyqsSnapshot = await getDocs(pyqsQuery);
+                const pyqs = pyqsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
                 res.status(200).json({
                     message: 'PYQs Fetched',
                     result: pyqs,
-                })
+                });
             } catch (err: any) {
-                console.log(err)
+                console.error(err);
                 res.status(405).json({
                     err,
-                })
+                });
             }
-            break
+            break;
 
         case 'POST':
-            if (headers && headers.authorization) {
-                const accessToken = headers.authorization.split(' ')[1]
-                const user = await adminAuth.verifyIdToken(accessToken!)
+        if (headers && headers.authorization) {
+            const accessToken = headers.authorization.split(' ')[1];
+            const user = await adminAuth.verifyIdToken(accessToken!);
 
-                if (user) {
-                    const {
-                        title,
-                        subjectCode,
-                        semester,
-                        branch,
-                        instructorId,
-                        url,
-                        isAnonymous,
-                    } = body
+        if (user) {
 
-                    try {
-                        await prisma.pyq.create({
-                            data: {
-                                title,
-                                subject_code: subjectCode,
-                                branch,
-                                semester,
-                                instructor_id: parseInt(instructorId),
-                                url,
-                                anonymous: isAnonymous,
-                                created_by_id: user.user_id,
-                            },
-                        })
-                        res.status(201).json({
-                            message: 'PYQ Created',
-                        })
-                    } catch (err: any) {
-                        console.log(err)
-                        res.status(405).json({
-                            err,
-                        })
-                    }
-                } else {
-                    res.status(401).json({
-                        message: 'Unauthorized Access',
-                    })
-                }
-            } else {
-                res.status(401).json({
-                    message: 'Unauthorized Access',
-                })
+            const {
+                title,
+                subjectCode,
+                semester,
+                instructorName,
+                subjectName,
+                uploadedBy,
+                branch,
+                url,
+                isAnonymous,
+            } = body;
+
+            try {
+                const pyqRef = await addDoc(collection(firestore, pyqsCollection), {
+                    title,
+                    subject_code:subjectCode,
+                    semester,
+                    branch,
+                    instructorName,
+                    subjectName,
+                    uploadedBy,
+                    url,
+                    anonymous: isAnonymous,
+                    created_by_id: user.user_id,
+                    timestamp: serverTimestamp(),
+                }); 
+
+                res.status(201).json({
+                    message: 'PYQ Created',
+                    id: pyqRef.id,
+                });
+            } catch (err: any) {
+                console.error(err);
+                res.status(405).json({
+                    err,
+                });
             }
-            break
+        } else {
+            res.status(401).json({
+                message: 'Unauthorized Access',
+            });
+        }
+    } else {
+        res.status(401).json({
+            message: 'Unauthorized Access',
+        });
+    }
+    break;
 
+            
         case 'PUT':
             if (headers && headers.authorization) {
-                const accessToken = headers.authorization.split(' ')[1]
-                const user = await adminAuth.verifyIdToken(accessToken!)
+                const accessToken = headers.authorization.split(' ')[1];
+                const user = await adminAuth.verifyIdToken(accessToken!);
 
                 if (user) {
                     try {
-                        const { id } = query
+                        const { id } = query;
+                        const pyqRef = doc(firestore, pyqsCollection, id as string);
+                        const pyqSnapshot = await getDoc(pyqRef);
+                        const pyqData = pyqSnapshot.data();
 
-                        const {
-                            title,
-                            subjectCode,
-                            semester,
-                            branch,
-                            instructorId,
-                            url,
-                            isAnonymous,
-                        } = body
-                        const pyqs = await prisma.pyq.findUnique({
-                            where: {
-                                id: parseInt(id as string),
-                            },
-                        })
-
-                        if (pyqs) {
-                            if (user.user_id === pyqs.created_by_id) {
-                                await prisma.pyq.update({
-                                    where: {
-                                        id: parseInt(id as string),
-                                    },
-                                    data: {
-                                        title,
-                                        subject_code: subjectCode,
-                                        branch,
-                                        semester,
-                                        instructor_id: instructorId,
-                                        url,
-                                        anonymous: isAnonymous,
-                                        created_by_id: user.user_id,
-                                    },
-                                })
+                        if (pyqData) {
+                            if (user.user_id === pyqData.created_by_id) {
+                                await setDoc(pyqRef, {
+                                    title: body.title,
+                                    subject_code: body.subjectCode,
+                                    semester: body.semester,
+                                    branch: body.branch,
+                                    instructorName:body.instructorName,
+                                    url: body.url,
+                                    subjectName:body.subjectName,
+                                    uploadedBy:body.uploadedBy,
+                                    anonymous: body.isAnonymous,
+                                    created_by_id: user.user_id,
+                                    timestamp: serverTimestamp(),
+                                });
 
                                 res.status(200).json({
                                     message: 'PYQ Updated',
-                                })
+                                });
                             } else {
                                 res.status(405).json({
                                     message: 'Unauthorized Access',
-                                })
+                                });
                             }
                         } else {
                             res.status(404).json({
                                 message: 'No PYQ Found',
-                            })
+                            });
                         }
                     } catch (err: any) {
-                        console.log(err)
+                        console.error(err);
                         res.status(405).json({
                             err,
-                        })
+                        });
                     }
                 }
             } else {
                 res.status(401).json({
                     message: 'Unauthorized Access',
-                })
+                });
             }
-            break
+            break;
+
         case 'DELETE':
             if (headers && headers.authorization) {
-                const accessToken = headers.authorization.split(' ')[1]
-                const user = await adminAuth.verifyIdToken(accessToken!)
+                const accessToken = headers.authorization.split(' ')[1];
+                const user = await adminAuth.verifyIdToken(accessToken!);
 
                 if (user) {
                     try {
-                        const { id } = query
+                        const { id } = query;
+                        const pyqRef = doc(firestore, pyqsCollection, id as string);
+                        const pyqSnapshot = await getDoc(pyqRef);
+                        const pyqData = pyqSnapshot.data();
 
-                        const pyqs = await prisma.pyq.findUnique({
-                            where: {
-                                id: parseInt(id as string),
-                            },
-                        })
-
-                        if (pyqs) {
-                            if (user.user_id === pyqs.created_by_id) {
-                                await prisma.pyq.delete({
-                                    where: {
-                                        id: parseInt(id as string),
-                                    },
-                                })
+                        if (pyqData) {
+                            if (user.user_id === pyqData.created_by_id) {
+                                await deleteDoc(pyqRef);
 
                                 res.status(200).json({
                                     message: 'PYQ Deleted Successfully',
-                                })
+                                });
                             } else {
                                 res.status(405).json({
                                     message: 'Unauthorized Access',
-                                })
+                                });
                             }
                         } else {
                             res.status(404).json({
                                 message: 'No PYQ Found',
-                            })
+                            });
                         }
                     } catch (err: any) {
-                        console.log(err)
+                        console.error(err);
                         res.status(405).json({
                             err,
-                        })
+                        });
                     }
                 } else {
                     res.status(401).json({
                         message: 'Unauthorized Access',
-                    })
+                    });
                 }
             } else {
                 res.status(401).json({
                     message: 'Unauthorized Access',
-                })
+                });
             }
-            break
+            break;
+
         default:
             res.status(405).json({
                 message: 'Method Not Allowed',
-            })
+            });
     }
 }
