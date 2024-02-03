@@ -147,12 +147,13 @@ export const Table: FC<{
                     )
                 },
                 accessor: 'subjectName',
-                Cell: (row: any) =>
-                    isDataFetching ? (
+                Cell: (row: any) =>{
+                    return isDataFetching ? (
                         <div className="h-2.5 bg-gray-200 w-24"></div>
                     ) : (
-                        row.value
-                    ),
+                        <span>{row.value}</span>
+                    );
+                    }
             },
             {
                 Header: 'URL',
@@ -216,13 +217,16 @@ export const Table: FC<{
                         </div>
                     )
                 },
-                accessor: 'instructor',
-                Cell: (row: any) =>
-                    isDataFetching ? (
+                accessor: 'instructorName',
+                Cell: (row: any) => {
+                    const instructorName = row.value
+                    return isDataFetching ? (
                         <div className="h-2.5 bg-gray-200 w-24"></div>
                     ) : (
-                        row.value
-                    ),
+                        <span>{instructorName}</span>
+                    );
+                },
+                
             },
             {
                 Header: (header: any) => {
@@ -253,14 +257,15 @@ export const Table: FC<{
                 Header: 'Uploaded By',
                 accessor: 'uploadedBy',
                 disableSortBy: true,
-                Cell: (row: any) =>
-                    isDataFetching ? (
+                Cell: (row: any) =>{
+                    return isDataFetching ? (
                         <div className="h-2.5 bg-gray-200 w-24"></div>
                     ) : row.row.original.anonymous ? (
                         'Anonymous'
                     ) : (
                         <span className="whitespace-nowrap">{row.value}</span>
-                    ),
+                    );
+                    }
             },
             {
                 Header: 'Actions',
@@ -306,16 +311,16 @@ export const Table: FC<{
                           id: pyq.id,
                           title: pyq.title,
                           upvotes: {
-                              count: pyq._count.upvotes,
+                              count: pyq._count?.upvotes,
                               users: pyq.upvotes,
                           },
                           subjectCode: pyq.subject_code,
-                          subjectName: pyq.subject.name,
+                          subjectName: pyq.subjectName,
                           url: pyq.url,
                           semester: pyq.semester,
-                          instructor: pyq.instructor.name,
+                          instructorName: pyq.instructorName,
                           branch: pyq.branch,
-                          uploadedBy: pyq.created_by.name,
+                          uploadedBy: pyq.uploadedBy,
                           anonymous: pyq.anonymous,
                           actions: pyq,
                       }

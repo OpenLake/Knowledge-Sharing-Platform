@@ -1,10 +1,8 @@
 import Head from 'next/head'
 import { toast } from 'react-hot-toast'
 import { useEffect, useState } from 'react'
-
 import { useAuth } from '../contexts/auth'
 import { Modal } from '../components/Common/Modal'
-
 import { BsPlus } from 'react-icons/bs'
 import { Table } from '../components/Notes/Table'
 import { notesColumnData } from '../types/notesColumnData'
@@ -13,10 +11,8 @@ import { addNotes } from '../services/db/notes/addNotes'
 import { updateNote } from '../services/db/notes/updateNotes'
 
 export default function Notes() {
-    //? contexts
     const { user, loading }: any = useAuth()
 
-    //? states
     const [isDataFetching, setIsDataFetching] = useState<boolean>(false)
     const [showAddNoteModal, setShowAddNoteModal] = useState<boolean>(false)
     const [showUpdateNoteModal, setShowUpdateNoteModal] =

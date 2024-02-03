@@ -1,47 +1,44 @@
-import { useAuth } from '../contexts/auth'
-import { useEffect, useMemo, useState } from 'react'
-import Head from 'next/head'
-import { BsPlus } from 'react-icons/bs'
-import { toast } from 'react-hot-toast'
-import { Table } from '../components/PYQs/Table'
-import { getPyqs } from '../services/db/pyqs/getPyqs'
-import { pyqsColumnData } from '../types/pyqsColumnData'
-import { Modal } from '../components/Common/Modal'
-import { addPyq } from '../services/db/pyqs/addPyq'
-import { updatePyq } from '../services/db/pyqs/updatePyq'
+import { useAuth } from '../contexts/auth';
+import { useEffect, useState } from 'react';
+import Head from 'next/head';
+import { BsPlus } from 'react-icons/bs';
+import { toast } from 'react-hot-toast';
+import { Table } from '../components/PYQs/Table';
+import { getPyqs } from '../services/db/pyqs/getPyqs';
+import { pyqsColumnData } from '../types/pyqsColumnData';
+import { Modal } from '../components/Common/Modal';
+import { addPyq } from '../services/db/pyqs/addPyq';
+import { updatePyq } from '../services/db/pyqs/updatePyq';
 
 export default function PYQs() {
-    //? contexts
-    const { user, loading }: any = useAuth()
+    const { user, loading }: any = useAuth();
 
-    //? states
-    const [isDataFetching, setIsDataFetching] = useState<boolean>(false)
-    const [pyqs, setPYQs] = useState<pyqsColumnData[]>([])
-    const [selectedPYQ, setSelectedPYQ] = useState<any>(null)
-    const [showAddPYQModal, setShowAddPYQModal] = useState<boolean>(false)
-    const [showUpdatePYQModal, setShowUpdatePYQModal] = useState<boolean>(false)
+    const [isDataFetching, setIsDataFetching] = useState<boolean>(false);
+    const [pyqs, setPYQs] = useState<pyqsColumnData[]>([]);
+    const [selectedPYQ, setSelectedPYQ] = useState<any>(null);
+    const [showAddPYQModal, setShowAddPYQModal] = useState<boolean>(false);
+    const [showUpdatePYQModal, setShowUpdatePYQModal] = useState<boolean>(false);
 
     const refetchPYQs = () => {
-        setIsDataFetching(true)
+        setIsDataFetching(true);
         getPyqs().then((res) => {
-            setPYQs(res)
-            setIsDataFetching(false)
-        })
-    }
-
-    //? effects
-    useEffect(() => {
-        setIsDataFetching(true)
-        getPyqs().then((res) => {
-            setPYQs(res)
-            setIsDataFetching(false)
-        })
-    }, [])
+            setPYQs(res);
+            setIsDataFetching(false);
+        });
+    };
 
     useEffect(() => {
-        if (selectedPYQ) setShowUpdatePYQModal(true)
-        else setShowUpdatePYQModal(false)
-    }, [selectedPYQ])
+        setIsDataFetching(true);
+        getPyqs().then((res) => {
+            setPYQs(res);
+            setIsDataFetching(false);
+        });
+    }, []);
+
+    useEffect(() => {
+        if (selectedPYQ) setShowUpdatePYQModal(true);
+        else setShowUpdatePYQModal(false);
+    }, [selectedPYQ]);
 
     return (
         <div className={`w-full bg-white flex flex-col`}>
@@ -102,12 +99,13 @@ export default function PYQs() {
                     </button>
                 </div>
                 <div className="col-span-5 flex w-full h-fit overflow-x-auto">
-                    <Table
-                        pyqs={pyqs}
-                        setSelectedPYQ={setSelectedPYQ}
-                        refetchPYQs={refetchPYQs}
-                        isDataFetching={isDataFetching}
-                    />
+                <Table
+                    pyqs={pyqs}
+                    setSelectedPYQ={setSelectedPYQ}
+                    refetchPYQs={refetchPYQs}
+                    isDataFetching={isDataFetching}
+/>
+
                 </div>
             </div>
         </div>

@@ -35,6 +35,7 @@ export const SelectInput: FC<{
     setSelectedValue,
 }) => {
     const dropdownRef = useRef(null)
+    
 
     useOutsideClick([dropdownRef], () => {
         setShowDropdown(false)

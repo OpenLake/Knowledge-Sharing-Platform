@@ -6,8 +6,10 @@ interface Props {
     title: string
     subjectCode: string
     semester: string
-    instructorId: number
+    subjectName:string
+    instructorName: string
     branch: string
+    uploadedBy: string
     url: string
     isAnonymous: boolean
     refetch: Function
@@ -18,7 +20,9 @@ export const updatePyq = ({
     title,
     subjectCode,
     branch,
-    instructorId,
+    instructorName,
+    subjectName,
+    uploadedBy,
     isAnonymous,
     refetch,
     semester,
@@ -29,7 +33,9 @@ export const updatePyq = ({
             title,
             subjectCode,
             semester,
-            instructorId,
+            instructorName,
+            uploadedBy,
+            subjectName,
             branch,
             url,
             isAnonymous,

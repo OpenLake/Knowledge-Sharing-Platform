@@ -19,8 +19,8 @@
         "axios": "^1.2.1",
         "eslint": "8.29.0",
         "eslint-config-next": "13.0.7",
-        "firebase": "^9.15.0",
-        "firebase-admin": "^11.4.0",
+        "firebase": "^9.23.0",
+        "firebase-admin": "^11.11.1",
         "js-cookie": "^3.0.1",
         "next": "13.0.7",
         "nextjs-progressbar": "^0.0.16",
@@ -40,5 +40,10 @@
         "postcss": "^8.4.20",
         "prisma": "^4.8.0",
         "tailwindcss": "^3.2.4"
+    },
+    "browser": {
+        "fs": false,
+        "os": false,
+        "path": false
     }
 }

@@ -3,15 +3,15 @@ import { api } from '../../../utils/api'
 import { Dispatch, SetStateAction } from 'react'
 
 interface Props {
-    id: number
+    code: string
     setCount: Dispatch<SetStateAction<number>>
     setIsUpvoted: Dispatch<SetStateAction<boolean>>
 }
 
-export const upvoteCourse = ({ id, setCount, setIsUpvoted }: Props) => {
+export const upvoteCourse = ({ code, setCount, setIsUpvoted }: Props) => {
     toast.promise(
         api.post('/api/db/courses/upvote', {
-            course_id: id,
+            courseCode: code,
         }),
         {
             loading: 'Loading...',

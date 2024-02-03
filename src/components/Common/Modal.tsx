@@ -1,24 +1,23 @@
-import React, { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
-import { branches } from '../../constants/branches'
-import { addSubject } from '../../services/db/subjects/addSubject'
-import { toast } from 'react-hot-toast'
-import { getSubjects } from '../../services/db/subjects/getSubjects'
-import { ModalContainer } from './ModalContainer'
-import { Input } from './Input'
-import { SelectInput } from './SelectInput'
-import { semesters } from '../../constants/semesters'
-import { getInstructors } from '../../services/db/instructors/getInstructors'
-import { addInstructor } from '../../services/db/instructors/addInstructor'
+import React, { Dispatch, FC, SetStateAction, useEffect, useState } from 'react';
+import { branches } from '../../constants/branches';
+import { toast } from 'react-hot-toast';
+import { ModalContainer } from './ModalContainer';
+import { Input } from './Input';
+import { SelectInput } from './SelectInput';
+import { semesters } from '../../constants/semesters';
+import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export const Modal: FC<{
-    isUpdateModal?: boolean
-    header: string
-    actionButtonText: string
-    actionFunction: Function
-    showModal: boolean
-    refetch: Function
-    setShowModal: Dispatch<SetStateAction<boolean>>
-    selectedEntity?: any
+    isUpdateModal?: boolean;
+    header: string;
+    actionButtonText: string;
+    actionFunction: Function;
+    showModal: boolean;
+    refetch: Function;
+    setShowModal: Dispatch<SetStateAction<boolean>>;
+    selectedEntity?: any;
 }> = ({
     header,
     refetch,
@@ -29,6 +28,7 @@ export const Modal: FC<{
     selectedEntity,
     isUpdateModal = false,
 }) => {
+    const db = getFirestore();
     //? states
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [title, setTitle] = useState<string>('')
@@ -58,96 +58,137 @@ export const Modal: FC<{
     const [subjects, setSubjects] = useState<any[]>([])
     const [instructors, setInstructors] = useState<any[]>([])
 
+    const auth = getAuth();
+    const [user, setUser] = useState<any | null>(null);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setUser(user);
+        });
+
+        return () => unsubscribe();
+    }, [auth]);
+
     //? functions
     const actionHandler = async (e: any) => {
-        e.preventDefault()
-        if (
-            title === '' ||
-            selectedSubjectCode === '' ||
-            selectedSubjectName === '' ||
-            selectedSemester === '' ||
-            selectedBranch === '' ||
-            url === '' ||
-            (selectedInstructorId === 0 && selectedInstructorName === '')
-        ) {
-            toast.error('Please fill all the details!')
-        } else {
-            setIsLoading(true)
+        e.preventDefault();
 
+        try {
             if (
-                !subjects.find(
-                    (subject) => subject.code === selectedSubjectCode
-                )
+                title === '' ||
+                selectedSubjectCode === '' ||
+                selectedSubjectName === '' ||
+                selectedSemester === '' ||
+                selectedBranch === '' ||
+                url === '' ||
+                (selectedInstructorId === 0 && selectedInstructorName === '')
             ) {
-                await addSubject(selectedSubjectName, selectedSubjectCode)
-                getSubjects().then((res) => setSubjects(res))
+                toast.error('Please fill in all the details!');
+                return;
             }
 
-            if (
-                !instructors.find(
-                    (instructor) => instructor.name === selectedInstructorName
-                )
-            ) {
-                const instructor = await addInstructor(selectedInstructorName)
-                await actionFunction({
-                    id: isUpdateModal ? selectedEntity.id : null,
-                    title: title,
-                    subjectCode: selectedSubjectCode,
-                    semester: selectedSemester,
-                    instructorId: instructor.id,
-                    branch: selectedBranch,
-                    url: url,
-                    isAnonymous: isAnonymous,
-                    refetch: refetch,
-                })
-                const res = await getInstructors()
-                setInstructors(res)
-                setSelectedInstructorId(instructor.id)
-            } else {
-                await actionFunction({
-                    id: isUpdateModal ? selectedEntity.id : null,
-                    title: title,
-                    subjectCode: selectedSubjectCode,
-                    semester: selectedSemester,
-                    instructorId: selectedInstructorId,
-                    branch: selectedBranch,
-                    url: url,
-                    isAnonymous: isAnonymous,
-                    refetch: refetch,
-                })
+            setIsLoading(true);
+            const subjectQuerySnapshot = await getDocs(collection(db, 'subjects'));
+            const subjectExists = subjectQuerySnapshot.docs.some(
+                (doc) => doc.data().code === selectedSubjectCode
+            );
+
+            if (!subjectExists) {
+                await addDoc(collection(db, 'subjects'), {
+                    name: selectedSubjectName,
+                    code: selectedSubjectCode,
+                });
+
+                const subjectsSnapshot = await getDocs(collection(db, 'subjects'));
+                setSubjects(subjectsSnapshot.docs.map((doc) => doc.data()));
             }
-            setTitle('')
-            setUrl('')
-            setSelectedBranch('')
-            setSelectedSemester('')
-            setSelectedSubjectCode('')
-            setSelectedSubjectName('')
-            setSelectedInstructorName('')
-            setSelectedInstructorId(0)
-            setIsAnonymous(false)
-            setShowModal(false)
-            setIsLoading(false)
+
+            const instructorQuerySnapshot = await getDocs(collection(db, 'instructors'));
+            const existingInstructor = instructorQuerySnapshot.docs.find(
+                (doc) => doc.data().name === selectedInstructorName
+            );
+
+            if (!existingInstructor) {
+                await addDoc(collection(db, 'instructors'), {
+                    name: selectedInstructorName,
+                });
+
+                const instructorsSnapshot = await getDocs(collection(db, 'instructors'));
+                setInstructors(instructorsSnapshot.docs.map((doc) => doc.data()));
+            }
+
+            await actionFunction({
+                id: isUpdateModal ? selectedEntity.id : null,
+                title,
+                subjectCode: selectedSubjectCode,
+                subjectName:selectedSubjectName,
+                semester: selectedSemester,
+                uploadedBy : user?.displayName,
+                instructorName: selectedInstructorName,
+                branch: selectedBranch,
+                url,
+                isAnonymous,
+                refetch,
+            });
+
+            setTitle('');
+            setUrl('');
+            setSelectedBranch('');
+            setSelectedSemester('');
+            setSelectedSubjectCode('');
+            setSelectedSubjectName('');
+            setSelectedInstructorName('');
+            setSelectedInstructorId(0);
+            setIsAnonymous(false);
+            setShowModal(false);
+        } catch (error) {
+            console.error('Error in actionHandler:', error);
+            toast.error('An error occurred. Please try again.');
+        } finally {
+            setIsLoading(false);
         }
-    }
+};
 
     //? effects
     useEffect(() => {
         if (selectedEntity) {
-            setTitle(selectedEntity.title)
-            setUrl(selectedEntity.url)
-            setSelectedBranch(selectedEntity.branch)
-            setSelectedSemester(selectedEntity.semester)
-            setSelectedSubjectCode(selectedEntity.subject_code)
-            setSelectedSubjectName(selectedEntity.subject.name)
-            setSelectedInstructorName(selectedEntity.instructor.name)
-            setIsAnonymous(selectedEntity.anonymous)
+            setTitle(selectedEntity.title || '');
+            setUrl(selectedEntity.url || '');
+            setSelectedBranch(selectedEntity.branch || '');
+            setSelectedSemester(selectedEntity.semester || '');
+            setSelectedSubjectCode(selectedEntity.subject_code || '');
+
+            if (selectedEntity.subject && selectedEntity.subject.name) {
+                setSelectedSubjectName(selectedEntity.subject.name);
+            } else {
+                setSelectedSubjectName('');
+            }
+
+            if (selectedEntity.instructor && selectedEntity.instructor.name) {
+                setSelectedInstructorName(selectedEntity.instructor.name);
+            } else {
+                setSelectedInstructorName('');
+            }
+    
+            setIsAnonymous(selectedEntity.anonymous || false);
         }
-    }, [selectedEntity])
+    }, [selectedEntity]);
+    
 
     useEffect(() => {
-        getSubjects().then((res) => setSubjects(res))
-        getInstructors().then((res) => setInstructors(res))
-    }, [])
+        const fetchSubjects = async () => {
+            const subjectsSnapshot = await getDocs(collection(db, 'subjects'));
+            setSubjects(subjectsSnapshot.docs.map((doc) => doc.data()));
+        };
+
+        const fetchInstructors = async () => {
+            const instructorsSnapshot = await getDocs(collection(db, 'instructors'));
+            setInstructors(instructorsSnapshot.docs.map((doc) => doc.data()));
+        };
+
+        fetchSubjects();
+        fetchInstructors();
+    }, [db])
 
     useEffect(() => {
         const keyPressHandler = (event: any) => {
@@ -167,6 +208,19 @@ export const Modal: FC<{
                 setSelectedInstructorId(instructor.id)
         })
     }, [selectedInstructorName, instructors])
+
+    useEffect(() => {
+        const selectedInstructor = instructors.find(
+            (instructor) => instructor.name === selectedInstructorName
+        );
+    
+        if (selectedInstructor) {
+            setSelectedInstructorId(selectedInstructor.id);
+        } else {
+            setSelectedInstructorId(0);
+        }
+    }, [selectedInstructorName, instructors]);
+    
 
     return (
         <ModalContainer

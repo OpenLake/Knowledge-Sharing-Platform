@@ -2,7 +2,7 @@ import { toast } from 'react-hot-toast'
 import { api } from '../../../../utils/api'
 
 interface Props {
-    id: number
+    code: string
     comment: string
     rating: number
     isAnonymous: boolean
@@ -10,14 +10,15 @@ interface Props {
 }
 
 export const updateCourseReview = ({
-    id,
+    code,
     comment,
     rating,
     isAnonymous,
     refetch,
 }: Props) => {
     toast.promise(
-        api.put('/api/db/courses/review?id=' + id, {
+        api.put('/api/db/courses/review?code=' + code, {
+            code,
             comment,
             isAnonymous,
             rating,

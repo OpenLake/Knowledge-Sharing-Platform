@@ -161,7 +161,7 @@ export const Table: FC<{
                             <button
                                 className="p-2 rounded-full hover:bg-gray-200 duration-150"
                                 onClick={(e) => {
-                                    deleteCourse(row.value.id, refetchCourses)
+                                    deleteCourse(row.value.code, refetchCourses)
                                 }}
                             >
                                 <RiDeleteBin6Line className="h-5 w-5 text-red-500" />

@@ -1,249 +1,173 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { adminAuth } from '../../../../utils/firebaseAdminInit'
-import { prisma } from '../../../../utils/prismaClientInit'
-import { Prisma } from '@prisma/client'
+import { firestore } from '../../../../utils/firebaseInit';
+import { getAuth } from 'firebase/auth';
+import {
+  DocumentData,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  where,
+  collection,
+} from 'firebase/firestore';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { query as firestoreQuery } from 'firebase/firestore';
+import { adminAuth } from '../../../../utils/firebaseAdminInit';
+
 
 export default async function coursesHandler(
-    req: NextApiRequest,
-    res: NextApiResponse
+  req: NextApiRequest,
+  res: NextApiResponse
 ) {
-    const { method, headers, body, query } = req
+  const { method, headers, body, query } = req;
 
-    switch (method) {
-        case 'GET':
-            try {
-                if (query.id) {
-                    const course = await prisma.course.findUnique({
-                        where: {
-                            id: parseInt(query.id as string),
-                        },
-                        select: {
-                            id: true,
-                            title: true,
-                            code: true,
-                            anonymous: true,
-                            instructor_id: true,
-                            created_by_id: true,
-                            _count: {
-                                select: {
-                                    reviews: true,
-                                },
-                            },
-                            reviews: {
-                                select: {
-                                    comment: true,
-                                    user: {
-                                        select: {
-                                            name: true,
-                                        },
-                                    },
-                                    upvotes: {
-                                        select: {
-                                            user_id: true,
-                                        },
-                                    },
-                                    anonymous: true,
-                                    user_id: true,
-                                    rating: true,
-                                    id: true,
-                                    _count: {
-                                        select: {
-                                            upvotes: true,
-                                        },
-                                    },
-                                },
-                            },
-                            created_by: {
-                                select: {
-                                    name: true,
-                                },
-                            },
-                            instructor: {
-                                select: {
-                                    name: true,
-                                },
-                            },
-                        },
-                    })
+  const coursesCollection = collection(firestore, 'courses');
+  const auth = getAuth();
 
-                    res.status(200).json({
-                        message: 'Course Fetched',
-                        result: course,
-                    })
-                } else {
-                    const courses = await prisma.course.findMany({
-                        include: {
-                            created_by: {
-                                select: {
-                                    name: true,
-                                },
-                            },
-                            instructor: {
-                                select: {
-                                    name: true,
-                                },
-                            },
-                            _count: {
-                                select: {
-                                    reviews: true,
-                                },
-                            },
-                        },
-                    })
-                    res.status(200).json({
-                        message: 'Courses Fetched',
-                        result: courses,
-                    })
-                }
-            } catch (err: any) {
-                res.status(404).json({
-                    message: err,
-                })
+  switch (method) {
+    case 'GET':
+      try {
+        if (query.code) {
+          let q = query.code
+          const courseDoc = await getDocs(firestoreQuery(collection(firestore, "courses"), where("code", "==", query.code)));
+
+          if (courseDoc.docs[0].exists()) {
+            const course = courseDoc.docs[0].data() as DocumentData;
+            res.status(200).json({
+              message: 'Course Fetched',
+              result: course,
+            });
+          } else {
+            res.status(404).json({
+              message: 'Course not found',
+            });
+          }
+        } else {
+          const coursesSnapshot = await getDocs(coursesCollection);
+          const courses = coursesSnapshot.docs.map((doc) => doc.data()) as DocumentData[];
+          res.status(200).json({
+            message: 'Courses Fetched',
+            result: courses,
+          });
+        }
+      } catch (err: any) {
+        res.status(404).json({
+          message: err,
+        });
+      }
+      break;
+
+    case 'POST':
+      if (headers && headers.authorization) {
+        const accessToken = headers.authorization.split(' ')[1];
+        const user = await adminAuth.verifyIdToken(accessToken!)
+        try {
+          if (user) {
+            const { title, code, isAnonymous, instructorName } = body;
+            const existingCourseSnapshot = await getDocs(
+                firestoreQuery(coursesCollection, where('code', '==', code),where('instructorName', '==', instructorName))
+            );
+  
+            if (!existingCourseSnapshot.empty) {
+              res.status(405).json({
+                message: 'Course Code already exists',
+              });
+              return;
             }
-            break
-        case 'POST':
-            if (headers && headers.authorization) {
-                const accessToken = headers.authorization.split(' ')[1]
-                const user = await adminAuth.verifyIdToken(accessToken!)
+            await addDoc(coursesCollection, {
+              title,
+              code,
+              isAnonymous,
+              instructorName
+            });
 
-                if (user) {
-                    const { title, code, instructorId, isAnonymous } = body
-                    const course = await prisma.course.findUnique({
-                        where: {
-                            instructor_id_code: {
-                                code: code,
-                                instructor_id: instructorId,
-                            },
-                        },
-                    })
+            res.status(201).json({
+              message: 'New Course Created',
+            });
+          } else {
+            res.status(401).json({
+              message: 'Unauthorized Access1',
+            });
+          }
+        } catch (err: any) {
+          res.status(401).json({
+            message: err,
+          });
+        }
+      } else {
+        res.status(401).json({
+          message: 'Unauthorized Access3',
+        });
+      }
+      break;
 
-                    if (course) {
-                        res.status(405).json({
-                            message: 'Course Code already exists',
-                        })
-                    } else {
-                        try {
-                            await prisma.course.create({
-                                data: {
-                                    title: title,
-                                    code: code,
-                                    instructor_id: instructorId,
-                                    anonymous: isAnonymous,
-                                    created_by_id: user.user_id,
-                                },
-                            })
+    case 'PUT':
+      if (headers && headers.authorization) {
+        const accessToken = headers.authorization.split(' ')[1];
+        const user = await adminAuth.verifyIdToken(accessToken!)
+        try {
+          if (user) {
+            const { id } = query;
+            const { title, code, instructorName, isAnonymous } = body;
 
-                            res.status(201).json({
-                                message: 'New Course Created',
-                            })
-                        } catch (err: any) {
-                            res.status(404).json({
-                                message: err,
-                            })
-                        }
-                    }
-                } else {
-                    res.status(401).json({
-                        message: 'Unauthorized Access',
-                    })
-                }
-            } else {
-                res.status(401).json({
-                    message: 'Unauthorized Access',
-                })
-            }
-            break
-        case 'PUT':
-            if (headers && headers.authorization) {
-                const accessToken = headers.authorization.split(' ')[1]
-                const user = await adminAuth.verifyIdToken(accessToken!)
+            await updateDoc(doc(coursesCollection, id as string), {
+              title,
+              code,
+              instructorName,
+              anonymous: isAnonymous,
+            });
 
-                if (user) {
-                    const { id } = query
-                    const { title, code, instructorId, isAnonymous } = body
+            res.status(201).json({
+              message: 'Course Updated',
+            });
+          } else {
+            res.status(401).json({
+              message: 'Unauthorized Access',
+            });
+          }
+        } catch (err: any) {
+          res.status(401).json({
+            message: 'Unauthorized Access',
+          });
+        }
+      } else {
+        res.status(401).json({
+          message: 'Unauthorized Access',
+        });
+      }
+      break;
 
-                    try {
-                        await prisma.course.update({
-                            where: {
-                                id: parseInt(id as string),
-                            },
-                            data: {
-                                title: title,
-                                code: code,
-                                instructor_id: instructorId,
-                                anonymous: isAnonymous,
-                            },
-                        })
+    case 'DELETE':
+      if (headers && headers.authorization) {
+        const accessToken = headers.authorization.split(' ')[1];
+        const user = await adminAuth.verifyIdToken(accessToken!)
+        try {
+          if (user) {
+            const { id } = query;
+            await deleteDoc(doc(coursesCollection, id as string));
+            res.status(200).json({
+              message: 'Course Deleted Successfully',
+            });
+          } else {
+            res.status(401).json({
+              message: 'Unauthorized Access',
+            });
+          }
+        } catch (err: any) {
+          res.status(401).json({
+            message: 'Unauthorized Access',
+          });
+        }
+      } else {
+        res.status(401).json({
+          message: 'Unauthorized Access',
+        });
+      }
+      break;
 
-                        res.status(201).json({
-                            message: 'Course Updated',
-                        })
-                    } catch (err: any) {
-                        if (
-                            err instanceof Prisma.PrismaClientKnownRequestError
-                        ) {
-                            if (err.code === 'P2002') {
-                                res.status(404).json({
-                                    message: 'Course Code already exists',
-                                })
-                            } else {
-                                res.status(404).json({
-                                    message: err,
-                                })
-                            }
-                        } else {
-                            res.status(404).json({
-                                message: err,
-                            })
-                        }
-                    }
-                } else {
-                    res.status(401).json({
-                        message: 'Unauthorized Access',
-                    })
-                }
-            } else {
-                res.status(401).json({
-                    message: 'Unauthorized Access',
-                })
-            }
-            break
-
-        case 'DELETE':
-            if (headers && headers.authorization) {
-                const accessToken = headers.authorization.split(' ')[1]
-                const user = await adminAuth.verifyIdToken(accessToken!)
-
-                if (user) {
-                    const { id } = query
-                    try {
-                        await prisma.course.delete({
-                            where: {
-                                id: parseInt(id as string),
-                            },
-                        })
-                        res.status(200).json({
-                            message: 'Course Deleted Successfully',
-                        })
-                    } catch (err: any) {
-                        res.status(404).json({
-                            message: err,
-                        })
-                    }
-                } else {
-                    res.status(401).json({
-                        message: 'Unauthorized Access',
-                    })
-                }
-            } else {
-                res.status(401).json({
-                    message: 'Unauthorized Access',
-                })
-            }
-            break
-        default:
-            res.status(405).json({
-                message: 'Method Not Allowed',
-            })
-    }
+    default:
+      res.status(405).json({
+        message: 'Method Not Allowed',
+      });
+  }
 }

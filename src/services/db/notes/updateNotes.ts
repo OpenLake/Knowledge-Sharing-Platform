@@ -6,7 +6,9 @@ interface Props {
     title: string
     subjectCode: string
     semester: string
-    instructorId: number
+    instructorName: string
+    subjectName:string
+    uploadedBy:string
     branch: string
     url: string
     isAnonymous: boolean
@@ -18,7 +20,9 @@ export const updateNote = ({
     title,
     subjectCode,
     branch,
-    instructorId,
+    instructorName,
+    subjectName,
+    uploadedBy,
     isAnonymous,
     refetch,
     semester,
@@ -29,7 +33,9 @@ export const updateNote = ({
             title,
             subjectCode,
             semester,
-            instructorId,
+            instructorName,
+            subjectName,
+            uploadedBy,
             branch,
             url,
             isAnonymous,

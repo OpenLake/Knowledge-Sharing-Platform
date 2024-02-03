@@ -5,9 +5,11 @@ interface Props {
     title: string
     subjectCode: string
     semester: string
-    instructorId: number
+    subjectName: string
+    instructorName: string
     branch: string
     url: string
+    uploadedBy: string
     isAnonymous: boolean
     refetch: Function
 }
@@ -16,8 +18,10 @@ export const addNotes = ({
     title,
     subjectCode,
     branch,
-    instructorId,
+    subjectName,
+    instructorName,
     isAnonymous,
+    uploadedBy,
     refetch,
     semester,
     url,
@@ -27,7 +31,9 @@ export const addNotes = ({
             title,
             subjectCode,
             semester,
-            instructorId,
+            subjectName,
+            instructorName,
+            uploadedBy,
             branch,
             url,
             isAnonymous,

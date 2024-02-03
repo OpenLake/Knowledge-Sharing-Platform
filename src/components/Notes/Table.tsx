@@ -154,12 +154,13 @@ export const Table: FC<{
                     )
                 },
                 accessor: 'subjectName',
-                Cell: (row: any) =>
-                    isDataFetching ? (
+                Cell: (row: any) =>{
+                    return isDataFetching ? (
                         <div className="h-2.5 bg-gray-200 w-24"></div>
                     ) : (
-                        row.value
-                    ),
+                        <span>{row.value}</span>
+                    );
+                    }
             },
             {
                 Header: 'URL',
@@ -221,16 +222,20 @@ export const Table: FC<{
                                 ''
                             )}
                         </div>
-                    )
+                    );
                 },
-                accessor: 'instructor',
-                Cell: (row: any) =>
-                    isDataFetching ? (
+                accessor: 'instructorName',
+                Cell: (row: any) => {
+                    const instructorName = row.value
+                    return isDataFetching ? (
                         <div className="h-2.5 bg-gray-200 w-24"></div>
                     ) : (
-                        row.value
-                    ),
+                        <span>{instructorName}</span>
+                    );
+                },
+                
             },
+            
             {
                 Header: (header: any) => {
                     return (
@@ -302,33 +307,35 @@ export const Table: FC<{
         ],
         [isDataFetching, setSelectedNote, refetchNotes, user]
     )
-    const data = useMemo(
-        () =>
-            isDataFetching
-                ? Array(8).fill({})
-                : notes &&
-                  notes.map((note: any, index) => {
-                      return {
-                          sno: `${index + 1}.`,
-                          id: note.id,
-                          upvotes: {
-                              count: note._count.upvotes,
-                              users: note.upvotes,
-                          },
-                          title: note.title,
-                          subjectCode: note.subject_code,
-                          subjectName: note.subject.name,
-                          url: note.url,
-                          semester: note.semester,
-                          instructor: note.instructor.name,
-                          branch: note.branch,
-                          uploadedBy: note.created_by.name,
-                          anonymous: note.anonymous,
-                          actions: note,
-                      }
-                  }),
-        [isDataFetching, notes]
-    )
+    const data = useMemo(() => {
+        return isDataFetching
+            ? Array(8).fill({})
+            : notes &&
+              notes.map((note: any, index) => {
+                  const rowData = {
+                      sno: `${index + 1}.`,
+                      id: note.id,
+                      upvotes: {
+                          count: note._count?.note_upvotes.count || 0, 
+                          users: note.upvotes,
+                      },
+                      title: note.title,
+                      subjectCode: note.subject_code,
+                      subjectName: note.subjectName,
+                      url: note.url,
+                      semester: note.semester,
+                      instructorName: note.instructorName || 'N/A',
+                      branch: note.branch,
+                      uploadedBy: note.uploadedBy || 'Anonymous', 
+                      anonymous: note.anonymous,
+                      actions: note,
+                  };
+    
+                  return rowData;
+              });
+    }, [isDataFetching, notes]);
+    
+    
 
     const {
         getTableProps,

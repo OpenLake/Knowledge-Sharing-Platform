@@ -5,9 +5,11 @@ interface Props {
     title: string
     subjectCode: string
     semester: string
-    instructorId: number
+    subjectName: string
+    instructorName: string
     branch: string
     url: string
+    uploadedBy: string
     isAnonymous: boolean
     refetch: Function
 }
@@ -15,19 +17,23 @@ interface Props {
 export const addPyq = ({
     title,
     subjectCode,
+    semester,
+    subjectName,
+    instructorName,
     branch,
-    instructorId,
+    uploadedBy,
+    url,
     isAnonymous,
     refetch,
-    semester,
-    url,
 }: Props) => {
     toast.promise(
         api.post('/api/db/pyqs', {
             title,
             subjectCode,
             semester,
-            instructorId,
+            subjectName,
+            instructorName,
+            uploadedBy,
             branch,
             url,
             isAnonymous,

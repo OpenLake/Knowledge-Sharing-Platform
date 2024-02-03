@@ -190,10 +190,11 @@ export default function Courses() {
                                         <div className="flex gap-7 items-center justify-between">
                                             <p
                                                 onClick={() =>
+                                                    {
                                                     router.push(
-                                                        '/courses/' + course.id
+                                                        '/courses/' + course.code
                                                     )
-                                                }
+                                                }}
                                                 className="font-semibold cursor-pointer text-primary hover:underline duration-150 transition-all text-xl"
                                             >
                                                 {course.title}
@@ -236,13 +237,13 @@ export default function Courses() {
                                             <p className="font-semibold">
                                                 Instructor:
                                             </p>
-                                            <p>{course.instructor.name}</p>
+                                            <p>{course.instructorName}</p>
                                         </div>
                                         <div className="flex gap-2 items-center">
                                             <p className="font-semibold">
                                                 Total Reviews:
                                             </p>
-                                            <p>{course._count.reviews}</p>
+                                            <p>{course._count?.reviews}</p>
                                         </div>
                                     </div>
                                 )

@@ -1,14 +1,25 @@
-import { FirebaseOptions, getApp, initializeApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
-import { FIREBASE_CONFIG } from '../config'
+import { FirebaseOptions, initializeApp, getApp } from 'firebase/app';
+import { getAuth, Auth } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore';
+import { FIREBASE_CONFIG } from '../config';
+
+let firebaseApp: any;
 
 function createFirebaseApp(config: FirebaseOptions) {
-    try {
-        return getApp()
-    } catch {
-        return initializeApp(config)
+  try {
+    if (!firebaseApp) {
+      firebaseApp = initializeApp(config);
     }
+    return firebaseApp;
+  } catch (error) {
+    if (getApp()) {
+      return getApp();
+    }
+    throw error;
+  }
 }
 
-const firebaseApp = createFirebaseApp(FIREBASE_CONFIG)
-export const firebaseAuth = getAuth(firebaseApp)
+const firestore: Firestore = getFirestore(createFirebaseApp(FIREBASE_CONFIG));
+const firebaseAuth: Auth = getAuth(createFirebaseApp(FIREBASE_CONFIG));
+
+export { firestore, firebaseAuth, firebaseApp };
