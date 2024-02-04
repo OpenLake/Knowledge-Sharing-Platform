@@ -10,7 +10,7 @@ import { firebaseAuth } from '../utils/firebaseInit';
 
 const AuthContext = createContext({
   isAuthenticated: false,
-  user: null,
+  user:null,
   photoURL: '',
   displayName: '',
   login: () => {},
@@ -52,12 +52,13 @@ export const AuthProvider = ({ children }: any) => {
         api.defaults.headers.Authorization = `Bearer ${accessToken}`;
         const { data } = await api.get('/api/auth/');
         const { result: userData } = data;
-        const { picture, name } = userData;
+        const { picture, name, isAdmin } = userData;
 
         if (userData) {
           setUser(userData);
           setPhotoURL(picture);
           setDisplayName(name);
+          return isAdmin
         }
         toast.success('Login Successful');
       }
@@ -73,7 +74,7 @@ export const AuthProvider = ({ children }: any) => {
       try {
         const { data } = await api.get('/api/auth/');
         const { result: user } = data;
-        const { picture, name } = user;
+        const { picture, name, isAdmin } = user;
         if (user) {
           setUser(user);
           setPhotoURL(picture);
@@ -120,7 +121,34 @@ export const AuthProvider = ({ children }: any) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+// Define a type for the user object
+type User = {
+  // Define the properties of your user object
+  // For example:
+  id: string;
+  email: string;
+  // ... other properties
+};
+
+export const useAuth = () => {
+  const authContext = useContext(AuthContext);
+
+  if (!authContext) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+
+  return authContext as {
+    isAuthenticated: boolean;
+    user: User | null; // Use the defined User type
+    photoURL: string;
+    displayName: string;
+    login: () => void;
+    logout: () => void;
+    loading: boolean;
+  };
+};
+
+
 
 export const ProtectRoute = ({ children }: any) => {
     const router = useRouter();

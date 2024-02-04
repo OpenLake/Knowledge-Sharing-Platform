@@ -32,7 +32,9 @@ export const Table: FC<{
     isDataFetching: boolean
     refetchNotes: Function
 }> = ({ notes, refetchNotes, setSelectedNote, isDataFetching }) => {
-    const { user, loading }: any = useAuth()
+    const { user, loading, isAdmin }: any = useAuth()
+    
+
     const columns = useMemo<Column<any>[]>(
         () => [
             {

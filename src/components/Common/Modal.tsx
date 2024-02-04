@@ -6,8 +6,11 @@ import { Input } from './Input';
 import { SelectInput } from './SelectInput';
 import { semesters } from '../../constants/semesters';
 import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
-import { onAuthStateChanged } from 'firebase/auth';
+import { useAuth } from '../../contexts/auth';
+import { AuthProvider } from '../../contexts/auth';
+import { getAuth, onAuthStateChanged} from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore'
+import { firestore } from '../../utils/firebaseInit';
 
 export const Modal: FC<{
     isUpdateModal?: boolean;
@@ -57,9 +60,22 @@ export const Modal: FC<{
     const [selectedSubjectName, setSelectedSubjectName] = useState<string>('')
     const [subjects, setSubjects] = useState<any[]>([])
     const [instructors, setInstructors] = useState<any[]>([])
+    const [adminStatus, setAdminStatus] = useState<boolean>(false)
+
 
     const auth = getAuth();
     const [user, setUser] = useState<any | null>(null);
+
+    onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        const docRef = doc(firestore, "users", user.uid)
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            setAdminStatus(docSnap.data().isAdmin)
+          }
+    }
+    });
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -94,13 +110,19 @@ export const Modal: FC<{
             );
 
             if (!subjectExists) {
-                await addDoc(collection(db, 'subjects'), {
-                    name: selectedSubjectName,
-                    code: selectedSubjectCode,
-                });
-
-                const subjectsSnapshot = await getDocs(collection(db, 'subjects'));
-                setSubjects(subjectsSnapshot.docs.map((doc) => doc.data()));
+                if(adminStatus){
+                    await addDoc(collection(db, 'subjects'), {
+                        name: selectedSubjectName,
+                        code: selectedSubjectCode,
+                    });
+    
+                    const subjectsSnapshot = await getDocs(collection(db, 'subjects'));
+                    setSubjects(subjectsSnapshot.docs.map((doc) => doc.data()));
+                }
+                else{
+                    toast.error("You don't have permissions to add subject, contact your admin.")
+                    return
+                }
             }
 
             const instructorQuerySnapshot = await getDocs(collection(db, 'instructors'));
@@ -109,12 +131,19 @@ export const Modal: FC<{
             );
 
             if (!existingInstructor) {
-                await addDoc(collection(db, 'instructors'), {
-                    name: selectedInstructorName,
-                });
-
-                const instructorsSnapshot = await getDocs(collection(db, 'instructors'));
-                setInstructors(instructorsSnapshot.docs.map((doc) => doc.data()));
+                if(adminStatus){
+                    await addDoc(collection(db, 'instructors'), {
+                        name: selectedInstructorName,
+                    });
+    
+                    const instructorsSnapshot = await getDocs(collection(db, 'instructors'));
+                    setInstructors(instructorsSnapshot.docs.map((doc) => doc.data()));
+                }
+                else{
+                    toast.error("You don't have permissions to add instructor, contact your admin.")
+                    return
+                }
+                
             }
 
             await actionFunction({
@@ -220,7 +249,6 @@ export const Modal: FC<{
             setSelectedInstructorId(0);
         }
     }, [selectedInstructorName, instructors]);
-    
 
     return (
         <ModalContainer

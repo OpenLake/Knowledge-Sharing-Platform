@@ -12,6 +12,9 @@ import { Player } from '@lottiefiles/react-lottie-player'
 import { useRouter } from 'next/router'
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import { deleteCourse } from '../../services/db/courses/deleteCourse'
+import { getAuth, onAuthStateChanged} from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore'
+import { firestore } from '../../utils/firebaseInit';
 
 export default function Courses() {
     //? router
@@ -28,6 +31,19 @@ export default function Courses() {
     const [selectedCourse, setSelectedCourse] = useState<any>(null)
     const [courses, setCourses] = useState<coursesColumnData[]>([])
     const [searchInput, setSearchInput] = useState<string>('')
+    const [adminStatus, setAdminStatus] = useState<boolean>(false)
+
+    const auth = getAuth();
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const docRef = doc(firestore, "users", user.uid)
+            const docSnap = await getDoc(docRef);
+    
+            if (docSnap.exists()) {
+                setAdminStatus(docSnap.data().isAdmin)
+              }
+        }
+        });
 
     //? functions
     const refetchCourses = () => {
@@ -94,7 +110,7 @@ export default function Courses() {
             <div className="grid grid-cols-5 gap-0 justify-center py-48 px-5 md:px-14 space-y-8 min-h-screen">
                 <div className="col-span-5 flex flex-row items-center gap-4 justify-between">
                     <h3 className="font-bold text-xl md:text-3xl">Courses</h3>
-                    <button
+                    {adminStatus && (<button
                         disabled={loading}
                         onClick={() => {
                             if (user) setShowAddCourseModal(true)
@@ -108,7 +124,7 @@ export default function Courses() {
                     >
                         <BsPlus className="h-8 w-8" />
                         <span className="">Add Course</span>
-                    </button>
+                    </button>)}
                 </div>
                 <div className="flex col-span-5 w-full px-2 py-3">
                     <label

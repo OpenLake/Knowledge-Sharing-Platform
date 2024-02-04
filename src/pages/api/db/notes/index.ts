@@ -28,7 +28,6 @@ export default async function noteHandler(
           ...doc.data(),
         }));
 
-        console.log('Fetched Notes:', notes);
         res.status(200).json({
           message: 'Notes Fetched',
           result: notes,
@@ -59,6 +58,8 @@ export default async function noteHandler(
             isAnonymous,
           } = body;
           try {
+            //Check if the 
+
             const newNoteRef = await addDoc(collection(firestore, notesCollection), {
               title,
               subject_code: subjectCode,
