@@ -7,3 +7,9 @@ export const FIREBASE_CONFIG = {
     appId: process.env.NEXT_PUBLIC_APP_ID,
     measurementId: process.env.NEXT_PUBLIC_MEASUREMENT_ID,
 }
+
+export const AWS_CONFIG = {
+    accessKeyId : process.env.YOUR_ACCESS_KEY_ID,
+    secretAccessKey :process.env.YOUR_SECRET_ACCESS_KEY,
+    region : process.env.YOUR_REGION
+}

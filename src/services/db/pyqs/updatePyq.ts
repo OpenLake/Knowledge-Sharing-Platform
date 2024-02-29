@@ -3,11 +3,12 @@ import { api } from '../../../utils/api'
 
 interface Props {
     id: number
-    title: string
     subjectCode: string
     semester: string
     subjectName:string
     instructorName: string
+    resourceNumber:number
+    description:string
     branch: string
     uploadedBy: string
     url: string
@@ -17,11 +18,12 @@ interface Props {
 
 export const updatePyq = ({
     id,
-    title,
     subjectCode,
     branch,
     instructorName,
     subjectName,
+    description,
+    resourceNumber,
     uploadedBy,
     isAnonymous,
     refetch,
@@ -30,10 +32,11 @@ export const updatePyq = ({
 }: Props) => {
     toast.promise(
         api.put('/api/db/pyqs?id=' + id, {
-            title,
             subjectCode,
             semester,
             instructorName,
+            resourceNumber,
+            description,
             uploadedBy,
             subjectName,
             branch,

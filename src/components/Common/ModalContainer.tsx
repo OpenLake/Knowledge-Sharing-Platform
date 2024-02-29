@@ -1,5 +1,4 @@
 import { Dispatch, FC, SetStateAction, useRef } from 'react'
-import useOutsideClick from '../../hooks/useOutsideClick'
 
 export const ModalContainer: FC<{
     showModal: boolean

@@ -1,23 +1,23 @@
-import { Dispatch, FC, SetStateAction, useRef } from 'react'
-import { IoMdClose } from 'react-icons/io'
-import useOutsideClick from '../../hooks/useOutsideClick'
-import { isStringMatch } from '../../utils/isStringMatch'
+import React, { Dispatch, FC, SetStateAction, useRef } from 'react';
+import { IoMdClose } from 'react-icons/io';
+import useOutsideClick from '../../hooks/useOutsideClick';
+import { isStringMatch } from '../../utils/isStringMatch';
 
 export const SelectInput: FC<{
-    createNew?: boolean
-    dropdownKey: string
-    dropdownValue: string
-    type: string
-    inputName: string
-    placeholder: string
-    selectedValue: any
-    inputValue: any
-    dropdownItems: any
-    showDropdown: boolean
-    setShowDropdown: Dispatch<SetStateAction<boolean>>
-    setSelectedValue: Dispatch<SetStateAction<any>>
-    setInputValue: Dispatch<SetStateAction<any>>
-    inputTitle: string
+    createNew?: boolean;
+    dropdownKey: string;
+    dropdownValue: string;
+    type: string;
+    inputName: string;
+    placeholder: string;
+    selectedValue: any;
+    inputValue: any;
+    dropdownItems: any;
+    showDropdown: boolean;
+    setShowDropdown: Dispatch<SetStateAction<boolean>>;
+    setSelectedValue: Dispatch<SetStateAction<any>>;
+    setInputValue: Dispatch<SetStateAction<any>>;
+    inputTitle: string;
 }> = ({
     createNew = true,
     dropdownKey,
@@ -34,37 +34,27 @@ export const SelectInput: FC<{
     setShowDropdown,
     setSelectedValue,
 }) => {
-    const dropdownRef = useRef(null)
-    
+    const dropdownRef = useRef(null);
 
     useOutsideClick([dropdownRef], () => {
-        setShowDropdown(false)
-    })
+        setShowDropdown(false);
+    });
 
     return (
         <div className="flex flex-col space-y-1 relative">
             <span className="font-semibold">{inputTitle}</span>
-            <label
-                htmlFor={inputName}
-                className="flex items-center"
-            >
+            <label htmlFor={inputName} className="flex items-center">
                 <input
                     name={inputName}
-                    type={type}
+                    type="text" 
                     autoComplete="off"
-                    disabled={!!selectedValue}
+                    readOnly 
                     placeholder={selectedValue ? '' : placeholder}
-                    value={inputValue}
                     onFocus={() => {
-                        dropdownItems.length
-                            ? setShowDropdown(true)
-                            : inputValue !== ''
-                            ? setShowDropdown(true)
-                            : setShowDropdown(false)
+                        setShowDropdown(true);
                     }}
                     onChange={(e) => {
-                        setShowDropdown(true)
-                        setInputValue(e.target.value)
+                        setInputValue(e.target.value);
                     }}
                     className="p-1 ring-1 relative ring-gray-400 rounded-sm w-full shadow-md"
                 />
@@ -72,7 +62,11 @@ export const SelectInput: FC<{
                     <div className="absolute flex items-center left-1 max-w-[90%] space-x-1 p-0.5 rounded-sm bg-primary/20 text-primary">
                         <span className="truncate">{selectedValue}</span>
                         <IoMdClose
-                            onClick={() => setSelectedValue('')}
+                            onClick={() => {
+                                setSelectedValue('');
+                                setInputValue('');
+                                setShowDropdown(false);
+                            }}
                             className="h-5 w-5 cursor-pointer"
                         />
                     </div>
@@ -94,14 +88,14 @@ export const SelectInput: FC<{
                                 key={item.id}
                                 className="px-2 py-1 md:py-2 border-b hover:bg-gray-100 cursor-pointer"
                                 onClick={() => {
-                                    setSelectedValue(item[dropdownKey])
-                                    setInputValue('')
-                                    setShowDropdown(false)
+                                    setSelectedValue(item[dropdownKey]);//here
+                                    setInputValue(''); 
+                                    setShowDropdown(false);
                                 }}
                             >
                                 {item[dropdownValue]}
                             </li>
-                        )
+                        );
                     })}
                 {createNew ? (
                     !dropdownItems?.find((item: any) =>
@@ -110,9 +104,9 @@ export const SelectInput: FC<{
                     inputValue !== '' && (
                         <li
                             onClick={() => {
-                                setShowDropdown(false)
-                                setSelectedValue(inputValue)
-                                setInputValue('')
+                                setShowDropdown(false);
+                                setSelectedValue(inputValue);
+                                setInputValue('');
                             }}
                             className="p-2 hover:bg-gray-100 cursor-pointer"
                         >
@@ -128,5 +122,5 @@ export const SelectInput: FC<{
                 )}
             </ul>
         </div>
-    )
-}
+    );
+};

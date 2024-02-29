@@ -48,44 +48,7 @@ export const Table: FC<{
                         row.value
                     ),
             },
-            {
-                Header: (header: any) => {
-                    return (
-                        <div className="flex items-end justify-center space-x-2 w-full">
-                            <span>Upvotes</span>
-                            {header.column.canSort ? (
-                                header.column.isSortedDesc ? (
-                                    <IoMdArrowDropdown className="h-5 w-5" />
-                                ) : (
-                                    <IoMdArrowDropup className="h-5 w-5" />
-                                )
-                            ) : (
-                                ''
-                            )}
-                        </div>
-                    )
-                },
-                accessor: 'upvotes',
-                sortType: (rowA: any, rowB: any) => {
-                    return rowA.values.upvotes.count > rowB.values.upvotes.count
-                        ? 1
-                        : -1
-                },
-                Cell: (row: any) =>
-                    isDataFetching ? (
-                        <div className="h-2.5 bg-gray-200 w-24"></div>
-                    ) : (
-                        row.value && (
-                            <UpvoteButton
-                                id={row.row.original.id}
-                                users={row.value.users}
-                                upvotesCount={row.value.count}
-                                removeUpvoteHandler={removeNotesUpvote}
-                                upvoteHandler={upvoteNotes}
-                            />
-                        )
-                    ),
-            },
+            
             {
                 Header: (header: any) => {
                     return (
@@ -104,6 +67,31 @@ export const Table: FC<{
                     )
                 },
                 accessor: 'title',
+                Cell: (row: any) =>
+                    isDataFetching ? (
+                        <div className="h-2.5 bg-gray-200 w-24"></div>
+                    ) : (
+                        row.value
+                    ),
+            },
+            {
+                Header: (header: any) => {
+                    return (
+                        <div className="flex items-end justify-center space-x-2 w-full">
+                            <span>Resource Type</span>
+                            {header.column.canSort ? (
+                                header.column.isSortedDesc ? (
+                                    <IoMdArrowDropdown className="h-5 w-5" />
+                                ) : (
+                                    <IoMdArrowDropup className="h-5 w-5" />
+                                )
+                            ) : (
+                                ''
+                            )}
+                        </div>
+                    )
+                },
+                accessor: 'resourceType',
                 Cell: (row: any) =>
                     isDataFetching ? (
                         <div className="h-2.5 bg-gray-200 w-24"></div>
@@ -277,6 +265,44 @@ export const Table: FC<{
                     ),
             },
             {
+                Header: (header: any) => {
+                    return (
+                        <div className="flex items-end justify-center space-x-2 w-full">
+                            <span>Upvotes</span>
+                            {header.column.canSort ? (
+                                header.column.isSortedDesc ? (
+                                    <IoMdArrowDropdown className="h-5 w-5" />
+                                ) : (
+                                    <IoMdArrowDropup className="h-5 w-5" />
+                                )
+                            ) : (
+                                ''
+                            )}
+                        </div>
+                    )
+                },
+                accessor: 'upvotes',
+                sortType: (rowA: any, rowB: any) => {
+                    return rowA.values.upvotes.count > rowB.values.upvotes.count
+                        ? 1
+                        : -1
+                },
+                Cell: (row: any) =>
+                    isDataFetching ? (
+                        <div className="h-2.5 bg-gray-200 w-24"></div>
+                    ) : (
+                        row.value && (
+                            <UpvoteButton
+                                id={row.row.original.id}
+                                users={row.value.users}
+                                upvotesCount={row.value.count}
+                                removeUpvoteHandler={removeNotesUpvote}
+                                upvoteHandler={upvoteNotes}
+                            />
+                        )
+                    ),
+            },
+            {
                 Header: 'Actions',
                 accessor: 'actions',
                 disableSortBy: true,
@@ -306,9 +332,36 @@ export const Table: FC<{
                         <div></div>
                     ),
             },
+            {
+                Header: (header: any) => {
+                    return (
+                        <div className="flex items-end justify-center space-x-2 w-full">
+                            <span>Description</span>
+                            {header.column.canSort ? (
+                                header.column.isSortedDesc ? (
+                                    <IoMdArrowDropdown className="h-5 w-5" />
+                                ) : (
+                                    <IoMdArrowDropup className="h-5 w-5" />
+                                )
+                            ) : (
+                                ''
+                            )}
+                        </div>
+                    )
+                },
+                accessor: 'description',
+                Cell: (row: any) =>
+                    isDataFetching ? (
+                        <div className="h-2.5 bg-gray-200 w-24"></div>
+                    ) : (
+                        row.value
+                    ),
+            },
         ],
         [isDataFetching, setSelectedNote, refetchNotes, user]
     )
+
+    
     const data = useMemo(() => {
         return isDataFetching
             ? Array(8).fill({})
@@ -322,10 +375,12 @@ export const Table: FC<{
                           users: note.upvotes,
                       },
                       title: note.title,
+                      description:note.description,
                       subjectCode: note.subject_code,
                       subjectName: note.subjectName,
                       url: note.url,
                       semester: note.semester,
+                      resourceType: note.resourceType,
                       instructorName: note.instructorName || 'N/A',
                       branch: note.branch,
                       uploadedBy: note.uploadedBy || 'Anonymous', 
@@ -336,6 +391,8 @@ export const Table: FC<{
                   return rowData;
               });
     }, [isDataFetching, notes]);
+
+    
     
     
 

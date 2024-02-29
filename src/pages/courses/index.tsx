@@ -13,8 +13,9 @@ import { useRouter } from 'next/router'
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import { deleteCourse } from '../../services/db/courses/deleteCourse'
 import { getAuth, onAuthStateChanged} from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
 import { firestore } from '../../utils/firebaseInit';
+import { query, where } from 'firebase/firestore'
 
 export default function Courses() {
     //? router
@@ -33,15 +34,49 @@ export default function Courses() {
     const [searchInput, setSearchInput] = useState<string>('')
     const [adminStatus, setAdminStatus] = useState<boolean>(false)
 
+    useEffect(() => {
+        const checkUserAuthentication = async () => {
+            if (user) {
+                // If the user is authenticated, call checkIfAdminExists
+                await checkIfAdminExists();
+            } else {
+                // Handle the case when the user is not authenticated
+                console.error('User not authenticated.');
+            }
+        };
+
+        // Call the function to check user authentication
+        checkUserAuthentication();
+    }, [user]); // Run this effect whenever the user changes
+
+    const checkIfAdminExists = async () => {
+        // Check if the user object is defined and has the 'name' property
+        if (user && user.name) {
+            try {
+                const q1 = await getDocs(
+                    query(
+                        collection(firestore, 'users'),
+                        where('name', '==', user.name),
+                        where('isAdmin', '==', true)
+                    )
+                );
+                if (q1.size > 0) {
+                    setAdminStatus(true);
+                }
+                console.log('q1: ', q1);
+            } catch (error) {
+                console.error('Error checking admin existence:', error);
+            }
+        } else {
+            // Handle the case when the user is not authenticated
+            console.error('Invalid user object:', user);
+        }
+    };
+
     const auth = getAuth();
     onAuthStateChanged(auth, async (user) => {
         if (user) {
-            const docRef = doc(firestore, "users", user.uid)
-            const docSnap = await getDoc(docRef);
-    
-            if (docSnap.exists()) {
-                setAdminStatus(docSnap.data().isAdmin)
-              }
+            await checkIfAdminExists();
         }
         });
 
@@ -63,10 +98,7 @@ export default function Courses() {
         })
     }, [])
 
-    useEffect(() => {
-        if (selectedCourse) setShowUpdateCourseModal(true)
-        else setShowUpdateCourseModal(false)
-    }, [selectedCourse])
+            
 
     return (
         <div className={`w-full bg-white flex flex-col`}>
@@ -144,9 +176,9 @@ export default function Courses() {
                                 xmlns="http://www.w3.org/2000/svg"
                             >
                                 <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                                 ></path>
                             </svg>

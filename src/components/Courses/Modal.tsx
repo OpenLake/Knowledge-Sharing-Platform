@@ -2,8 +2,6 @@ import React, { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { ModalContainer } from '../Common/ModalContainer'
 import { Input } from '../Common/Input'
-import { SelectInput } from '../Common/SelectInput'
-import { getInstructors } from '../../services/db/instructors/getInstructors'
 import { addInstructor } from '../../services/db/instructors/addInstructor'
 
 export const Modal: FC<{
@@ -30,7 +28,7 @@ export const Modal: FC<{
     const [title, setTitle] = useState<string>('')
     const [code, setCode] = useState<string>('')
     const [isAnonymous, setIsAnonymous] = useState<boolean>(false)
-    const [instructors, setInstructors] = useState<any[]>([])
+    const [instructors, setInstructors] = useState<string>('')
     const [instructorNameInput, setInstructorNameInput] = useState<string>('')
     const [selectedInstructorId, setSelectedInstructorId] = useState<number>(0)
     const [showInstructorNameDropdown, setShowInstructorNameDropdown] =
@@ -44,40 +42,23 @@ export const Modal: FC<{
         if (
             title === '' ||
             code === '' ||
-            ( selectedInstructorName === '')
+            ( instructors === '')
         ) {
             toast.error('Please fill all the details!')
         } else {
             setIsLoading(true)
-            if (
-                !instructors.find(
-                    (instructor) => instructor.instructorName === selectedInstructorName
-                )
-            ) {
-                
-                const instructor = await addInstructor(selectedInstructorName)
-                await actionFunction({
-                    id: isUpdateModal ? selectedEntity.id : null,
-                    title: title,
-                    code: code,
-                    instructorName: selectedInstructorName,
-                    isAnonymous: isAnonymous,
-                    refetch: refetch,
-                })
-            } else {
-                await actionFunction({
-                    id: isUpdateModal ? selectedEntity.id : null,
-                    title: title,
-                    code: code,
-                    instructorName:selectedInstructorName,
-                    isAnonymous: isAnonymous,
-                    refetch: refetch,
-                })
-            }
+            const instructor = await addInstructor(instructors)
+            await actionFunction({
+                id: isUpdateModal ? selectedEntity.id : null,
+                title: title,
+                code: code,
+                instructorName: instructors,
+                isAnonymous: isAnonymous,
+                refetch: refetch,
+            })
             setTitle('')
             setCode('')
-            setSelectedInstructorName('')
-            setSelectedInstructorId(0)
+            setInstructors('')
             setIsAnonymous(false)
             setShowModal(false)
             setIsLoading(false)
@@ -88,7 +69,7 @@ export const Modal: FC<{
         if (selectedEntity) {
             setTitle(selectedEntity.title)
             setCode(selectedEntity.code)
-            setSelectedInstructorName(selectedEntity.instructor.instructorName)
+            setInstructors(selectedEntity.instructor.instructorName)
             setIsAnonymous(selectedEntity.anonymous)
         }
     }, [selectedEntity])
@@ -104,17 +85,6 @@ export const Modal: FC<{
         return () =>
             document.removeEventListener('keydown', keyPressHandler, false)
     }, [setShowModal])
-
-    useEffect(() => {
-        getInstructors().then((res) => setInstructors(res))
-    }, [])
-
-    useEffect(() => {
-        instructors.map((instructor) => {
-            if (instructor.instructorName === selectedInstructorName)
-                setSelectedInstructorId(instructor.id)
-        })
-    }, [selectedInstructorName, instructors])
 
     return (
         <ModalContainer
@@ -143,19 +113,11 @@ export const Modal: FC<{
                 />
 
                 {/* Instructor */}
-                <SelectInput
-                    dropdownItems={instructors}
-                    dropdownKey={'name'}
-                    dropdownValue={'name'}
-                    inputName={'instructor'}
+                <Input
                     inputTitle={'Instructor'}
                     placeholder={'e.g. Dr. R.S. Sharma'}
-                    selectedValue={selectedInstructorName}
-                    setSelectedValue={setSelectedInstructorName}
-                    inputValue={instructorNameInput}
-                    setInputValue={setInstructorNameInput}
-                    showDropdown={showInstructorNameDropdown}
-                    setShowDropdown={setShowInstructorNameDropdown}
+                    setValue={setInstructors}
+                    value = {instructors}
                     type={'text'}
                 />
                 {/* Anonymous */}

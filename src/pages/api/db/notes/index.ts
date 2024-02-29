@@ -47,31 +47,45 @@ export default async function noteHandler(
 
         if (user) {
           const {
-            title,
             subjectCode,
+            resourceType,
             semester,
             subjectName,
             branch,
             uploadedBy,
             instructorName,
+            resourceNumber,
             url,
             isAnonymous,
+            description
           } = body;
           try {
-            //Check if the 
-
+            let generatedTitle = subjectCode+'_'+subjectName+'_'+branch+'_'+semester+'_'+instructorName+'_'+resourceType+'_'+resourceNumber;
+            // console.log(generatedTitle)
+            // console.log(resourceNumber)
+            // console.log(description)
             const newNoteRef = await addDoc(collection(firestore, notesCollection), {
-              title,
+              title:generatedTitle,
               subject_code: subjectCode,
               branch,
               semester,
+              resourceType,
               subjectName,
               instructorName,
+              resourceNumber,
               uploadedBy,
               url,
               anonymous: isAnonymous,
               created_by_id: user.user_id,
+              description
             });
+
+            const newResourceTypeRef = await getDoc(doc(firestore, 'resourceTypes', resourceType));
+            if(!newResourceTypeRef.exists()){
+              await addDoc(collection(firestore, 'resourceTypes'), {
+                resourceType:resourceType
+              })
+            }
 
             res.status(201).json({
               message: 'Notes Created',
@@ -111,10 +125,13 @@ export default async function noteHandler(
               title,
               subjectCode,
               semester,
+              resourceType,
               subjectName,
               branch,
               instructorName,
+              resourceNumber,
               uploadedBy,
+              description,
               url,
               isAnonymous,
             } = body;
@@ -131,13 +148,23 @@ export default async function noteHandler(
                   subject_code: subjectCode,
                   branch,
                   semester,
+                  resourceType,
                   subjectName,
+                  description,
                   instructorName,
+                  resourceNumber,
                   uploadedBy,
                   url,
                   anonymous: isAnonymous,
                   created_by_id: user.user_id,
                 });
+
+                const newResourceTypeRef = await getDoc(doc(firestore, 'resourceTypes', resourceType));
+                if(!newResourceTypeRef.exists()){
+                  await addDoc(collection(firestore, 'resourceTypes'), {
+                    resourceType:resourceType
+                  })
+                }
 
                 res.status(200).json({
                   message: 'Notes Updated',

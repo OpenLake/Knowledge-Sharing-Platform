@@ -3,9 +3,11 @@ import { api } from '../../../utils/api'
 
 interface Props {
     id: number
-    title: string
     subjectCode: string
     semester: string
+    resourceType: string,
+    resourceNumber:number,
+    description:string,
     instructorName: string
     subjectName:string
     uploadedBy:string
@@ -17,11 +19,13 @@ interface Props {
 
 export const updateNote = ({
     id,
-    title,
     subjectCode,
     branch,
     instructorName,
+    description,
+    resourceNumber,
     subjectName,
+    resourceType,
     uploadedBy,
     isAnonymous,
     refetch,
@@ -30,11 +34,13 @@ export const updateNote = ({
 }: Props) => {
     toast.promise(
         api.put('/api/db/notes?id=' + id, {
-            title,
             subjectCode,
             semester,
             instructorName,
+            resourceType,
             subjectName,
+            resourceNumber,
+            description,
             uploadedBy,
             branch,
             url,

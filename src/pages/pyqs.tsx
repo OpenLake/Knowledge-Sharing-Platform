@@ -9,6 +9,12 @@ import { pyqsColumnData } from '../types/pyqsColumnData';
 import { Modal } from '../components/Common/Modal';
 import { addPyq } from '../services/db/pyqs/addPyq';
 import { updatePyq } from '../services/db/pyqs/updatePyq';
+import { ModifyDbModal } from '../components/Common/modifyDbModal'
+import { addDb } from '../services/db/common/addDb'
+import { getFirestore } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+import { getDocs, query, collection, where } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export default function PYQs() {
     const { user, loading }: any = useAuth();
@@ -16,8 +22,13 @@ export default function PYQs() {
     const [isDataFetching, setIsDataFetching] = useState<boolean>(false);
     const [pyqs, setPYQs] = useState<pyqsColumnData[]>([]);
     const [selectedPYQ, setSelectedPYQ] = useState<any>(null);
+    const [adminStatus, setAdminStatus] = useState<boolean>(false)
+    const [showModifyDbModal, setShowModifyDbModal] = useState<boolean>(false)
     const [showAddPYQModal, setShowAddPYQModal] = useState<boolean>(false);
     const [showUpdatePYQModal, setShowUpdatePYQModal] = useState<boolean>(false);
+
+    const firestore = getFirestore();
+    const auth = getAuth(); 
 
     const refetchPYQs = () => {
         setIsDataFetching(true);
@@ -36,6 +47,32 @@ export default function PYQs() {
     }, []);
 
     useEffect(() => {
+        async function checkAdmin() {
+            if (user) {
+                const docSnap = await getDocs(query(collection(firestore, "users"), where("isAdmin", "==", true), where("email", "==", user.email)));
+                if (docSnap) {
+                    docSnap.forEach((doc) => {
+                        if (doc.data().isAdmin) {
+                            setAdminStatus(true);
+                        }
+                    });
+                }
+            }
+        }
+        checkAdmin();
+        
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                checkAdmin();
+            } else {
+                setAdminStatus(false);
+            }
+        });
+
+        return () => unsubscribe();
+    });
+
+    useEffect(() => {
         if (selectedPYQ) setShowUpdatePYQModal(true);
         else setShowUpdatePYQModal(false);
     }, [selectedPYQ]);
@@ -50,6 +87,16 @@ export default function PYQs() {
                     refetch={refetchPYQs}
                     showModal={showAddPYQModal}
                     setShowModal={setShowAddPYQModal}
+                />
+            )}
+            {adminStatus && (
+                <ModifyDbModal
+                    header="Modify Database Structure"
+                    actionButtonText="Modify DB"
+                    actionFunction={addDb}
+                    refetch={refetchPYQs}
+                    showModal={showModifyDbModal}
+                    setShowModal={setShowModifyDbModal}
                 />
             )}
             {selectedPYQ && (
@@ -97,6 +144,23 @@ export default function PYQs() {
                         <BsPlus className="h-8 w-8" />
                         <span className="">Add PYQ</span>
                     </button>
+                    {adminStatus && (
+                        <button
+                            disabled={loading}
+                            onClick={() => {
+                                if (user) setShowModifyDbModal(true)
+                                else
+                                    toast('Please login to add new notes', {
+                                        icon: 'ℹ️',
+                                    })
+                            }}
+                            type="button"
+                            className="flex items-center space-x-2 px-2 py-1 duration-200 transition-all rounded-md shadow-md hover:shadow-xl bg-primary text-white font-semibold disabled:bg-primary/70 disabled:cursor-wait"
+                        >
+                            <BsPlus className="h-8 w-8" />
+                            <span className="">Modify DB</span>
+                        </button>
+                    )}
                 </div>
                 <div className="col-span-5 flex w-full h-fit overflow-x-auto">
                 <Table

@@ -9,16 +9,29 @@ import { notesColumnData } from '../types/notesColumnData'
 import { getNotes } from '../services/db/notes/getNotes'
 import { addNotes } from '../services/db/notes/addNotes'
 import { updateNote } from '../services/db/notes/updateNotes'
+import { collection, doc, getDocs, query, where } from "firebase/firestore";
+import { firestore } from '../utils/firebaseInit'
+import { onAuthStateChanged } from 'firebase/auth'
+import { getAuth } from 'firebase/auth'
+import { getFirestore } from 'firebase/firestore'
+import { ModifyDbModal } from '../components/Common/modifyDbModal'
+import { addDb } from '../services/db/common/addDb'
 
 export default function Notes() {
     const { user, loading }: any = useAuth()
 
     const [isDataFetching, setIsDataFetching] = useState<boolean>(false)
     const [showAddNoteModal, setShowAddNoteModal] = useState<boolean>(false)
+    const [showModifyDbModal, setShowModifyDbModal] = useState<boolean>(false)
     const [showUpdateNoteModal, setShowUpdateNoteModal] =
         useState<boolean>(false)
     const [selectedNote, setSelectedNote] = useState<any>(null)
     const [notes, setNotes] = useState<notesColumnData[]>([])
+    const [adminStatus, setAdminStatus] = useState<boolean>(false)
+
+    const firestore = getFirestore();
+    const auth = getAuth(); 
+
 
     //? functions
     const refetchNotes = () => {
@@ -39,6 +52,33 @@ export default function Notes() {
     }, [])
 
     useEffect(() => {
+        async function checkAdmin() {
+            if (user) {
+                const docSnap = await getDocs(query(collection(firestore, "users"), where("isAdmin", "==", true), where("email", "==", user.email)));
+                if (docSnap) {
+                    docSnap.forEach((doc) => {
+                        if (doc.data().isAdmin) {
+                            setAdminStatus(true);
+                        }
+                    });
+                }
+            }
+        }
+        checkAdmin();
+        
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                checkAdmin();
+            } else {
+                setAdminStatus(false);
+            }
+        });
+
+        return () => unsubscribe();
+    });
+    
+
+    useEffect(() => {
         if (selectedNote) setShowUpdateNoteModal(true)
         else setShowUpdateNoteModal(false)
     }, [selectedNote])
@@ -53,6 +93,16 @@ export default function Notes() {
                     refetch={refetchNotes}
                     showModal={showAddNoteModal}
                     setShowModal={setShowAddNoteModal}
+                />
+            )}
+            {adminStatus && (
+                <ModifyDbModal
+                    header="Modify Database Structure"
+                    actionButtonText="Modify DB"
+                    actionFunction={addDb}
+                    refetch={refetchNotes}
+                    showModal={showModifyDbModal}
+                    setShowModal={setShowModifyDbModal}
                 />
             )}
             {selectedNote && (
@@ -100,6 +150,23 @@ export default function Notes() {
                         <BsPlus className="h-8 w-8" />
                         <span className="">Add Notes</span>
                     </button>
+                    {adminStatus && (
+                        <button
+                            disabled={loading}
+                            onClick={() => {
+                                if (user) setShowModifyDbModal(true)
+                                else
+                                    toast('Please login to add new notes', {
+                                        icon: 'ℹ️',
+                                    })
+                            }}
+                            type="button"
+                            className="flex items-center space-x-2 px-2 py-1 duration-200 transition-all rounded-md shadow-md hover:shadow-xl bg-primary text-white font-semibold disabled:bg-primary/70 disabled:cursor-wait"
+                        >
+                            <BsPlus className="h-8 w-8" />
+                            <span className="">Modify DB</span>
+                        </button>
+                    )}
                 </div>
                 <div className="col-span-5 flex w-full h-fit">
                     <Table

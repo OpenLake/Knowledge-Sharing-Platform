@@ -2,9 +2,11 @@ import { toast } from 'react-hot-toast'
 import { api } from '../../../utils/api'
 
 interface Props {
-    title: string
     subjectCode: string
     semester: string
+    resourceType: string,
+    description:string,
+    resourceNumber:number,
     subjectName: string
     instructorName: string
     branch: string
@@ -15,11 +17,13 @@ interface Props {
 }
 
 export const addNotes = ({
-    title,
     subjectCode,
     branch,
     subjectName,
     instructorName,
+    resourceType,
+    resourceNumber,
+    description,
     isAnonymous,
     uploadedBy,
     refetch,
@@ -28,11 +32,13 @@ export const addNotes = ({
 }: Props) => {
     toast.promise(
         api.post('/api/db/notes', {
-            title,
             subjectCode,
             semester,
             subjectName,
+            resourceType,
             instructorName,
+            description,
+            resourceNumber,
             uploadedBy,
             branch,
             url,
