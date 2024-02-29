@@ -198,9 +198,7 @@ export const Modal: FC<{
             let urlToSend
             const fileExtension = file.name.split('.').pop()
             const expirationTime = new Date()
-            expirationTime.setHours(
-                expirationTime.getHours() + 1000000000000000
-            )
+            expirationTime.setHours(expirationTime.getHours() + 10000)
             try {
                 await Promise.all([
                     s3
