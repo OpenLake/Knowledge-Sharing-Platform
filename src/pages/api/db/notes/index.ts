@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { firestore } from '../../../../utils/firebaseInit';
 import { adminAuth } from '../../../../utils/firebaseAdminInit';
+import { filterBadWords } from './badWordFilter';
 import {
   collection,
   getDocs,
@@ -10,6 +11,7 @@ import {
   deleteDoc,
   doc,
 } from 'firebase/firestore';
+import axios from 'axios';
 
 const notesCollection = 'notes';
 
@@ -36,7 +38,7 @@ export default async function noteHandler(
       } catch (err: any) {
         console.log(err);
         res.status(405).json({
-          err,
+          error: err.message || 'An error occurred',
         });
       }
       break;
@@ -58,7 +60,17 @@ export default async function noteHandler(
             url,
             isAnonymous,
           } = body;
+
           try {
+            const response = await axios.get(url);
+            const content = response.data;
+
+            const profanityCheckResponse = await filterBadWords(content);
+
+            if ('is-bad' in profanityCheckResponse && profanityCheckResponse['is-bad']) {
+              throw new Error('Profanity detected in the content');
+            }
+
             const newNoteRef = await addDoc(collection(firestore, notesCollection), {
               title,
               subject_code: subjectCode,
@@ -70,6 +82,7 @@ export default async function noteHandler(
               url,
               anonymous: isAnonymous,
               created_by_id: user.user_id,
+              content,
             });
 
             res.status(201).json({
@@ -83,7 +96,7 @@ export default async function noteHandler(
           } catch (err: any) {
             console.log(err);
             res.status(405).json({
-              err,
+              error: err.message || 'An error occurred',
             });
           }
         } else {
@@ -116,7 +129,10 @@ export default async function noteHandler(
               uploadedBy,
               url,
               isAnonymous,
+              content,
             } = body;
+
+            await filterBadWords(content);
 
             const noteRef = doc(firestore, notesCollection, id as string);
             const noteDoc = await getDoc(noteRef);
@@ -136,6 +152,7 @@ export default async function noteHandler(
                   url,
                   anonymous: isAnonymous,
                   created_by_id: user.user_id,
+                  content,
                 });
 
                 res.status(200).json({
@@ -154,7 +171,7 @@ export default async function noteHandler(
           } catch (err: any) {
             console.log(err);
             res.status(405).json({
-              err,
+              error: err.message || 'An error occurred',
             });
           }
         }
@@ -197,7 +214,7 @@ export default async function noteHandler(
           } catch (err: any) {
             console.log(err);
             res.status(405).json({
-              err,
+              error: err.message || 'An error occurred',
             });
           }
         } else {
