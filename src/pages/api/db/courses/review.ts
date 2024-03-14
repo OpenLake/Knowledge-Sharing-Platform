@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { adminAuth } from '../../../../utils/firebaseAdminInit';
 import { firestore } from '../../../../utils/firebaseInit';
-
+import { filterBadWords } from '../../badWordFilter';
+import toast from 'react-hot-toast';
 import {
   collection,
   updateDoc,
@@ -26,6 +27,16 @@ export default async function courseReviewHandler(
           try {
             const { user_id, name } = user;
             const { code, comment, rating, isAnonymous } = body;
+
+            const profanityCheckResponse = await filterBadWords(comment);
+      
+              if ('is-bad' in profanityCheckResponse && profanityCheckResponse['is-bad']) {
+                toast.error('Bad word found in title');
+                res.status(405).json({
+                  message: 'Title contains profanity',
+                });
+                return;
+              }
 
             const courseDocRef = await getCourseDocRef(code);
             if (courseDocRef) {
@@ -84,6 +95,16 @@ export default async function courseReviewHandler(
       try {
         const { user_id, name } = user;
         const { code, comment, rating, isAnonymous } = body;
+
+        const profanityCheckResponse = await filterBadWords(comment);
+      
+              if ('is-bad' in profanityCheckResponse && profanityCheckResponse['is-bad']) {
+                toast.error('Bad word found in title');
+                res.status(405).json({
+                  message: 'Title contains profanity',
+                });
+                return;
+              }
 
         const courseDocRef = await getCourseDocRef(code);
         if (courseDocRef) {

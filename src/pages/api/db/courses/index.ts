@@ -1,5 +1,7 @@
 import { firestore } from '../../../../utils/firebaseInit';
 import { getAuth } from 'firebase/auth';
+import { filterBadWords } from '../../badWordFilter';
+import toast from 'react-hot-toast';
 import {
   DocumentData,
   getDocs,
@@ -57,49 +59,85 @@ export default async function coursesHandler(
       }
       break;
 
-    case 'POST':
-      if (headers && headers.authorization) {
-        const accessToken = headers.authorization.split(' ')[1];
-        const user = await adminAuth.verifyIdToken(accessToken!)
-        try {
-          if (user) {
-            const { title, code, isAnonymous, instructorName } = body;
-            const existingCourseSnapshot = await getDocs(
-                firestoreQuery(coursesCollection, where('code', '==', code),where('instructorName', '==', instructorName))
-            );
-  
-            if (!existingCourseSnapshot.empty) {
-              res.status(405).json({
-                message: 'Course Code already exists',
-              });
-              return;
-            }
-            await addDoc(coursesCollection, {
-              title,
-              code,
-              isAnonymous,
-              instructorName
-            });
+      case 'POST':
+        if (headers && headers.authorization) {
+          const accessToken = headers.authorization.split(' ')[1];
+          const user = await adminAuth.verifyIdToken(accessToken!)
+          try {
+            if (user) {
+              const { title, code, isAnonymous, instructorName } = body;
+      
+              // Add bad word moderation here
+const profanityCheckResponse = await filterBadWords(title);
+const profanityCheckResponseCode = await filterBadWords(code);
+const profanityCheckResponseInstructor = await filterBadWords(instructorName);
 
-            res.status(201).json({
-              message: 'New Course Created',
-            });
-          } else {
+if ('is-bad' in profanityCheckResponse && profanityCheckResponse['is-bad']) {
+  toast.error('Bad word found in title');
+  res.status(405).json({
+    message: 'Title contains profanity',
+  });
+  return;
+}
+
+if ('is-bad' in profanityCheckResponseCode && profanityCheckResponseCode['is-bad']) {
+  toast.error('Bad word found in code');
+  res.status(405).json({
+    message: 'Code contains profanity',
+  });
+  return;
+}
+
+if ('is-bad' in profanityCheckResponseInstructor && profanityCheckResponseInstructor['is-bad']) {
+  toast.error('Bad word found in instructor name');
+  res.status(405).json({
+    message: 'Instructor name contains profanity',
+  });
+  return;
+}
+
+      
+              const existingCourseSnapshot = await getDocs(
+                firestoreQuery(
+                  coursesCollection,
+                  where('code', '==', code),
+                  where('instructorName', '==', instructorName)
+                )
+              );
+      
+              if (!existingCourseSnapshot.empty) {
+                res.status(405).json({
+                  message: 'Course Code already exists',
+                });
+                return;
+              }
+      
+              await addDoc(coursesCollection, {
+                title,
+                code,
+                isAnonymous,
+                instructorName
+              });
+      
+              res.status(201).json({
+                message: 'New Course Created',
+              });
+            } else {
+              res.status(401).json({
+                message: 'Unauthorized Access1',
+              });
+            }
+          } catch (err: any) {
             res.status(401).json({
-              message: 'Unauthorized Access1',
+              message: err,
             });
           }
-        } catch (err: any) {
+        } else {
           res.status(401).json({
-            message: err,
+            message: 'Unauthorized Access3',
           });
         }
-      } else {
-        res.status(401).json({
-          message: 'Unauthorized Access3',
-        });
-      }
-      break;
+        break;
 
     case 'PUT':
       if (headers && headers.authorization) {
