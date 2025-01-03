@@ -16,7 +16,7 @@ export default async function authHandler(
 
         try {
           const user = await adminAuth.verifyIdToken(accessToken!);
-          const { email, name, uid } = user;
+          const { email, name, uid, isAdmin } = user;
 
           const usersCollection = collection(firestore, 'users');
           const userQuery = await getDocs(usersCollection);
@@ -27,13 +27,16 @@ export default async function authHandler(
               user_id: uid,
               email: email as string,
               name,
+              isAdmin: user.isAdmin || false
             });
+          } else {
+            const existingAdminStatus = existingUser.data().isAdmin;
+            res.status(200).json({
+              message: 'User fetched',
+              result: { ...user, isAdmin: existingAdminStatus },
+            });
+            return;
           }
-
-          res.status(200).json({
-            message: 'User fetched',
-            result: user,
-          });
         } catch (err: any) {
           res.status(405).json({
             err,

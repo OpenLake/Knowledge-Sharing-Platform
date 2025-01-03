@@ -3,6 +3,7 @@ export interface notesColumnData {
     upvotes: number
     title: string
     subjectCode: string
+    resourceType: string
     subjectName: string
     url: string
     semester: string

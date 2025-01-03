@@ -42,7 +42,10 @@ export default async function pyqHandler(
                 subjectCode,
                 semester,
                 instructorName,
+                resourceNumber,
+                description,
                 subjectName,
+                resourceType,
                 uploadedBy,
                 branch,
                 url,
@@ -50,19 +53,30 @@ export default async function pyqHandler(
             } = body;
 
             try {
+                let generatedTitle = subjectCode+'_'+subjectName+'_'+branch+'_'+semester+'_'+instructorName+'_'+resourceType+'_'+resourceNumber;
                 const pyqRef = await addDoc(collection(firestore, pyqsCollection), {
-                    title,
+                    title:generatedTitle,
                     subject_code:subjectCode,
                     semester,
                     branch,
                     instructorName,
+                    resourceType,
                     subjectName,
+                    resourceNumber,
+                    description,
                     uploadedBy,
                     url,
                     anonymous: isAnonymous,
                     created_by_id: user.user_id,
                     timestamp: serverTimestamp(),
                 }); 
+
+                const newResourceTypeRef = await getDoc(doc(firestore, 'resourceTypes', resourceType));
+                if(!newResourceTypeRef.exists()){
+                await addDoc(collection(firestore, 'resourceTypes'), {
+                    resourceType:resourceType
+                })
+                }
 
                 res.status(201).json({
                     message: 'PYQ Created',
@@ -106,6 +120,9 @@ export default async function pyqHandler(
                                     subject_code: body.subjectCode,
                                     semester: body.semester,
                                     branch: body.branch,
+                                    resourceType: body.resourceType,
+                                    resourceNumber:body.resourceNumber,
+                                    description:body.description,
                                     instructorName:body.instructorName,
                                     url: body.url,
                                     subjectName:body.subjectName,
@@ -114,6 +131,13 @@ export default async function pyqHandler(
                                     created_by_id: user.user_id,
                                     timestamp: serverTimestamp(),
                                 });
+
+                                const newResourceTypeRef = await getDoc(doc(firestore, 'resourceTypes', body.resourceType));
+                                if(!newResourceTypeRef.exists()){
+                                await addDoc(collection(firestore, 'resourceTypes'), {
+                                    resourceType:body.resourceType
+                                })
+                                }
 
                                 res.status(200).json({
                                     message: 'PYQ Updated',

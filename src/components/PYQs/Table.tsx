@@ -105,6 +105,31 @@ export const Table: FC<{
             {
                 Header: (header: any) => {
                     return (
+                        <div className="flex items-end justify-center space-x-2 w-full">
+                            <span>Resource Type</span>
+                            {header.column.canSort ? (
+                                header.column.isSortedDesc ? (
+                                    <IoMdArrowDropdown className="h-5 w-5" />
+                                ) : (
+                                    <IoMdArrowDropup className="h-5 w-5" />
+                                )
+                            ) : (
+                                ''
+                            )}
+                        </div>
+                    )
+                },
+                accessor: 'resourceType',
+                Cell: (row: any) =>
+                    isDataFetching ? (
+                        <div className="h-2.5 bg-gray-200 w-24"></div>
+                    ) : (
+                        row.value
+                    ),
+            },
+            {
+                Header: (header: any) => {
+                    return (
                         <div className="flex items-end justify-center w-full space-x-2">
                             <span className="whitespace-nowrap">
                                 Subject Code
@@ -297,6 +322,31 @@ export const Table: FC<{
                         <div></div>
                     ),
             },
+            {
+                Header: (header: any) => {
+                    return (
+                        <div className="flex items-end justify-center space-x-2 w-full">
+                            <span>Description</span>
+                            {header.column.canSort ? (
+                                header.column.isSortedDesc ? (
+                                    <IoMdArrowDropdown className="h-5 w-5" />
+                                ) : (
+                                    <IoMdArrowDropup className="h-5 w-5" />
+                                )
+                            ) : (
+                                ''
+                            )}
+                        </div>
+                    )
+                },
+                accessor: 'description',
+                Cell: (row: any) =>
+                    isDataFetching ? (
+                        <div className="h-2.5 bg-gray-200 w-24"></div>
+                    ) : (
+                        row.value
+                    ),
+            },
         ],
         [isDataFetching, setSelectedPYQ, refetchPYQs, user]
     )
@@ -316,8 +366,10 @@ export const Table: FC<{
                           },
                           subjectCode: pyq.subject_code,
                           subjectName: pyq.subjectName,
+                          description:pyq.description,
                           url: pyq.url,
                           semester: pyq.semester,
+                          resourceType: pyq.resourceType,
                           instructorName: pyq.instructorName,
                           branch: pyq.branch,
                           uploadedBy: pyq.uploadedBy,

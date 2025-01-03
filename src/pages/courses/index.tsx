@@ -12,6 +12,10 @@ import { Player } from '@lottiefiles/react-lottie-player'
 import { useRouter } from 'next/router'
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import { deleteCourse } from '../../services/db/courses/deleteCourse'
+import { getAuth, onAuthStateChanged} from 'firebase/auth';
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
+import { firestore } from '../../utils/firebaseInit';
+import { query, where } from 'firebase/firestore'
 
 export default function Courses() {
     //? router
@@ -28,6 +32,53 @@ export default function Courses() {
     const [selectedCourse, setSelectedCourse] = useState<any>(null)
     const [courses, setCourses] = useState<coursesColumnData[]>([])
     const [searchInput, setSearchInput] = useState<string>('')
+    const [adminStatus, setAdminStatus] = useState<boolean>(false)
+
+    useEffect(() => {
+        const checkUserAuthentication = async () => {
+            if (user) {
+                // If the user is authenticated, call checkIfAdminExists
+                await checkIfAdminExists();
+            } else {
+                // Handle the case when the user is not authenticated
+                console.error('User not authenticated.');
+            }
+        };
+
+        // Call the function to check user authentication
+        checkUserAuthentication();
+    }, [user]); // Run this effect whenever the user changes
+
+    const checkIfAdminExists = async () => {
+        // Check if the user object is defined and has the 'name' property
+        if (user && user.name) {
+            try {
+                const q1 = await getDocs(
+                    query(
+                        collection(firestore, 'users'),
+                        where('name', '==', user.name),
+                        where('isAdmin', '==', true)
+                    )
+                );
+                if (q1.size > 0) {
+                    setAdminStatus(true);
+                }
+                console.log('q1: ', q1);
+            } catch (error) {
+                console.error('Error checking admin existence:', error);
+            }
+        } else {
+            // Handle the case when the user is not authenticated
+            console.error('Invalid user object:', user);
+        }
+    };
+
+    const auth = getAuth();
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            await checkIfAdminExists();
+        }
+        });
 
     //? functions
     const refetchCourses = () => {
@@ -47,10 +98,7 @@ export default function Courses() {
         })
     }, [])
 
-    useEffect(() => {
-        if (selectedCourse) setShowUpdateCourseModal(true)
-        else setShowUpdateCourseModal(false)
-    }, [selectedCourse])
+            
 
     return (
         <div className={`w-full bg-white flex flex-col`}>
@@ -94,7 +142,7 @@ export default function Courses() {
             <div className="grid grid-cols-5 gap-0 justify-center py-48 px-5 md:px-14 space-y-8 min-h-screen">
                 <div className="col-span-5 flex flex-row items-center gap-4 justify-between">
                     <h3 className="font-bold text-xl md:text-3xl">Courses</h3>
-                    <button
+                    {adminStatus && (<button
                         disabled={loading}
                         onClick={() => {
                             if (user) setShowAddCourseModal(true)
@@ -108,7 +156,7 @@ export default function Courses() {
                     >
                         <BsPlus className="h-8 w-8" />
                         <span className="">Add Course</span>
-                    </button>
+                    </button>)}
                 </div>
                 <div className="flex col-span-5 w-full px-2 py-3">
                     <label
@@ -128,9 +176,9 @@ export default function Courses() {
                                 xmlns="http://www.w3.org/2000/svg"
                             >
                                 <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                                 ></path>
                             </svg>

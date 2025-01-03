@@ -4,45 +4,30 @@ import { api } from '../../../utils/api'
 interface Props {
     subjectCode: string
     semester: string
+    resourceType: string,
     subjectName: string
     instructorName: string
-    resourceNumber:number,
-    description:string,
-    resourceType: string
     branch: string
-    url: string
-    uploadedBy: string
-    isAnonymous: boolean
     refetch: Function
 }
 
-export const addPyq = ({
+export const addDb = ({
     subjectCode,
-    semester,
-    subjectName,
-    resourceType,
-    resourceNumber,
-    description,
-    instructorName,
     branch,
-    uploadedBy,
-    url,
-    isAnonymous,
+    subjectName,
+    instructorName,
+    resourceType,
     refetch,
+    semester,
 }: Props) => {
     toast.promise(
-        api.post('/api/db/pyqs', {
+        api.post('/api/db/addDb', {
             subjectCode,
             semester,
             subjectName,
-            instructorName,
-            description,
-            resourceNumber,
             resourceType,
-            uploadedBy,
-            branch,
-            url,
-            isAnonymous,
+            instructorName,
+            branch
         }),
         {
             loading: 'Adding...',

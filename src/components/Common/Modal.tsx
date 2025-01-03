@@ -1,23 +1,24 @@
-import React, { Dispatch, FC, SetStateAction, useEffect, useState } from 'react';
-import { branches } from '../../constants/branches';
-import { toast } from 'react-hot-toast';
-import { ModalContainer } from './ModalContainer';
-import { Input } from './Input';
-import { SelectInput } from './SelectInput';
-import { semesters } from '../../constants/semesters';
-import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
-import { onAuthStateChanged } from 'firebase/auth';
+import React, { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
+import { toast } from 'react-hot-toast'
+import { ModalContainer } from './ModalContainer'
+import { Input } from './Input'
+import { SelectInput } from './SelectInput'
+import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { doc, getDoc } from 'firebase/firestore'
+import { firestore } from '../../utils/firebaseInit'
+import { query, where } from 'firebase/firestore'
+import { s3 } from '../../utils/awsConfig'
 
 export const Modal: FC<{
-    isUpdateModal?: boolean;
-    header: string;
-    actionButtonText: string;
-    actionFunction: Function;
-    showModal: boolean;
-    refetch: Function;
-    setShowModal: Dispatch<SetStateAction<boolean>>;
-    selectedEntity?: any;
+    isUpdateModal?: boolean
+    header: string
+    actionButtonText: string
+    actionFunction: Function
+    showModal: boolean
+    refetch: Function
+    setShowModal: Dispatch<SetStateAction<boolean>>
+    selectedEntity?: any
 }> = ({
     header,
     refetch,
@@ -28,15 +29,17 @@ export const Modal: FC<{
     selectedEntity,
     isUpdateModal = false,
 }) => {
-    const db = getFirestore();
+    const db = getFirestore()
     //? states
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [title, setTitle] = useState<string>('')
     const [url, setUrl] = useState<string>('')
+    const [resourceNumber, setResourceNumber] = useState<number>(0)
     const [isAnonymous, setIsAnonymous] = useState<boolean>(false)
     const [showSemesterDropdown, setShowSemesterDropdown] =
         useState<boolean>(false)
     const [showSubjectNameDropdown, setShowSubjectNameDropdown] =
+        useState<boolean>(false)
+    const [showResourceTypeDropdown, setShowResourceTypeDropdown] =
         useState<boolean>(false)
     const [showSubjectCodeDropdown, setShowSubjectCodeDropdown] =
         useState<boolean>(false)
@@ -57,137 +60,243 @@ export const Modal: FC<{
     const [selectedSubjectName, setSelectedSubjectName] = useState<string>('')
     const [subjects, setSubjects] = useState<any[]>([])
     const [instructors, setInstructors] = useState<any[]>([])
+    const [semesters, setSemesters] = useState<any[]>([])
+    const [branches, setBranches] = useState<any[]>([])
+    const [adminStatus, setAdminStatus] = useState<boolean>(false)
+    const [resourceTypes, setResourceTypes] = useState<any[]>([])
+    const [resourceTypeInput, setResourceTypeInput] = useState<string>('')
+    const [selectedResourceType, setSelectedResourceType] = useState<string>('')
+    const [description, setDescription] = useState<string>('')
+    const [file, setFile] = useState<File | null>(null)
 
-    const auth = getAuth();
-    const [user, setUser] = useState<any | null>(null);
+    const auth = getAuth()
+    const [user, setUser] = useState<any | null>(null)
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const docRef = doc(firestore, 'users', user.uid)
+            const docSnap = await getDoc(docRef)
+
+            if (docSnap.exists()) {
+                setAdminStatus(docSnap.data().isAdmin)
+            }
+        }
+    })
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-        setUser(user);
-        });
+            setUser(user)
+        })
 
-        return () => unsubscribe();
-    }, [auth]);
+        return () => unsubscribe()
+    }, [auth])
 
     //? functions
     const actionHandler = async (e: any) => {
-        e.preventDefault();
+        e.preventDefault()
 
         try {
             if (
-                title === '' ||
+                selectedResourceType === '' ||
                 selectedSubjectCode === '' ||
                 selectedSubjectName === '' ||
                 selectedSemester === '' ||
                 selectedBranch === '' ||
-                url === '' ||
+                // url === '' ||
+                resourceNumber <= 0 ||
+                description === '' ||
+                file === null ||
                 (selectedInstructorId === 0 && selectedInstructorName === '')
             ) {
-                toast.error('Please fill in all the details!');
-                return;
+                toast.error('Please fill in all the details!')
+                return
             }
 
-            setIsLoading(true);
-            const subjectQuerySnapshot = await getDocs(collection(db, 'subjects'));
+            setIsLoading(true)
+
+            const combinationExists = await getDocs(
+                query(
+                    collection(db, 'notes'),
+                    where('resourceNumber', '==', resourceNumber),
+                    where('resourceType', '==', selectedResourceType),
+                    where('subject_code', '==', selectedSubjectCode),
+                    where('subjectName', '==', selectedSubjectName),
+                    where('semester', '==', selectedSemester),
+                    where('instructorName', '==', selectedInstructorName),
+                    where('branch', '==', selectedBranch)
+                )
+            )
+            if (!combinationExists.empty) {
+                toast.error('The selected combination already exists !')
+                return
+            }
+
+            const subjectQuerySnapshot = await getDocs(
+                collection(db, 'subjects')
+            )
             const subjectExists = subjectQuerySnapshot.docs.some(
                 (doc) => doc.data().code === selectedSubjectCode
-            );
+            )
 
             if (!subjectExists) {
-                await addDoc(collection(db, 'subjects'), {
-                    name: selectedSubjectName,
-                    code: selectedSubjectCode,
-                });
-
-                const subjectsSnapshot = await getDocs(collection(db, 'subjects'));
-                setSubjects(subjectsSnapshot.docs.map((doc) => doc.data()));
+                toast.error('The subject is not added, contact your admin.')
+                return
             }
 
-            const instructorQuerySnapshot = await getDocs(collection(db, 'instructors'));
+            const instructorQuerySnapshot = await getDocs(
+                collection(db, 'instructors')
+            )
             const existingInstructor = instructorQuerySnapshot.docs.find(
                 (doc) => doc.data().name === selectedInstructorName
-            );
+            )
 
             if (!existingInstructor) {
-                await addDoc(collection(db, 'instructors'), {
-                    name: selectedInstructorName,
-                });
-
-                const instructorsSnapshot = await getDocs(collection(db, 'instructors'));
-                setInstructors(instructorsSnapshot.docs.map((doc) => doc.data()));
+                toast.error('The instructor is not added, contact your admin.')
+                return
             }
+
+            const resourceTypeQuerySnapshot = await getDocs(
+                collection(db, 'resourceTypes')
+            )
+            const existingResourceType = resourceTypeQuerySnapshot.docs.find(
+                (doc) => (doc.data().resourceType = selectedResourceType)
+            )
+
+            if (!existingResourceType) {
+                toast.error("Resource Type doesn't exist, contact your admin.")
+                return
+            }
+
+            let generatedTitle =
+                selectedSubjectCode +
+                '_' +
+                selectedSubjectName +
+                '_' +
+                selectedBranch +
+                '_' +
+                selectedSemester +
+                '_' +
+                selectedInstructorName +
+                '_' +
+                selectedResourceType +
+                '_' +
+                resourceNumber
+
+            const q = await getDocs(
+                query(
+                    collection(firestore, 'cities'),
+                    where('title', '==', generatedTitle)
+                )
+            )
+            if (!q.empty) {
+                toast.error(
+                    'Resource already exists, please choose a different combination.'
+                )
+                return
+            }
+
+            let urlToSend
+            const fileExtension = file.name.split('.').pop()
+            const expirationTime = new Date()
+            expirationTime.setHours(expirationTime.getHours() + 10000)
+            try {
+                await Promise.all([
+                    s3
+                        .upload({
+                            Body: file,
+                            Bucket: 'ksp-pdf',
+                            Key: generatedTitle + '.' + fileExtension,
+                            Expires: expirationTime,
+                        })
+                        .promise(),
+                    s3.getSignedUrl('getObject', {
+                        Bucket: 'ksp-pdf',
+                        Key: generatedTitle + '.' + fileExtension,
+                    }),
+                ]).then(([uploadResponse, url]) => {
+                    console.log('File uploaded successfully')
+                    console.log('url generated successfully: ', url)
+                    urlToSend = url
+                })
+            } catch (error) {
+                console.error('Error uploading file:', error)
+            }
+
+            console.log(urlToSend)
 
             await actionFunction({
                 id: isUpdateModal ? selectedEntity.id : null,
-                title,
+                resourceType: selectedResourceType,
+                resourceNumber: resourceNumber,
                 subjectCode: selectedSubjectCode,
-                subjectName:selectedSubjectName,
+                subjectName: selectedSubjectName,
                 semester: selectedSemester,
-                uploadedBy : user?.displayName,
+                uploadedBy: user?.displayName,
                 instructorName: selectedInstructorName,
+                description,
                 branch: selectedBranch,
-                url,
+                url: urlToSend,
                 isAnonymous,
                 refetch,
-            });
+            })
 
-            setTitle('');
-            setUrl('');
-            setSelectedBranch('');
-            setSelectedSemester('');
-            setSelectedSubjectCode('');
-            setSelectedSubjectName('');
-            setSelectedInstructorName('');
-            setSelectedInstructorId(0);
-            setIsAnonymous(false);
-            setShowModal(false);
+            setUrl('')
+            setSelectedBranch('')
+            setSelectedSemester('')
+            setSelectedSubjectCode('')
+            setSelectedSubjectName('')
+            setSelectedInstructorName('')
+            setDescription('')
+            setSelectedResourceType('')
+            setSelectedInstructorId(0)
+            setResourceNumber(0)
+            setIsAnonymous(false)
+            setShowModal(false)
         } catch (error) {
-            console.error('Error in actionHandler:', error);
-            toast.error('An error occurred. Please try again.');
+            console.error('Error in actionHandler:', error)
+            toast.error('An error occurred. Please try again.')
         } finally {
-            setIsLoading(false);
+            setIsLoading(false)
         }
-};
-
-    //? effects
-    useEffect(() => {
-        if (selectedEntity) {
-            setTitle(selectedEntity.title || '');
-            setUrl(selectedEntity.url || '');
-            setSelectedBranch(selectedEntity.branch || '');
-            setSelectedSemester(selectedEntity.semester || '');
-            setSelectedSubjectCode(selectedEntity.subject_code || '');
-
-            if (selectedEntity.subject && selectedEntity.subject.name) {
-                setSelectedSubjectName(selectedEntity.subject.name);
-            } else {
-                setSelectedSubjectName('');
-            }
-
-            if (selectedEntity.instructor && selectedEntity.instructor.name) {
-                setSelectedInstructorName(selectedEntity.instructor.name);
-            } else {
-                setSelectedInstructorName('');
-            }
-    
-            setIsAnonymous(selectedEntity.anonymous || false);
-        }
-    }, [selectedEntity]);
-    
+    }
 
     useEffect(() => {
         const fetchSubjects = async () => {
-            const subjectsSnapshot = await getDocs(collection(db, 'subjects'));
-            setSubjects(subjectsSnapshot.docs.map((doc) => doc.data()));
-        };
+            const subjectsSnapshot = await getDocs(collection(db, 'subjects'))
+            setSubjects(subjectsSnapshot.docs.map((doc) => doc.data()))
+        }
 
         const fetchInstructors = async () => {
-            const instructorsSnapshot = await getDocs(collection(db, 'instructors'));
-            setInstructors(instructorsSnapshot.docs.map((doc) => doc.data()));
-        };
+            const instructorsSnapshot = await getDocs(
+                collection(db, 'instructors')
+            )
+            setInstructors(instructorsSnapshot.docs.map((doc) => doc.data()))
+        }
 
-        fetchSubjects();
-        fetchInstructors();
+        const fetchResourceTypes = async () => {
+            const resourceTypesSnapshot = await getDocs(
+                collection(db, 'resourceTypes')
+            )
+            setResourceTypes(
+                resourceTypesSnapshot.docs.map((doc) => doc.data())
+            )
+        }
+
+        const fetchBranches = async () => {
+            const branchesSnapshot = await getDocs(collection(db, 'branches'))
+            setBranches(branchesSnapshot.docs.map((doc) => doc.data()))
+        }
+
+        const fetchSemesters = async () => {
+            const semestersSnapshot = await getDocs(collection(db, 'semesters'))
+            setSemesters(semestersSnapshot.docs.map((doc) => doc.data()))
+        }
+
+        fetchSubjects()
+        fetchInstructors()
+        fetchResourceTypes()
+        fetchBranches()
+        fetchSemesters()
     }, [db])
 
     useEffect(() => {
@@ -212,15 +321,19 @@ export const Modal: FC<{
     useEffect(() => {
         const selectedInstructor = instructors.find(
             (instructor) => instructor.name === selectedInstructorName
-        );
-    
+        )
+
         if (selectedInstructor) {
-            setSelectedInstructorId(selectedInstructor.id);
+            setSelectedInstructorId(selectedInstructor.id)
         } else {
-            setSelectedInstructorId(0);
+            setSelectedInstructorId(0)
         }
-    }, [selectedInstructorName, instructors]);
-    
+    }, [selectedInstructorName, instructors])
+
+    const handleResourceNumberChange = (value: number) => {
+        console.log('Resource Number changed to:', value)
+        setResourceNumber(value)
+    }
 
     return (
         <ModalContainer
@@ -229,12 +342,29 @@ export const Modal: FC<{
             showModal={showModal}
         >
             <div className="flex flex-col p-10 space-y-2">
-                {/* Title */}
+                {/* Number */}
                 <Input
-                    inputTitle="Title"
-                    value={title}
-                    setValue={setTitle}
-                    placeholder={'e.g. Unit 1,2 and 3'}
+                    inputTitle="Resource Number"
+                    placeholder="1, 2, 3, ..."
+                    setValue={handleResourceNumberChange}
+                    type="number"
+                    value={resourceNumber}
+                />
+
+                {/* Resource Type */}
+                <SelectInput
+                    dropdownItems={resourceTypes}
+                    dropdownKey={'resourceType'}
+                    dropdownValue={'resourceType'}
+                    inputName={'resourceType'}
+                    inputValue={resourceTypeInput}
+                    inputTitle="Resource Type"
+                    placeholder={'e.g. Class notes, References, etc.'}
+                    selectedValue={selectedResourceType}
+                    setInputValue={setResourceTypeInput}
+                    setSelectedValue={setSelectedResourceType}
+                    setShowDropdown={setShowResourceTypeDropdown}
+                    showDropdown={showResourceTypeDropdown}
                     type={'text'}
                 />
 
@@ -333,6 +463,25 @@ export const Modal: FC<{
                     type="text"
                     value={url}
                 />
+
+                {/* Description */}
+                <Input
+                    inputTitle="Remarks/Description"
+                    placeholder="Add a description..."
+                    setValue={setDescription}
+                    type="text"
+                    value={description}
+                />
+
+                {/* File Upload */}
+                <label className="flex flex-col space-y-1">
+                    <span className="font-semibold">Upload File</span>
+                    <input
+                        type="file"
+                        onChange={(e) => setFile(e.target.files?.[0] || null)}
+                        className="border rounded-md p-2"
+                    />
+                </label>
 
                 {/* Anonymous */}
                 <div className="flex flex-col space-y-1">
