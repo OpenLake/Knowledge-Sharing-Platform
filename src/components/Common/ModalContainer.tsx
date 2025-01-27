@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useRef } from 'react'
+import { Dispatch, FC, SetStateAction, useEffect } from 'react'
 
 export const ModalContainer: FC<{
     showModal: boolean
@@ -6,14 +6,27 @@ export const ModalContainer: FC<{
     header: string
     setShowModal: Dispatch<SetStateAction<boolean>>
 }> = ({ children, showModal, header, setShowModal }) => {
+    // Lock the background scroll when the modal is open
+    useEffect(() => {
+        if (showModal) {
+            document.body.style.overflow = 'hidden'; // Disable scroll on background
+        } else {
+            document.body.style.overflow = ''; // Re-enable scroll
+        }
+
+        return () => {
+            document.body.style.overflow = ''; // Cleanup on unmount
+        }
+    }, [showModal]);
+
     return (
         <div
             className={`${
                 !showModal && 'hidden'
             } flex justify-center items-center fixed top-0 left-0 right-0 z-50 w-full bg-black/50 overflow-x-hidden overflow-y-auto h-full`}
         >
-            <div className="relative w-full h-full mt-16 flex flex-col justify-center max-w-2xl md:h-auto">
-                <div className="relative bg-white rounded-lg shadow">
+            <div className="relative w-full h-full mt-16 flex flex-col justify-center max-w-lg sm:max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-5xl md:h-auto px-4 sm:px-6 lg:px-8 overflow-y-auto mb-12">
+                <div className="relative bg-white rounded-lg shadow-lg max-h-full overflow-y-auto">
                     <div className="flex items-start justify-between p-4 border-b rounded-t">
                         <h3 className="text-xl font-semibold text-gray-900">
                             {header}
@@ -39,7 +52,10 @@ export const ModalContainer: FC<{
                             <span className="sr-only">Close modal</span>
                         </button>
                     </div>
-                    {children}
+                    {/* Make the content scrollable */}
+                    <div className="overflow-y-auto max-h-[60vh] sm:max-h-[70vh] md:max-h-[80vh] lg:max-h-[90vh]">
+                        {children}
+                    </div>
                 </div>
             </div>
         </div>
