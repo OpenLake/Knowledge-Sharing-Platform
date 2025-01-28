@@ -8,7 +8,11 @@ import {
 } from 'react-table'
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import { BsPencilSquare } from 'react-icons/bs'
-import { Player } from '@lottiefiles/react-lottie-player'
+import dynamic from 'next/dynamic'
+const Player = dynamic(
+    () => import('@lottiefiles/react-lottie-player').then((mod) => mod.Player),
+    { ssr: false }
+)
 import { useAuth } from '../../contexts/auth'
 import { coursesColumnData } from '../../types/coursesColumnData'
 import { deleteCourse } from '../../services/db/courses/deleteCourse'

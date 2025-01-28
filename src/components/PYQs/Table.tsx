@@ -9,7 +9,11 @@ import {
 } from 'react-table'
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import { BsPencilSquare } from 'react-icons/bs'
-import { Player } from '@lottiefiles/react-lottie-player'
+import dynamic from 'next/dynamic'
+const Player = dynamic(
+    () => import('@lottiefiles/react-lottie-player').then((mod) => mod.Player),
+    { ssr: false }
+)
 import { useAuth } from '../../contexts/auth'
 import { pyqsColumnData } from '../../types/pyqsColumnData'
 import { deletePyq } from '../../services/db/pyqs/deletePyq'
@@ -172,13 +176,13 @@ export const Table: FC<{
                     )
                 },
                 accessor: 'subjectName',
-                Cell: (row: any) =>{
+                Cell: (row: any) => {
                     return isDataFetching ? (
                         <div className="h-2.5 bg-gray-200 w-24"></div>
                     ) : (
                         <span>{row.value}</span>
-                    );
-                    }
+                    )
+                },
             },
             {
                 Header: 'URL',
@@ -249,9 +253,8 @@ export const Table: FC<{
                         <div className="h-2.5 bg-gray-200 w-24"></div>
                     ) : (
                         <span>{instructorName}</span>
-                    );
+                    )
                 },
-                
             },
             {
                 Header: (header: any) => {
@@ -282,15 +285,15 @@ export const Table: FC<{
                 Header: 'Uploaded By',
                 accessor: 'uploadedBy',
                 disableSortBy: true,
-                Cell: (row: any) =>{
+                Cell: (row: any) => {
                     return isDataFetching ? (
                         <div className="h-2.5 bg-gray-200 w-24"></div>
                     ) : row.row.original.anonymous ? (
                         'Anonymous'
                     ) : (
                         <span className="whitespace-nowrap">{row.value}</span>
-                    );
-                    }
+                    )
+                },
             },
             {
                 Header: 'Actions',
@@ -366,7 +369,7 @@ export const Table: FC<{
                           },
                           subjectCode: pyq.subject_code,
                           subjectName: pyq.subjectName,
-                          description:pyq.description,
+                          description: pyq.description,
                           url: pyq.url,
                           semester: pyq.semester,
                           resourceType: pyq.resourceType,

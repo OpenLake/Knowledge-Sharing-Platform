@@ -8,7 +8,7 @@ import {
 } from 'firebase-admin/app'
 import { getAuth } from 'firebase-admin/auth'
 
-const { privateKey } = JSON.parse(process.env.PRIVATE_KEY!)
+const privateKey = process.env.PRIVATE_KEY!.replace(/\\n/g, '\n')
 
 const credentials: ServiceAccount = {
     projectId: process.env.PROJECT_ID,

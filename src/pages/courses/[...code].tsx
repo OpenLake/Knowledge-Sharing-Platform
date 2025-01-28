@@ -13,10 +13,14 @@ import ReactStars from 'react-stars'
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import { TiTick } from 'react-icons/ti'
 import { deleteCourseReview } from '../../services/db/courses/courseReview/deleteCourseReview'
-import { Player } from '@lottiefiles/react-lottie-player'
+import dynamic from 'next/dynamic'
 import { UpvoteButton } from '../../components/Common/UpvoteButton'
 import { removeCourseReviewUpvote } from '../../services/db/courses/courseReview/courseReviewUpvote/removeUpvote'
 import { upvoteCourseReview } from '../../services/db/courses/courseReview/courseReviewUpvote/upvote'
+const Player = dynamic(
+    () => import('@lottiefiles/react-lottie-player').then((mod) => mod.Player),
+    { ssr: false }
+)
 
 const Course: NextPage = ({}) => {
     //? router
@@ -55,7 +59,7 @@ const Course: NextPage = ({}) => {
     const refetchReviews = () => {
         setIsDataFetching(true)
         if (router.query.code) {
-            const code = (router.query.code[0])
+            const code = router.query.code[0]
             getCourseById({ code }).then((res) => {
                 setReviews(res.reviews)
                 setIsDataFetching(false)
@@ -67,7 +71,7 @@ const Course: NextPage = ({}) => {
     useEffect(() => {
         setIsDataFetching(true)
         if (router.query.code) {
-            const code = (router.query.code[0])
+            const code = router.query.code[0]
             getCourseById({ code }).then((res) => {
                 setCourse(res)
                 setReviews(res.reviews)
@@ -83,18 +87,20 @@ const Course: NextPage = ({}) => {
 
     useEffect(() => {
         if (user && reviews) {
-          if (Array.isArray(reviews)) {
-            const userHasReviewed = reviews.find((review: any) => user.user_id === review.user_id);
-            setAlreadyReviewed(!!userHasReviewed);
-          } else if (typeof reviews === 'object' && reviews !== null) {
-            const reviewKeys = Object.keys(reviews);
-            const userHasReviewed = reviewKeys.some((key) => reviews[key].user_id === user.user_id);
-            setAlreadyReviewed(userHasReviewed);
-          }
+            if (Array.isArray(reviews)) {
+                const userHasReviewed = reviews.find(
+                    (review: any) => user.user_id === review.user_id
+                )
+                setAlreadyReviewed(!!userHasReviewed)
+            } else if (typeof reviews === 'object' && reviews !== null) {
+                const reviewKeys = Object.keys(reviews)
+                const userHasReviewed = reviewKeys.some(
+                    (key) => reviews[key].user_id === user.user_id
+                )
+                setAlreadyReviewed(userHasReviewed)
+            }
         }
-      }, [reviews, user]);
-      
-      
+    }, [reviews, user])
 
     return (
         course && (
@@ -208,7 +214,9 @@ const Course: NextPage = ({}) => {
                                         </div>
                                     )
                                 })
-                        ) : reviews && typeof reviews === 'object' && Object.keys(reviews).length ? (
+                        ) : reviews &&
+                          typeof reviews === 'object' &&
+                          Object.keys(reviews).length ? (
                             Object.values(reviews).map((review: any) => {
                                 return (
                                     <div

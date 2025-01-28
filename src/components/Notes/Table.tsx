@@ -17,7 +17,11 @@ import {
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import { notesColumnData } from '../../types/notesColumnData'
 import { BsPencilSquare } from 'react-icons/bs'
-import { Player } from '@lottiefiles/react-lottie-player'
+import dynamic from 'next/dynamic'
+const Player = dynamic(
+    () => import('@lottiefiles/react-lottie-player').then((mod) => mod.Player),
+    { ssr: false }
+)
 import { useAuth } from '../../contexts/auth'
 import { deleteNotes } from '../../services/db/notes/deleteNotes'
 import { UpvoteButton } from '../Common/UpvoteButton'
@@ -33,7 +37,6 @@ export const Table: FC<{
     refetchNotes: Function
 }> = ({ notes, refetchNotes, setSelectedNote, isDataFetching }) => {
     const { user, loading, isAdmin }: any = useAuth()
-    
 
     const columns = useMemo<Column<any>[]>(
         () => [
@@ -48,7 +51,7 @@ export const Table: FC<{
                         row.value
                     ),
             },
-            
+
             {
                 Header: (header: any) => {
                     return (
@@ -144,13 +147,13 @@ export const Table: FC<{
                     )
                 },
                 accessor: 'subjectName',
-                Cell: (row: any) =>{
+                Cell: (row: any) => {
                     return isDataFetching ? (
                         <div className="h-2.5 bg-gray-200 w-24"></div>
                     ) : (
                         <span>{row.value}</span>
-                    );
-                    }
+                    )
+                },
             },
             {
                 Header: 'URL',
@@ -212,7 +215,7 @@ export const Table: FC<{
                                 ''
                             )}
                         </div>
-                    );
+                    )
                 },
                 accessor: 'instructorName',
                 Cell: (row: any) => {
@@ -221,11 +224,10 @@ export const Table: FC<{
                         <div className="h-2.5 bg-gray-200 w-24"></div>
                     ) : (
                         <span>{instructorName}</span>
-                    );
+                    )
                 },
-                
             },
-            
+
             {
                 Header: (header: any) => {
                     return (
@@ -361,40 +363,42 @@ export const Table: FC<{
         [isDataFetching, setSelectedNote, refetchNotes, user]
     )
 
-    
     const data = useMemo(() => {
-        return isDataFetching
-            ? Array(8).fill({})
-            : notes &&
-              notes.map((note: any, index) => {
-                  const rowData = {
-                      sno: `${index + 1}.`,
-                      id: note.id,
-                      upvotes: {
-                          count: note._count?.note_upvotes.count || 0, 
-                          users: note.upvotes,
-                      },
-                      title: note.title,
-                      description:note.description,
-                      subjectCode: note.subject_code,
-                      subjectName: note.subjectName,
-                      url: note.url,
-                      semester: note.semester,
-                      resourceType: note.resourceType,
-                      instructorName: note.instructorName || 'N/A',
-                      branch: note.branch,
-                      uploadedBy: note.uploadedBy || 'Anonymous', 
-                      anonymous: note.anonymous,
-                      actions: note,
-                  };
-    
-                  return rowData;
-              });
-    }, [isDataFetching, notes]);
+        if (isDataFetching) {
+            // Return an array of empty objects while data is being fetched
+            return Array(8).fill({})
+        }
 
-    
-    
-    
+        // If notes are undefined or null, return an empty array
+        if (!notes) {
+            return []
+        }
+
+        return notes.map((note: any, index: number) => {
+            const rowData = {
+                sno: `${index + 1}.`,
+                id: note.id,
+                upvotes: {
+                    count: note._count?.note_upvotes?.count || 0,
+                    users: note.upvotes,
+                },
+                title: note.title,
+                description: note.description,
+                subjectCode: note.subject_code,
+                subjectName: note.subjectName,
+                url: note.url,
+                semester: note.semester,
+                resourceType: note.resourceType,
+                instructorName: note.instructorName || 'N/A',
+                branch: note.branch,
+                uploadedBy: note.uploadedBy || 'Anonymous',
+                anonymous: note.anonymous,
+                actions: note,
+            }
+
+            return rowData
+        })
+    }, [isDataFetching, notes])
 
     const {
         getTableProps,
@@ -407,7 +411,12 @@ export const Table: FC<{
         prepareRow,
         preGlobalFilteredRows,
         setGlobalFilter,
-    } = useTable({ columns, data }, useFilters, useGlobalFilter, useSortBy)
+    } = useTable(
+        { columns, data: data || [] },
+        useFilters,
+        useGlobalFilter,
+        useSortBy
+    )
 
     //? effects
     useEffect(() => {
@@ -420,7 +429,7 @@ export const Table: FC<{
         }
     }, [loading, setHiddenColumns, user])
 
-    return isDataFetching || notes.length ? (
+    return isDataFetching || (notes && notes.length) ? (
         <div className="flex flex-col space-y-2 w-full">
             <GlobalFilter
                 preGlobalFilteredRows={preGlobalFilteredRows}

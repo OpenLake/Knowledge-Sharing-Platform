@@ -8,14 +8,18 @@ import { getCourses } from '../../services/db/courses/getCourses'
 import { Modal } from '../../components/Courses/Modal'
 import { addCourse } from '../../services/db/courses/addCourse'
 import { updateCourse } from '../../services/db/courses/updateCourse'
-import { Player } from '@lottiefiles/react-lottie-player'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import { deleteCourse } from '../../services/db/courses/deleteCourse'
-import { getAuth, onAuthStateChanged} from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
-import { firestore } from '../../utils/firebaseInit';
+import { firestore } from '../../utils/firebaseInit'
 import { query, where } from 'firebase/firestore'
+const Player = dynamic(
+    () => import('@lottiefiles/react-lottie-player').then((mod) => mod.Player),
+    { ssr: false }
+)
 
 export default function Courses() {
     //? router
@@ -38,16 +42,16 @@ export default function Courses() {
         const checkUserAuthentication = async () => {
             if (user) {
                 // If the user is authenticated, call checkIfAdminExists
-                await checkIfAdminExists();
+                await checkIfAdminExists()
             } else {
                 // Handle the case when the user is not authenticated
-                console.error('User not authenticated.');
+                console.error('User not authenticated.')
             }
-        };
+        }
 
         // Call the function to check user authentication
-        checkUserAuthentication();
-    }, [user]); // Run this effect whenever the user changes
+        checkUserAuthentication()
+    }, [user]) // Run this effect whenever the user changes
 
     const checkIfAdminExists = async () => {
         // Check if the user object is defined and has the 'name' property
@@ -59,26 +63,26 @@ export default function Courses() {
                         where('name', '==', user.name),
                         where('isAdmin', '==', true)
                     )
-                );
+                )
                 if (q1.size > 0) {
-                    setAdminStatus(true);
+                    setAdminStatus(true)
                 }
-                console.log('q1: ', q1);
+                console.log('q1: ', q1)
             } catch (error) {
-                console.error('Error checking admin existence:', error);
+                console.error('Error checking admin existence:', error)
             }
         } else {
             // Handle the case when the user is not authenticated
-            console.error('Invalid user object:', user);
+            console.error('Invalid user object:', user)
         }
-    };
+    }
 
-    const auth = getAuth();
+    const auth = getAuth()
     onAuthStateChanged(auth, async (user) => {
         if (user) {
-            await checkIfAdminExists();
+            await checkIfAdminExists()
         }
-        });
+    })
 
     //? functions
     const refetchCourses = () => {
@@ -97,8 +101,6 @@ export default function Courses() {
             setIsDataFetching(false)
         })
     }, [])
-
-            
 
     return (
         <div className={`w-full bg-white flex flex-col`}>
@@ -142,21 +144,23 @@ export default function Courses() {
             <div className="grid grid-cols-5 gap-0 justify-center py-48 px-5 md:px-14 space-y-8 min-h-screen">
                 <div className="col-span-5 flex flex-row items-center gap-4 justify-between">
                     <h3 className="font-bold text-xl md:text-3xl">Courses</h3>
-                    {adminStatus && (<button
-                        disabled={loading}
-                        onClick={() => {
-                            if (user) setShowAddCourseModal(true)
-                            else
-                                toast('Please login to add new course', {
-                                    icon: 'ℹ️',
-                                })
-                        }}
-                        type="button"
-                        className="flex items-center space-x-2 px-2 py-1 duration-200 transition-all rounded-md shadow-md hover:shadow-xl bg-primary text-white font-semibold disabled:bg-primary/70 disabled:cursor-wait"
-                    >
-                        <BsPlus className="h-8 w-8" />
-                        <span className="">Add Course</span>
-                    </button>)}
+                    {adminStatus && (
+                        <button
+                            disabled={loading}
+                            onClick={() => {
+                                if (user) setShowAddCourseModal(true)
+                                else
+                                    toast('Please login to add new course', {
+                                        icon: 'ℹ️',
+                                    })
+                            }}
+                            type="button"
+                            className="flex items-center space-x-2 px-2 py-1 duration-200 transition-all rounded-md shadow-md hover:shadow-xl bg-primary text-white font-semibold disabled:bg-primary/70 disabled:cursor-wait"
+                        >
+                            <BsPlus className="h-8 w-8" />
+                            <span className="">Add Course</span>
+                        </button>
+                    )}
                 </div>
                 <div className="flex col-span-5 w-full px-2 py-3">
                     <label
@@ -237,10 +241,10 @@ export default function Courses() {
                                     >
                                         <div className="flex gap-7 items-center justify-between">
                                             <p
-                                                onClick={() =>
-                                                    {
+                                                onClick={() => {
                                                     router.push(
-                                                        '/courses/' + course.code
+                                                        '/courses/' +
+                                                            course.code
                                                     )
                                                 }}
                                                 className="font-semibold cursor-pointer text-primary hover:underline duration-150 transition-all text-xl"
