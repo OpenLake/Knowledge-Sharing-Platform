@@ -6,16 +6,15 @@ export const ModalContainer: FC<{
     header: string
     setShowModal: Dispatch<SetStateAction<boolean>>
 }> = ({ children, showModal, header, setShowModal }) => {
-    // Lock the background scroll when the modal is open
     useEffect(() => {
         if (showModal) {
-            document.body.style.overflow = 'hidden'; // Disable scroll on background
+            document.body.style.overflow = 'hidden'; 
         } else {
-            document.body.style.overflow = ''; // Re-enable scroll
+            document.body.style.overflow = ''; 
         }
 
         return () => {
-            document.body.style.overflow = ''; // Cleanup on unmount
+            document.body.style.overflow = ''; 
         }
     }, [showModal]);
 
@@ -52,7 +51,6 @@ export const ModalContainer: FC<{
                             <span className="sr-only">Close modal</span>
                         </button>
                     </div>
-                    {/* Make the content scrollable */}
                     <div className="overflow-y-auto max-h-[60vh] sm:max-h-[70vh] md:max-h-[80vh] lg:max-h-[90vh]">
                         {children}
                     </div>
