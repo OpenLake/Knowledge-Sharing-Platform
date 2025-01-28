@@ -8,8 +8,8 @@ NextJS, TailwindCSS
 
 ## Maintainers ☀️
 
-| [@JaeAeich](https://github.com/JaeAeich) | [@AryaLanjewar3005](https://github.com/AryaLanjewar3005) |
-| --------------------------------------------- | ----------------------------------------------------- |
+| [@gunjjoshi](https://github.com/gunjjoshi) | [@JaeAeich](https://github.com/JaeAeich) | [@AryaLanjewar3005](https://github.com/AryaLanjewar3005) |
+| --------------------------------------------- | --------------------------------------------- | ----------------------------------------------------- |
 
 ## Other details 📑
 
