@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { Search, ThumbsUp, Edit2, Trash2, MessageCircle, Star, ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
 
@@ -20,12 +22,155 @@ interface Comment {
   date: string;
 }
 
+interface ReviewCardProps {
+  review: Review;
+  onUpvote: (id: string) => void;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
+  onAddComment: (reviewId: string, comment: string) => void;
+  setNewReview: (review: { professorName: string; rating: number; course: string; review: string; }) => void;
+}
+
+const ReviewCard = ({ review, onUpvote, onEdit, onDelete, onAddComment, setNewReview }: ReviewCardProps) => {
+  const [expandedComments, setExpandedComments] = useState(false);
+  const [showCommentForm, setShowCommentForm] = useState(false);
+  const [newComment, setNewComment] = useState('');
+
+  const toggleComments = () => setExpandedComments(!expandedComments);
+  const toggleCommentForm = () => setShowCommentForm(!showCommentForm);
+
+  const handleAddComment = () => {
+    if (!newComment.trim()) return;
+    onAddComment(review.id, newComment);
+    setNewComment('');
+    setShowCommentForm(false);
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <h3 className="text-xl font-semibold text-gray-900">{review.professorName}</h3>
+          <p className="text-gray-600">{review.course}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          {[...Array(5)].map((_, index) => (
+            <Star
+              key={index}
+              className={`h-5 w-5 ${
+                index < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+      
+      <p className="text-gray-700 mb-4">{review.review}</p>
+      
+      <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+        <span>{review.date}</span>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => onUpvote(review.id)}
+            className="flex items-center gap-1 text-gray-600 hover:text-blue-600"
+          >
+            <ThumbsUp className="h-4 w-4" />
+            <span>{review.upvotes}</span>
+          </button>
+          <button
+            onClick={() => {
+              onEdit(review.id);
+              setNewReview({
+                professorName: review.professorName,
+                rating: review.rating,
+                course: review.course,
+                review: review.review
+              });
+            }}
+            className="text-gray-600 hover:text-blue-600"
+          >
+            <Edit2 className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => onDelete(review.id)}
+            className="text-gray-600 hover:text-red-600"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+
+      <div className="border-t pt-4">
+        <div className="flex items-center justify-between mb-2">
+          <h4 className="text-lg font-semibold">
+            Comments ({review.comments.length})
+          </h4>
+          <button
+            onClick={toggleComments}
+            className="text-gray-600 hover:text-blue-600 flex items-center gap-1"
+          >
+            {expandedComments ? (
+              <>Hide <ChevronUp className="h-4 w-4" /></>
+            ) : (
+              <>Show <ChevronDown className="h-4 w-4" /></>
+            )}
+          </button>
+        </div>
+
+        {expandedComments && (
+          <div className="space-y-3 mb-4 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+            {review.comments.map((comment) => (
+              <div key={comment.id} className="bg-gray-50 p-3 rounded">
+                <p className="text-gray-700">{comment.text}</p>
+                <p className="text-sm text-gray-500 mt-1">{comment.date}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-3">
+          {!showCommentForm ? (
+            <button
+              onClick={toggleCommentForm}
+              className="flex items-center gap-2 text-blue-600 hover:text-blue-700"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Add Comment
+            </button>
+          ) : (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Add a comment..."
+                className="flex-1 p-2 border rounded"
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+              />
+              <button
+                onClick={handleAddComment}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Post
+              </button>
+              <button
+                onClick={toggleCommentForm}
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function RateProfessor() {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAddReview, setShowAddReview] = useState(false);
   const [editingReview, setEditingReview] = useState<string | null>(null);
-  const [expandedComments, setExpandedComments] = useState<{ [key: string]: boolean }>({});
   
   const [reviews, setReviews] = useState<Review[]>([
     {
@@ -108,9 +253,6 @@ export default function RateProfessor() {
     review: ''
   });
 
-  const [newComment, setNewComment] = useState<{ [key: string]: string }>({});
-  const [showCommentForm, setShowCommentForm] = useState<{ [key: string]: boolean }>({});
-
   const itemsPerPage = 4;
   const filteredReviews = reviews.filter(review =>
     review.professorName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -120,20 +262,6 @@ export default function RateProfessor() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-
-  const toggleComments = (reviewId: string) => {
-    setExpandedComments(prev => ({
-      ...prev,
-      [reviewId]: !prev[reviewId]
-    }));
-  };
-
-  const toggleCommentForm = (reviewId: string) => {
-    setShowCommentForm(prev => ({
-      ...prev,
-      [reviewId]: !prev[reviewId]
-    }));
-  };
 
   const handleAddReview = () => {
     const review: Review = {
@@ -177,9 +305,7 @@ export default function RateProfessor() {
     }));
   };
 
-  const handleAddComment = (reviewId: string) => {
-    if (!newComment[reviewId]) return;
-
+  const handleAddComment = (reviewId: string, commentText: string) => {
     setReviews(reviews.map(review => {
       if (review.id === reviewId) {
         return {
@@ -187,18 +313,17 @@ export default function RateProfessor() {
           comments: [...review.comments, {
             id: Math.random().toString(),
             userId: 'currentUser',
-            text: newComment[reviewId],
+            text: commentText,
             date: new Date().toISOString().split('T')[0]
           }]
         };
       }
       return review;
     }));
-    setNewComment({ ...newComment, [reviewId]: '' });
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-48">
+    <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Rate My Professor</h1>
@@ -285,125 +410,15 @@ export default function RateProfessor() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {currentReviews.map((review) => (
-            <div key={review.id} className="bg-white rounded-lg shadow-md p-6">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900">{review.professorName}</h3>
-                  <p className="text-gray-600">{review.course}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  {[...Array(5)].map((_, index) => (
-                    <Star
-                      key={index}
-                      className={`h-5 w-5 ${
-                        index < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-              
-              <p className="text-gray-700 mb-4">{review.review}</p>
-              
-              <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                <span>{review.date}</span>
-                <div className="flex items-center gap-4">
-                  <button
-                    onClick={() => handleUpvote(review.id)}
-                    className="flex items-center gap-1 text-gray-600 hover:text-blue-600"
-                  >
-                    <ThumbsUp className="h-4 w-4" />
-                    <span>{review.upvotes}</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setEditingReview(review.id);
-                      setNewReview({
-                        professorName: review.professorName,
-                        rating: review.rating,
-                        course: review.course,
-                        review: review.review
-                      });
-                    }}
-                    className="text-gray-600 hover:text-blue-600"
-                  >
-                    <Edit2 className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteReview(review.id)}
-                    className="text-gray-600 hover:text-red-600"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="border-t pt-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-lg font-semibold">
-                    Comments ({review.comments.length})
-                  </h4>
-                  <button
-                    onClick={() => toggleComments(review.id)}
-                    className="text-gray-600 hover:text-blue-600 flex items-center gap-1"
-                  >
-                    {expandedComments[review.id] ? (
-                      <>Hide <ChevronUp className="h-4 w-4" /></>
-                    ) : (
-                      <>Show <ChevronDown className="h-4 w-4" /></>
-                    )}
-                  </button>
-                </div>
-
-                {expandedComments[review.id] && (
-                  <div className="space-y-3 mb-4 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                    {review.comments.map((comment) => (
-                      <div key={comment.id} className="bg-gray-50 p-3 rounded">
-                        <p className="text-gray-700">{comment.text}</p>
-                        <p className="text-sm text-gray-500 mt-1">{comment.date}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <div className="mt-3">
-                  {!showCommentForm[review.id] ? (
-                    <button
-                      onClick={() => toggleCommentForm(review.id)}
-                      className="flex items-center gap-2 text-blue-600 hover:text-blue-700"
-                    >
-                      <MessageCircle className="h-4 w-4" />
-                      Add Comment
-                    </button>
-                  ) : (
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        placeholder="Add a comment..."
-                        className="flex-1 p-2 border rounded"
-                        value={newComment[review.id] || ''}
-                        onChange={(e) => setNewComment({ ...newComment, [review.id]: e.target.value })}
-                      />
-                      <button
-                        onClick={() => {
-                          handleAddComment(review.id);
-                          toggleCommentForm(review.id);
-                        }}
-                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                      >
-                        Post
-                      </button>
-                      <button
-                        onClick={() => toggleCommentForm(review.id)}
-                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+            <ReviewCard
+              key={review.id}
+              review={review}
+              onUpvote={handleUpvote}
+              onEdit={setEditingReview}
+              onDelete={handleDeleteReview}
+              onAddComment={handleAddComment}
+              setNewReview={setNewReview}
+            />
           ))}
         </div>
 
