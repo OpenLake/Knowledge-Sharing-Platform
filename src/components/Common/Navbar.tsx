@@ -104,7 +104,6 @@ export const Navbar: FC<{}> = ({}) => {
                     Courses
                 </span>
 
-                {/* Rate professor page Link */}
 
                 <span
                     ref={router.asPath === '/rateprofessor' ? activeRef : null}
