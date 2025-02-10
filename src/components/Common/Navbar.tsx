@@ -6,6 +6,7 @@ import { FiLogOut } from 'react-icons/fi'
 import { useRouter } from 'next/router'
 import { useAuth } from '../../contexts/auth'
 import Image from 'next/image'
+import Link from 'next/link'
 
 export const Navbar: FC<{}> = ({}) => {
     const router = useRouter()
@@ -33,7 +34,7 @@ export const Navbar: FC<{}> = ({}) => {
                     >
                         <Image
                             className="rounded-full"
-                            src={photoURL}
+                            src={photoURL || '/default-profile.jpg'}
                             width={40}
                             height={40}
                             alt="user"
@@ -49,6 +50,12 @@ export const Navbar: FC<{}> = ({}) => {
                                     <p className="font-semibold ">Logout</p>
                                     <FiLogOut className="h-6 w-6 text-gray-800" />
                                 </div>
+                                <Link href="/profile"> {/* Add link to Profile page */}
+                                    <a className="px-5 py-3 cursor-pointer group hover:bg-black/10 flex space-x-2 items-center justify-between">
+                                        <p className="font-semibold">Profile</p>
+                                    </a>
+                                </Link>
+                              
                             </div>
                         )}
                     </div>
