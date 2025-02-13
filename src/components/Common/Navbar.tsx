@@ -50,7 +50,7 @@ export const Navbar: FC<{}> = ({}) => {
                                     <p className="font-semibold ">Logout</p>
                                     <FiLogOut className="h-6 w-6 text-gray-800" />
                                 </div>
-                                <Link href="/profile"> {/* Add link to Profile page */}
+                                <Link href="/profile"> 
                                     <a className="px-5 py-3 cursor-pointer group hover:bg-black/10 flex space-x-2 items-center justify-between">
                                         <p className="font-semibold">Profile</p>
                                     </a>
