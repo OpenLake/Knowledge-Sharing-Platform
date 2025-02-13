@@ -24,7 +24,7 @@ export const Navbar: FC<{}> = ({}) => {
     }, [router, activeRef, activeRef.current?.offsetWidth])
 
     return (
-        <div className="w-full fixed top-0 right-0 left-0 z-50 bg-bg-primary shadow-md px-5 md:px-8 py-3 md:py-6 space-y-3 md:space-y-0 flex flex-col">
+        <div className="w-full fixed top-0 right-0 left-0  z-50 bg-bg-primary shadow-md px-5 md:px-8 py-3 md:py-6 space-y-3 md:space-y-0 flex flex-col">
             <div className="flex justify-between items-center">
                 <Logo />
                 {user ? (
@@ -109,6 +109,17 @@ export const Navbar: FC<{}> = ({}) => {
                     className={`cursor-pointer p-3 relative before:content-[''] before:absolute before:bottom-[-7px] before:left-0 before:w-full before:h-[5px] before:bg-primary/40 before:rounded-[8px_8px_0_0] before:opacity-0 before:duration-100 text-gray-600 hover:before:opacity-100 hover:before:bottom-0 hover:text-gray-800`}
                 >
                     Courses
+                </span>
+
+
+                <span
+                    ref={router.asPath === '/rateprofessor' ? activeRef : null}
+                    onClick={(e) => {
+                        router.push('/rateprofessor')
+                    }}
+                    className={`cursor-pointer p-3 relative before:content-[''] before:absolute before:bottom-[-7px] before:left-0 before:w-full before:h-[5px] before:bg-primary/40 before:rounded-[8px_8px_0_0] before:opacity-0 before:duration-100 text-gray-600 hover:before:opacity-100 hover:before:bottom-0 hover:text-gray-800`}
+                >
+                    Rate Professor
                 </span>
 
                 <span
