@@ -5,8 +5,10 @@ import { updateProfile } from '../services/db/profile/updateProfile';
 import { useAuth } from '../contexts/auth';
 import { firestore } from '../utils/firebaseInit';
 import { collection, query, where, getDocs } from 'firebase/firestore';
+import { useRouter } from 'next/router';
 
 const ProfilePage: React.FC = () => {
+  const router = useRouter();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState<ProfileData>({
@@ -176,9 +178,12 @@ const ProfilePage: React.FC = () => {
               <button className="bg-blue-200 w-full py-2 rounded-md mb-2 hover:bg-blue-300">
                 🔗 Connections
               </button>
-              <button className="bg-blue-200 w-full py-2 rounded-md mb-2 hover:bg-blue-300">
-                💬 Go to Discussion Page
-              </button>
+              <button
+        className="bg-blue-200 w-full py-2 rounded-md mb-2 hover:bg-blue-300"
+        onClick={() => router.push('/discussion')} // Navigate to discussion
+      >
+        💬 Go to Discussion Page
+      </button>
               <button className="bg-gray-500 text-white w-full py-2 rounded-md hover:bg-gray-600">
                 ⚙️ Settings
               </button>

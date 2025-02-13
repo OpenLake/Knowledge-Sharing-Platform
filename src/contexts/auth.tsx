@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import cookies from 'js-cookie';
 import { signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { useRouter } from 'next/router';
 import { toast } from 'react-hot-toast';
 import { api } from '../utils/api';
@@ -10,7 +10,7 @@ import { firebaseAuth } from '../utils/firebaseInit';
 
 const AuthContext = createContext({
   isAuthenticated: false,
-  user:null,
+  user: null,
   photoURL: '',
   displayName: '',
   login: () => {},
@@ -19,15 +19,16 @@ const AuthContext = createContext({
 });
 
 export const AuthProvider = ({ children }: any) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>(null);
   const [photoURL, setPhotoURL] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(true);
+  const auth = firebaseAuth;
 
-  // Functions
+
   const logout = async () => {
     try {
-      await signOut(firebaseAuth);
+      await signOut(auth);
       cookies.remove('accessToken');
       setUser(null);
       setPhotoURL('');
@@ -40,9 +41,8 @@ export const AuthProvider = ({ children }: any) => {
 
   const login = async () => {
     const provider = new GoogleAuthProvider();
-
     try {
-      const res = await signInWithPopup(firebaseAuth, provider);
+      const res = await signInWithPopup(auth, provider);
       const { user }: any = res;
       const { accessToken } = user;
 
@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }: any) => {
           setUser(userData);
           setPhotoURL(picture);
           setDisplayName(name);
-          return isAdmin
+          return isAdmin;
         }
         toast.success('Login Successful');
       }
@@ -66,7 +66,6 @@ export const AuthProvider = ({ children }: any) => {
       toast.error((err as FirebaseError).message);
     }
   };
-
   async function loadUserFromCookie() {
     const accessToken = cookies.get('accessToken');
     if (accessToken) {
@@ -74,11 +73,10 @@ export const AuthProvider = ({ children }: any) => {
       try {
         const { data } = await api.get('/api/auth/');
         const { result: user } = data;
-        const { picture, name, isAdmin } = user;
         if (user) {
           setUser(user);
-          setPhotoURL(picture);
-          setDisplayName(name);
+          setPhotoURL(user.picture);
+          setDisplayName(user.name);
         }
       } catch (err) {
         if ((err as FirebaseError).code === 'auth/id-token-expired') {
@@ -91,13 +89,21 @@ export const AuthProvider = ({ children }: any) => {
     setLoading(false);
   }
 
-  // Effects
+  
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(firebaseAuth, (authUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (authUser: FirebaseUser | null) => {
       if (authUser) {
-        loadUserFromCookie();
+        setUser({
+          id: authUser.uid,
+          email: authUser.email,
+          name: authUser.displayName,
+          picture: authUser.photoURL,
+        });
+        setPhotoURL(authUser.photoURL || '');
+        setDisplayName(authUser.displayName || '');
+        cookies.set('accessToken', authUser.accessToken || '', { expires: 60 });
       } else {
-        setLoading(false);
+        loadUserFromCookie(); 
       }
     });
 
@@ -121,25 +127,22 @@ export const AuthProvider = ({ children }: any) => {
   );
 };
 
-// Define a type for the user object
 type User = {
-  // Define the properties of your user object
-  // For example:
   id: string;
   email: string;
-  // ... other properties
+  name?: string;
+  picture?: string;
 };
 
 export const useAuth = () => {
   const authContext = useContext(AuthContext);
-
   if (!authContext) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
 
   return authContext as {
     isAuthenticated: boolean;
-    user: User | null; // Use the defined User type
+    user: User | null;
     photoURL: string;
     displayName: string;
     login: () => void;
@@ -148,14 +151,13 @@ export const useAuth = () => {
   };
 };
 
-
-
 export const ProtectRoute = ({ children }: any) => {
-    const router = useRouter();
-  const { isAuthenticated, loading }: any = useAuth();
+  const router = useRouter();
+  const { isAuthenticated, loading } = useAuth();
 
   if (loading || (!isAuthenticated && router.pathname !== '/login')) {
     return <h1>Loading...</h1>;
   }
   return children;
 };
+
