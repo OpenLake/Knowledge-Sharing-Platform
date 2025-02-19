@@ -103,7 +103,7 @@ export default function Courses() {
     }, [])
 
     return (
-        <div className={`w-full bg-white flex flex-col`}>
+        <div className={`w-full bg-white flex flex-col py-48`}>
             {user && (
                 <Modal
                     header="Add New Course"
@@ -141,7 +141,7 @@ export default function Courses() {
                     href="/favicon.ico"
                 />
             </Head>
-            <div className="grid grid-cols-5 gap-0 justify-center py-48 px-5 md:px-14 space-y-8 min-h-screen">
+            <div className="grid grid-cols-5 gap-0 justify-center c px-5 md:px-14 space-y-8 min-h-screen">
                 <div className="col-span-5 flex flex-row items-center gap-4 justify-between">
                     <h3 className="font-bold text-xl md:text-3xl">Courses</h3>
                     {adminStatus && (
