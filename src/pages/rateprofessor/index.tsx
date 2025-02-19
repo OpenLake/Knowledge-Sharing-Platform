@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, ThumbsUp, Edit2, Trash2, MessageCircle, Star, ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { increment } from 'firebase/firestore';
 
 interface Review {
   id: string;
@@ -28,14 +29,13 @@ interface ReviewCardProps {
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
   onAddComment: (reviewId: string, comment: string) => void;
-  setNewReview: (review: { professorName: string; rating: number; course: string; review: string; }) => void;
+  setNewReview: (review: { professorName: string; rating: number; course: string; review: string; upvotes: number; }) => void;
 }
 
 const ReviewCard = ({ review, onUpvote, onEdit, onDelete, onAddComment, setNewReview }: ReviewCardProps) => {
   const [expandedComments, setExpandedComments] = useState(false);
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [newComment, setNewComment] = useState('');
-
   const toggleComments = () => setExpandedComments(!expandedComments);
   const toggleCommentForm = () => setShowCommentForm(!showCommentForm);
 
@@ -84,7 +84,8 @@ const ReviewCard = ({ review, onUpvote, onEdit, onDelete, onAddComment, setNewRe
                 professorName: review.professorName,
                 rating: review.rating,
                 course: review.course,
-                review: review.review
+                review: review.review,
+                upvotes: review.upvotes
               });
             }}
             className="text-gray-600 hover:text-blue-600"
@@ -103,7 +104,7 @@ const ReviewCard = ({ review, onUpvote, onEdit, onDelete, onAddComment, setNewRe
       <div className="border-t pt-4">
         <div className="flex items-center justify-between mb-2">
           <h4 className="text-lg font-semibold">
-            Comments ({review.comments.length})
+            Comments ({review.comments?.length})
           </h4>
           <button
             onClick={toggleComments}
@@ -119,7 +120,7 @@ const ReviewCard = ({ review, onUpvote, onEdit, onDelete, onAddComment, setNewRe
 
         {expandedComments && (
           <div className="space-y-3 mb-4 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-            {review.comments.map((comment) => (
+            {review.comments?.map((comment) => (
               <div key={comment.id} className="bg-gray-50 p-3 rounded">
                 <p className="text-gray-700">{comment.text}</p>
                 <p className="text-sm text-gray-500 mt-1">{comment.date}</p>
@@ -171,87 +172,181 @@ export default function RateProfessor() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showAddReview, setShowAddReview] = useState(false);
   const [editingReview, setEditingReview] = useState<string | null>(null);
-  
-  const [reviews, setReviews] = useState<Review[]>([
-    {
-      id: '1',
-      professorName: 'Dr. Sarah Johnson',
-      rating: 4.5,
-      course: 'Computer Science 101',
-      review: "Excellent professor who really cares about student success. Her teaching methods are innovative and she's always available during office hours.",
-      date: '2024-03-20',
-      upvotes: 45,
-      userId: 'user1',
-      comments: [
-        { id: 'c1', userId: 'user2', text: 'Totally agree! Best CS professor!', date: '2024-03-21' },
-        { id: 'c2', userId: 'user3', text: 'Her office hours are super helpful.', date: '2024-03-21' },
-        { id: 'c3', userId: 'user4', text: 'The projects were challenging but fun.', date: '2024-03-22' },
-        { id: 'c4', userId: 'user5', text: 'Really helped me understand complex concepts.', date: '2024-03-22' }
-      ]
-    },
-    {
-      id: '2',
-      professorName: 'Dr. Michael Chen',
-      rating: 4.8,
-      course: 'Data Structures',
-      review: "Dr. Chen makes complex topics easy to understand. His practical examples and coding demonstrations are incredibly helpful.",
-      date: '2024-03-19',
-      upvotes: 38,
-      userId: 'user3',
-      comments: []
-    },
-    {
-      id: '3',
-      professorName: 'Dr. Emily Rodriguez',
-      rating: 4.2,
-      course: 'Artificial Intelligence',
-      review: "Dr. Rodriguez brings real-world AI applications into the classroom. Her projects are challenging but incredibly rewarding.",
-      date: '2024-03-18',
-      upvotes: 32,
-      userId: 'user4',
-      comments: []
-    },
-    {
-      id: '4',
-      professorName: 'Prof. David Kim',
-      rating: 4.9,
-      course: 'Web Development',
-      review: "Best web development course ever! Prof. Kim is always up-to-date with the latest technologies and frameworks.",
-      date: '2024-03-17',
-      upvotes: 56,
-      userId: 'user5',
-      comments: []
-    },
-    {
-      id: '5',
-      professorName: 'Dr. Lisa Martinez',
-      rating: 4.6,
-      course: 'Database Systems',
-      review: "Dr. Martinez explains complex database concepts in a very approachable way. Great balance of theory and practical applications.",
-      date: '2024-03-16',
-      upvotes: 41,
-      userId: 'user6',
-      comments: []
-    },
-    {
-      id: '6',
-      professorName: 'Prof. James Wilson',
-      rating: 4.7,
-      course: 'Software Engineering',
-      review: "Prof. Wilson's industry experience really shines through. The group projects mirror real-world development scenarios.",
-      date: '2024-03-15',
-      upvotes: 49,
-      userId: 'user7',
-      comments: []
-    }
-  ]);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [newReview, setNewReview] = useState({
     professorName: '',
     rating: 5,
     course: '',
-    review: ''
+    review: '',
+    upvotes: 0,
   });
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
+  const fetchReviews = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/db/rateProfDb');
+      if (!response.ok) throw new Error('Failed to fetch reviews');
+      const data = await response.json();
+      
+      // Handle empty reviews array gracefully
+      if (!data.reviews || data.reviews.length === 0) {
+        setReviews([]);
+        return;
+      }
+      
+      setReviews(data.reviews);
+    } catch (err) {
+      console.error('Error fetching reviews:', err);
+      // Don't show error for empty database
+      if (err instanceof Error && err.message !== 'Failed to fetch reviews') {
+        setError('Failed to load reviews');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddReview = async () => {
+    try {
+      const response = await fetch('/api/db/rateProfDb', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newReview),
+      });
+
+      if (!response.ok) throw new Error('Failed to add review');
+      
+      const addedReview = await response.json();
+      console.log( addedReview )
+      setReviews([addedReview, ...reviews]);
+      setNewReview({ professorName: '', rating: 5, course: '', review: '' , upvotes: 0 });
+      setShowAddReview(false);
+    } catch (err) {
+      console.error('Error adding review:', err);
+    }
+  };
+
+  const handleUpdateReview = async (id: string) => {
+    try {
+      const response = await fetch('/api/db/rateProfDb', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id,
+          ...newReview,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update review');
+
+      setReviews(reviews.map(review => {
+        if (review.id === id) {
+          return {
+            ...review,
+            ...newReview,
+          };
+        }
+        return review;
+      }));
+      setEditingReview(null);
+      setNewReview({ professorName: '', rating: 5, course: '', review: '' , upvotes:0 });
+    } catch (err) {
+      console.error('Error updating review:', err);
+    }
+  };
+
+  const handleDeleteReview = async (id: string) => {
+    try {
+      const response = await fetch('/api/db/rateProfDb', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id }),
+      });
+
+      if (!response.ok) throw new Error('Failed to delete review');
+
+      setReviews(reviews.filter(review => review.id !== id));
+    } catch (err) {
+      console.error('Error deleting review:', err);
+    }
+  };
+
+  const handleUpvote = async (id: string) => {
+    try {
+      const response = await fetch('/api/db/rateProfDb', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id,
+        }),
+      });
+  
+      if (!response.ok) throw new Error('Failed to upvote review');
+  
+      setReviews(reviews.map(review => {
+        if (review.id === id) {
+          return { ...review, upvotes: review.upvotes + 1 };
+        }
+        return review;
+      }));
+    } catch (err) {
+      console.error('Error upvoting review:', err);
+    }
+  };
+
+  const handleAddComment = async (reviewId: string, commentText: string) => {
+    try {
+      const review = reviews.find(r => r.id === reviewId);
+      if (!review) return;
+
+      const newComment = {
+        id: Math.random().toString(),
+        userId: 'currentUser',
+        text: commentText,
+        date: new Date().toISOString().split('T')[0]
+      };
+
+      const response = await fetch('/api/db/rateProfDb', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: reviewId,
+          comments: [...review.comments, newComment],
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to add comment');
+
+      setReviews(reviews.map(review => {
+        if (review.id === reviewId) {
+          return {
+            ...review,
+            comments: [...review.comments, newComment],
+          };
+        }
+        return review;
+      }));
+    } catch (err) {
+      console.error('Error adding comment:', err);
+    }
+  };
 
   const itemsPerPage = 4;
   const filteredReviews = reviews.filter(review =>
@@ -263,64 +358,8 @@ export default function RateProfessor() {
     currentPage * itemsPerPage
   );
 
-  const handleAddReview = () => {
-    const review: Review = {
-      id: Math.random().toString(),
-      ...newReview,
-      date: new Date().toISOString().split('T')[0],
-      upvotes: 0,
-      userId: 'currentUser',
-      comments: []
-    };
-    setReviews([review, ...reviews]);
-    setNewReview({ professorName: '', rating: 5, course: '', review: '' });
-    setShowAddReview(false);
-  };
-
-  const handleUpdateReview = (id: string) => {
-    setReviews(reviews.map(review => {
-      if (review.id === id) {
-        return {
-          ...review,
-          ...newReview,
-          date: new Date().toISOString().split('T')[0]
-        };
-      }
-      return review;
-    }));
-    setEditingReview(null);
-    setNewReview({ professorName: '', rating: 5, course: '', review: '' });
-  };
-
-  const handleDeleteReview = (id: string) => {
-    setReviews(reviews.filter(review => review.id !== id));
-  };
-
-  const handleUpvote = (id: string) => {
-    setReviews(reviews.map(review => {
-      if (review.id === id) {
-        return { ...review, upvotes: review.upvotes + 1 };
-      }
-      return review;
-    }));
-  };
-
-  const handleAddComment = (reviewId: string, commentText: string) => {
-    setReviews(reviews.map(review => {
-      if (review.id === reviewId) {
-        return {
-          ...review,
-          comments: [...review.comments, {
-            id: Math.random().toString(),
-            userId: 'currentUser',
-            text: commentText,
-            date: new Date().toISOString().split('T')[0]
-          }]
-        };
-      }
-      return review;
-    }));
-  };
+  if (loading) return <div className="text-center py-8">Loading reviews...</div>;
+  if (error) return <div className="text-center py-8 text-red-600">{error}</div>;
 
   return (
     <div className="min-h-screen bg-gray-50 py-48">
@@ -409,17 +448,23 @@ export default function RateProfessor() {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {currentReviews.map((review) => (
-            <ReviewCard
-              key={review.id}
-              review={review}
-              onUpvote={handleUpvote}
-              onEdit={setEditingReview}
-              onDelete={handleDeleteReview}
-              onAddComment={handleAddComment}
-              setNewReview={setNewReview}
-            />
-          ))}
+          {currentReviews.length === 0 && !loading ? (
+            <div className="col-span-2 text-center py-8 text-gray-500">
+              {searchTerm ? 'No reviews found for your search.' : 'No reviews yet. Be the first to add one!'}
+            </div>
+          ) : (
+            currentReviews.map((review) => (
+              <ReviewCard
+                key={review.id}
+                review={review}
+                onUpvote={handleUpvote}
+                onEdit={setEditingReview}
+                onDelete={handleDeleteReview}
+                onAddComment={handleAddComment}
+                setNewReview={setNewReview}
+              />
+            ))
+          )}
         </div>
 
         {totalPages > 1 && (
