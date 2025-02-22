@@ -25,6 +25,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     case 'POST':
       try {
         const body = req.body;
+        console.log(body);
         const reviewsRef = collection(db, COLLECTION_NAME);
         const docRef = await addDoc(reviewsRef, {
           ...body,
@@ -41,16 +42,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       case 'PUT':
         try {
-          const body = req.body;
-          const { id, ...updateData } = body;
-          const reviewRef = doc(db, COLLECTION_NAME, id);
-          
-          await updateDoc(reviewRef, {
-            upvotes: increment(1), 
-            ...updateData
-          });
+          const body = await req.body;
+          const { id, userId, ...updateData } = body;
+          if (!id) {
+            res.status(400).json({ error: 'Review ID is required' });
+          }
       
-          res.status(200).json({ success: true });
+          if (!userId) {
+            res.status(401).json({ error: 'User must be authenticated' });
+          }
+          const reviewRef = doc(db, COLLECTION_NAME, id);
+          await updateDoc(reviewRef, updateData);
+          res.json({ success: true, id, ...updateData });
         } catch (error) {
           console.error('Error updating review:', error);
           res.status(500).json({ error: 'Failed to update review' });
