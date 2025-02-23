@@ -21,37 +21,37 @@ const ProfilePage: React.FC = () => {
   });
 
   useEffect(() => {
-  const fetchProfile = async () => {
-    try {
-      const storedProfile = localStorage.getItem("userProfile");
+    const fetchProfile = async () => {
+      try {
+        const storedProfile = localStorage.getItem("userProfile");
 
-      if (storedProfile) {
-        setProfile(JSON.parse(storedProfile));
-        setFormData(JSON.parse(storedProfile));
-      } else {
-        const userEmail = "john.doe@example.com"; 
-        const profilesCollection = collection(firestore, "profiles");
-        const q = query(profilesCollection, where("email", "==", userEmail));
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-          const userProfile = querySnapshot.docs[0].data() as ProfileData;
-          setProfile(userProfile);
-          setFormData(userProfile);
-
-          localStorage.setItem("userProfile", JSON.stringify(userProfile));
+        if (storedProfile) {
+          const parsedProfile = JSON.parse(storedProfile);
+          setProfile(parsedProfile);
+          setFormData(parsedProfile);
         } else {
-          console.warn("Profile not found for email:", userEmail);
+          const userEmail = "john.doe@example.com"; 
+          const profilesCollection = collection(firestore, "profiles");
+          const q = query(profilesCollection, where("email", "==", userEmail));
+          const querySnapshot = await getDocs(q);
+
+          if (!querySnapshot.empty) {
+            const userProfile = querySnapshot.docs[0].data() as ProfileData;
+            setProfile(userProfile);
+            setFormData(userProfile);
+
+            localStorage.setItem("userProfile", JSON.stringify(userProfile));
+          } else {
+            console.warn("Profile not found for email:", userEmail);
+          }
         }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
       }
-    } catch (error) {
-      console.error("Error fetching profile:", error);
-    }
-  };
+    };
 
-  fetchProfile();
-}, []);
-
+    fetchProfile();
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -179,11 +179,11 @@ const ProfilePage: React.FC = () => {
                 🔗 Connections
               </button>
               <button
-        className="bg-blue-200 w-full py-2 rounded-md mb-2 hover:bg-blue-300"
-        onClick={() => router.push('/discussion')} // Navigate to discussion
-      >
-        💬 Go to Discussion Page
-      </button>
+                className="bg-blue-200 w-full py-2 rounded-md mb-2 hover:bg-blue-300"
+                onClick={() => router.push('/discussion')} // Navigate to discussion
+              >
+                💬 Go to Discussion Page
+              </button>
               <button className="bg-gray-500 text-white w-full py-2 rounded-md hover:bg-gray-600">
                 ⚙️ Settings
               </button>
