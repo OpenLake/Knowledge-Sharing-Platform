@@ -8,7 +8,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case 'GET':
       try {
-        console.log("Fetching all reviews...");
         const reviewsRef = collection(db, COLLECTION_NAME);
         const snapshot = await getDocs(reviewsRef);
         const reviews = snapshot.docs.map(doc => ({
