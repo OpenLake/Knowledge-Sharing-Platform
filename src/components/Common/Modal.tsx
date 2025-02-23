@@ -214,15 +214,11 @@ export const Modal: FC<{
                         Key: generatedTitle + '.' + fileExtension,
                     }),
                 ]).then(([uploadResponse, url]) => {
-                    console.log('File uploaded successfully')
-                    console.log('url generated successfully: ', url)
                     urlToSend = url
                 })
             } catch (error) {
                 console.error('Error uploading file:', error)
             }
-
-            console.log(urlToSend)
 
             await actionFunction({
                 id: isUpdateModal ? selectedEntity.id : null,
@@ -331,7 +327,6 @@ export const Modal: FC<{
     }, [selectedInstructorName, instructors])
 
     const handleResourceNumberChange = (value: number) => {
-        console.log('Resource Number changed to:', value)
         setResourceNumber(value)
     }
 
