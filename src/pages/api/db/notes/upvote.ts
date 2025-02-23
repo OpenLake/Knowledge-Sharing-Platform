@@ -41,7 +41,6 @@ export default async function noteUpvoteHandler(
                             });
                         }
                     } catch (err: any) {
-                        console.log(err);
                         res.status(405).json({
                             err,
                         });
@@ -85,7 +84,6 @@ export default async function noteUpvoteHandler(
                             });
                         }
                     } catch (err: any) {
-                        console.log(err);
                         res.status(405).json({
                             err,
                         });

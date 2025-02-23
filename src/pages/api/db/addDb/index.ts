@@ -112,7 +112,6 @@ export default async function DbHandler(
             }
             
           } catch (err: any) {
-            console.log(err);
             res.status(405).json({
               err,
             });

@@ -226,7 +226,6 @@ export default function RateProfessor() {
       if (!response.ok) throw new Error('Failed to add review');
       
       const addedReview = await response.json();
-      console.log( addedReview )
       setReviews([addedReview, ...reviews]);
       setNewReview({ professorName: '', rating: 5, course: '', review: '' , upvotes: 0 });
       setShowAddReview(false);
