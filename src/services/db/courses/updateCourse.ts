@@ -2,11 +2,11 @@ import { toast } from 'react-hot-toast'
 import { api } from '../../../utils/api'
 
 interface Props {
-    id: number
-    title: string
-    code: string
-    isAnonymous: boolean
-    refetch: Function
+    id: number;
+    title: string;
+    code: string;
+    isAnonymous: boolean;
+    refetch: Function;
 }
 
 export const updateCourse = ({
