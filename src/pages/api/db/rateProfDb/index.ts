@@ -8,7 +8,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case 'GET':
       try {
-        console.log("Fetching all reviews...");
         const reviewsRef = collection(db, COLLECTION_NAME);
         const snapshot = await getDocs(reviewsRef);
         const reviews = snapshot.docs.map(doc => ({
@@ -25,11 +24,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     case 'POST':
       try {
         const body = req.body;
-        console.log(body);
         const reviewsRef = collection(db, COLLECTION_NAME);
         const docRef = await addDoc(reviewsRef, {
           ...body,
-          date: new Date().toISOString().split('T')[0],
+          date: new Date().toISOString(),
           upvotes: 0,
           comments: []
         });

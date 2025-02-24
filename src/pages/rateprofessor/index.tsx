@@ -127,7 +127,7 @@ const ReviewCard = ({ review, onUpvote, onEdit, onDelete, onAddComment, onDelete
       <p className="text-gray-700 mb-4">{review.review}</p>
       
       <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-        <span>{review.date}</span>
+        <span>{new Date(review.date).toLocaleString()}</span>
         <div className="flex items-center gap-4">
           <button
             onClick={handleUpvote}
@@ -295,7 +295,8 @@ export default function RateProfessor() {
           ...newReview,
           userId: user.uid,
           userName: user.name, 
-          upvotedBy: [] 
+          upvotedBy: [],
+          date: new Date().toISOString()
         }),
       });
 
@@ -475,7 +476,8 @@ export default function RateProfessor() {
         userId: user.uid,
         userName: user.name,
         text: commentText,
-        date: new Date().toISOString().split('T')[0]
+        date:  new Date().toLocaleString()
+
       };
 
       const response = await fetch('/api/db/rateProfDb', {
