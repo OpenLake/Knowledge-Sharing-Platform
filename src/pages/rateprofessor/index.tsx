@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { Search, ThumbsUp, Edit2, Trash2, MessageCircle, Star, ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
-import { increment } from 'firebase/firestore';
+import toast from 'react-hot-toast';
+import { useAuth } from '../../contexts/auth';
 
 interface Review {
   id: string;
@@ -13,37 +14,94 @@ interface Review {
   date: string;
   upvotes: number;
   userId: string;
+  userName: string;      
   comments: Comment[];
+  upvotedBy: string[]; 
 }
 
 interface Comment {
   id: string;
   userId: string;
+  userName: string;       
   text: string;
   date: string;
 }
 
 interface ReviewCardProps {
   review: Review;
-  onUpvote: (id: string) => void;
+  onUpvote: (id: string, isUpvoting: boolean) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
   onAddComment: (reviewId: string, comment: string) => void;
+  onDeleteComment: (reviewId: string, commentId: string) => void; // <-- added
   setNewReview: (review: { professorName: string; rating: number; course: string; review: string; upvotes: number; }) => void;
+  currentUserId: string | null;
 }
 
-const ReviewCard = ({ review, onUpvote, onEdit, onDelete, onAddComment, setNewReview }: ReviewCardProps) => {
+const ReviewCard = ({ review, onUpvote, onEdit, onDelete, onAddComment, onDeleteComment, setNewReview, currentUserId }: ReviewCardProps) => {
   const [expandedComments, setExpandedComments] = useState(false);
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [newComment, setNewComment] = useState('');
+  const hasUpvoted = currentUserId && review.upvotedBy?.includes(currentUserId);
+
   const toggleComments = () => setExpandedComments(!expandedComments);
-  const toggleCommentForm = () => setShowCommentForm(!showCommentForm);
+  const toggleCommentForm = () => {
+    if (!currentUserId) {
+      toast.error('Please log in to add comments');
+      return;
+    }
+    setShowCommentForm(!showCommentForm);
+  };
 
   const handleAddComment = () => {
+    if (!currentUserId) {
+      toast.error('Please log in to add comments');
+      return;
+    }
     if (!newComment.trim()) return;
+    console.log("chala" , review , newComment );
     onAddComment(review.id, newComment);
     setNewComment('');
     setShowCommentForm(false);
+  };
+
+  const handleUpvote = () => {
+    if (!currentUserId) {
+      toast.error('Please log in to upvote reviews');
+      return;
+    }
+    onUpvote(review.id, !hasUpvoted);
+  };
+
+  const handleEdit = () => {
+    if (!currentUserId) {
+      toast.error('Please log in to edit reviews');
+      return;
+    }
+    if (currentUserId !== review.userId) {
+      toast.error('You can only edit your own reviews');
+      return;
+    }
+    onEdit(review.id);
+    setNewReview({
+      professorName: review.professorName,
+      rating: review.rating,
+      course: review.course,
+      review: review.review,
+      upvotes: review.upvotes
+    });
+  };
+
+  const handleDelete = () => {
+    if (!currentUserId) {
+      toast.error('Please log in to delete reviews');
+      return;
+    }
+    if (currentUserId !== review.userId) {
+      toast.error('You can only delete your own reviews');
+      return;
+    }
+    onDelete(review.id);
   };
 
   return (
@@ -51,6 +109,7 @@ const ReviewCard = ({ review, onUpvote, onEdit, onDelete, onAddComment, setNewRe
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="text-xl font-semibold text-gray-900">{review.professorName}</h3>
+          <p className="text-sm text-gray-500">Posted by: {review.userName}</p>
           <p className="text-gray-600">{review.course}</p>
         </div>
         <div className="flex items-center gap-2">
@@ -68,36 +127,33 @@ const ReviewCard = ({ review, onUpvote, onEdit, onDelete, onAddComment, setNewRe
       <p className="text-gray-700 mb-4">{review.review}</p>
       
       <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-        <span>{review.date}</span>
+        <span>{new Date(review.date).toLocaleString()}</span>
         <div className="flex items-center gap-4">
           <button
-            onClick={() => onUpvote(review.id)}
-            className="flex items-center gap-1 text-gray-600 hover:text-blue-600"
+            onClick={handleUpvote}
+            className={`flex items-center gap-1 ${
+              hasUpvoted ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600'
+            }`}
           >
-            <ThumbsUp className="h-4 w-4" />
+            <ThumbsUp className={`h-4 w-4 ${hasUpvoted ? 'fill-current' : ''}`} />
             <span>{review.upvotes}</span>
           </button>
-          <button
-            onClick={() => {
-              onEdit(review.id);
-              setNewReview({
-                professorName: review.professorName,
-                rating: review.rating,
-                course: review.course,
-                review: review.review,
-                upvotes: review.upvotes
-              });
-            }}
-            className="text-gray-600 hover:text-blue-600"
-          >
-            <Edit2 className="h-4 w-4" />
-          </button>
-          <button
-            onClick={() => onDelete(review.id)}
-            className="text-gray-600 hover:text-red-600"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
+          {currentUserId === review.userId && (
+            <>
+              <button
+                onClick={handleEdit}
+                className="text-gray-600 hover:text-blue-600"
+              >
+                <Edit2 className="h-4 w-4" />
+              </button>
+              <button
+                onClick={handleDelete}
+                className="text-gray-600 hover:text-red-600"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -120,12 +176,23 @@ const ReviewCard = ({ review, onUpvote, onEdit, onDelete, onAddComment, setNewRe
 
         {expandedComments && (
           <div className="space-y-3 mb-4 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-            {review.comments?.map((comment) => (
-              <div key={comment.id} className="bg-gray-50 p-3 rounded">
-                <p className="text-gray-700">{comment.text}</p>
-                <p className="text-sm text-gray-500 mt-1">{comment.date}</p>
-              </div>
-            ))}
+        {review.comments?.map((comment) => (
+          <div key={comment.id} className="bg-gray-50 p-3 rounded flex justify-between items-center">
+            <div>
+              <p className="text-sm text-gray-500">Posted by: {comment.userName}</p>
+              <p className="text-gray-700">{comment.text}</p>
+              <p className="text-sm text-gray-500 mt-1">{comment.date}</p>
+            </div>
+            {currentUserId === comment.userId && (
+              <button
+                onClick={() => onDeleteComment(review.id, comment.id)}
+                title="Delete comment"
+              >
+                <Trash2 className="h-4 w-4 text-red-600 hover:text-red-800" />
+              </button>
+            )}
+          </div>
+        ))}
           </div>
         )}
 
@@ -168,12 +235,13 @@ const ReviewCard = ({ review, onUpvote, onEdit, onDelete, onAddComment, setNewRe
 };
 
 export default function RateProfessor() {
+  const { user, loading }: any = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAddReview, setShowAddReview] = useState(false);
   const [editingReview, setEditingReview] = useState<string | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [newReview, setNewReview] = useState({
@@ -181,7 +249,7 @@ export default function RateProfessor() {
     rating: 5,
     course: '',
     review: '',
-    upvotes: 0,
+    upvotes:0
   });
 
   useEffect(() => {
@@ -190,12 +258,11 @@ export default function RateProfessor() {
 
   const fetchReviews = async () => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       const response = await fetch('/api/db/rateProfDb');
       if (!response.ok) throw new Error('Failed to fetch reviews');
       const data = await response.json();
       
-      // Handle empty reviews array gracefully
       if (!data.reviews || data.reviews.length === 0) {
         setReviews([]);
         return;
@@ -204,37 +271,54 @@ export default function RateProfessor() {
       setReviews(data.reviews);
     } catch (err) {
       console.error('Error fetching reviews:', err);
-      // Don't show error for empty database
       if (err instanceof Error && err.message !== 'Failed to fetch reviews') {
         setError('Failed to load reviews');
       }
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   const handleAddReview = async () => {
+    if (!user) {
+      toast.error('Please log in to add a review');
+      return;
+    }
+
     try {
       const response = await fetch('/api/db/rateProfDb', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newReview),
+        body: JSON.stringify({
+          ...newReview,
+          userId: user.uid,
+          userName: user.name, 
+          upvotedBy: [],
+          date: new Date().toISOString()
+        }),
       });
 
       if (!response.ok) throw new Error('Failed to add review');
       
       const addedReview = await response.json();
       setReviews([addedReview, ...reviews]);
-      setNewReview({ professorName: '', rating: 5, course: '', review: '' , upvotes: 0 });
+      setNewReview({ professorName: '', rating: 5, course: '', review: '' , upvotes:0 });
       setShowAddReview(false);
+      toast.success('Review added successfully!');
     } catch (err) {
       console.error('Error adding review:', err);
+      toast.error('Failed to add review');
     }
   };
 
   const handleUpdateReview = async (id: string) => {
+    if (!user) {
+      toast.error('Please log in to update a review');
+      return;
+    }
+
     try {
       const response = await fetch('/api/db/rateProfDb', {
         method: 'PUT',
@@ -243,6 +327,8 @@ export default function RateProfessor() {
         },
         body: JSON.stringify({
           id,
+          userId: user.uid,
+          userName: user.name, 
           ...newReview,
         }),
       });
@@ -259,32 +345,89 @@ export default function RateProfessor() {
         return review;
       }));
       setEditingReview(null);
-      setNewReview({ professorName: '', rating: 5, course: '', review: '' , upvotes:0 });
+      setNewReview({ professorName: '', rating: 5, course: '', review: '',upvotes:0 });
+      toast.success('Review updated successfully!');
     } catch (err) {
       console.error('Error updating review:', err);
+      toast.error('Failed to update review');
     }
   };
 
   const handleDeleteReview = async (id: string) => {
+    if (!user) {
+      toast.error('Please log in to delete a review');
+      return;
+    }
+
     try {
       const response = await fetch('/api/db/rateProfDb', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id, userId: user.uid }),
       });
 
       if (!response.ok) throw new Error('Failed to delete review');
 
       setReviews(reviews.filter(review => review.id !== id));
+      toast.success('Review deleted successfully!');
     } catch (err) {
       console.error('Error deleting review:', err);
+      toast.error('Failed to delete review');
     }
   };
 
-  const handleUpvote = async (id: string) => {
+  const handleDeleteComment = async (reviewId: string, commentId: string) => {
+    if (!user) {
+      toast.error('Please log in to delete comments');
+      return;
+    }
     try {
+      const review = reviews.find(r => r.id === reviewId);
+      if (!review) return;
+      const updatedComments = review.comments.filter(comment => comment.id !== commentId);
+      const response = await fetch('/api/db/rateProfDb', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: reviewId,
+          userId: user.uid,
+          userName: user.name, 
+          comments: updatedComments,
+        }),
+      });
+      if (!response.ok) throw new Error('Failed to delete comment');
+  
+      setReviews(reviews.map(r => {
+        if (r.id === reviewId) {
+          return { ...r, comments: updatedComments };
+        }
+        return r;
+      }));
+      toast.success('Comment deleted successfully!');
+    } catch (err) {
+      console.error('Error deleting comment:', err);
+      toast.error('Failed to delete comment');
+    }
+  };
+
+  const handleUpvote = async (id: string, isUpvoting: boolean) => {
+    if (!user) {
+      toast.error('Please log in to upvote reviews');
+      return;
+    }
+
+    try {
+      const review = reviews.find(r => r.id === id);
+      if (!review) return;
+
+      const updatedUpvotedBy = isUpvoting
+        ? [...(review.upvotedBy || []), user.uid]
+        : (review.upvotedBy || []).filter(uid => uid !== user.uid);
+
       const response = await fetch('/api/db/rateProfDb', {
         method: 'PUT',
         headers: {
@@ -292,32 +435,49 @@ export default function RateProfessor() {
         },
         body: JSON.stringify({
           id,
+          userId: user.uid,
+          userName: user.name, 
+          upvotes: review.upvotes + (isUpvoting ? 1 : -1),
+          upvotedBy: updatedUpvotedBy
         }),
       });
-  
-      if (!response.ok) throw new Error('Failed to upvote review');
-  
-      setReviews(reviews.map(review => {
-        if (review.id === id) {
-          return { ...review, upvotes: review.upvotes + 1 };
+
+      if (!response.ok) throw new Error('Failed to update upvote');
+
+      setReviews(reviews.map(r => {
+        if (r.id === id) {
+          return {
+            ...r,
+            upvotes: r.upvotes + (isUpvoting ? 1 : -1),
+            upvotedBy: updatedUpvotedBy
+          };
         }
-        return review;
+        return r;
       }));
+
+      toast.success(isUpvoting ? 'Review upvoted!' : 'Upvote removed');
     } catch (err) {
-      console.error('Error upvoting review:', err);
+      console.error('Error updating upvote:', err);
+      toast.error('Failed to update upvote');
     }
   };
 
   const handleAddComment = async (reviewId: string, commentText: string) => {
+    if (!user) {
+      toast.error('Please log in to add comments');
+      return;
+    }
+
     try {
       const review = reviews.find(r => r.id === reviewId);
       if (!review) return;
-
       const newComment = {
         id: Math.random().toString(),
-        userId: 'currentUser',
+        userId: user.uid,
+        userName: user.name,
         text: commentText,
-        date: new Date().toISOString().split('T')[0]
+        date:  new Date().toLocaleString()
+
       };
 
       const response = await fetch('/api/db/rateProfDb', {
@@ -327,23 +487,25 @@ export default function RateProfessor() {
         },
         body: JSON.stringify({
           id: reviewId,
-          comments: [...review.comments, newComment],
+          userId: user.uid,
+          userName: user.name,
+          comments: [...(review.comments ?? []), newComment],
         }),
       });
-
       if (!response.ok) throw new Error('Failed to add comment');
-
       setReviews(reviews.map(review => {
         if (review.id === reviewId) {
           return {
             ...review,
-            comments: [...review.comments, newComment],
+            comments: [...(review.comments ?? []), newComment],
           };
         }
         return review;
       }));
+      toast.success('Comment added successfully!');
     } catch (err) {
       console.error('Error adding comment:', err);
+      toast.error('Failed to add comment');
     }
   };
 
@@ -357,7 +519,7 @@ export default function RateProfessor() {
     currentPage * itemsPerPage
   );
 
-  if (loading) return <div className="text-center py-8">Loading reviews...</div>;
+  if (loading || isLoading) return <div className="text-center py-8">Loading...</div>;
   if (error) return <div className="text-center py-8 text-red-600">{error}</div>;
 
   return (
@@ -380,7 +542,13 @@ export default function RateProfessor() {
             <Search className="absolute left-3 top-2.5 text-gray-400 h-5 w-5" />
           </div>
           <button
-            onClick={() => setShowAddReview(true)}
+            onClick={() => {
+              if (!user) {
+                toast.error('Please log in to add a review');
+                return;
+              }
+              setShowAddReview(true);
+            }}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             Add Review
@@ -447,7 +615,7 @@ export default function RateProfessor() {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {currentReviews.length === 0 && !loading ? (
+          {currentReviews.length === 0 && !isLoading ? (
             <div className="col-span-2 text-center py-8 text-gray-500">
               {searchTerm ? 'No reviews found for your search.' : 'No reviews yet. Be the first to add one!'}
             </div>
@@ -460,7 +628,9 @@ export default function RateProfessor() {
                 onEdit={setEditingReview}
                 onDelete={handleDeleteReview}
                 onAddComment={handleAddComment}
+                onDeleteComment={handleDeleteComment}
                 setNewReview={setNewReview}
+                currentUserId={user?.uid || null}
               />
             ))
           )}
