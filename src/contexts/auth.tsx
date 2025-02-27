@@ -7,6 +7,15 @@ import { toast } from 'react-hot-toast';
 import { api } from '../utils/api';
 import { FirebaseError } from 'firebase/app';
 import { firebaseAuth } from '../utils/firebaseInit';
+import { User as FirebaseUser } from "firebase/auth";
+import { getIdToken } from "firebase/auth";
+
+type User = {
+  id: string;
+  email: string | null;
+  name?: string | null;
+  picture?: string | null;
+};
 
 const AuthContext = createContext({
   isAuthenticated: false,
@@ -19,7 +28,7 @@ const AuthContext = createContext({
 });
 
 export const AuthProvider = ({ children }: any) => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [photoURL, setPhotoURL] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(true);
@@ -77,6 +86,7 @@ export const AuthProvider = ({ children }: any) => {
           setUser(user);
           setPhotoURL(user.picture);
           setDisplayName(user.name);
+          return;
         }
       } catch (err) {
         if ((err as FirebaseError).code === 'auth/id-token-expired') {
@@ -86,29 +96,47 @@ export const AuthProvider = ({ children }: any) => {
         }
       }
     }
+    const authUser = firebaseAuth.currentUser;
+    if (authUser) {
+      setUser({
+        id: authUser.uid,
+        email: authUser.email,
+        name: authUser.displayName,
+        picture: authUser.photoURL,
+      });
+      setPhotoURL(authUser.photoURL || '');
+      setDisplayName(authUser.displayName || '');
+      cookies.set('accessToken', authUser.accessToken || '', { expires: 60 });
+    } else {
+      setUser(null);
+    }
     setLoading(false);
   }
 
   
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (authUser: FirebaseUser | null) => {
+    const unsubscribe = onAuthStateChanged(firebaseAuth, async (authUser: FirebaseUser | null) => {
       if (authUser) {
+        const token = await authUser.getIdToken();
+  
         setUser({
           id: authUser.uid,
           email: authUser.email,
           name: authUser.displayName,
           picture: authUser.photoURL,
         });
+  
         setPhotoURL(authUser.photoURL || '');
         setDisplayName(authUser.displayName || '');
-        cookies.set('accessToken', authUser.accessToken || '', { expires: 60 });
+
+        cookies.set('accessToken', token, { expires: 60 });
       } else {
-        loadUserFromCookie(); 
+        loadUserFromCookie();
       }
     });
-
+  
     return () => unsubscribe();
-  }, []);
+  }, []);  
 
   return (
     <AuthContext.Provider
@@ -125,13 +153,6 @@ export const AuthProvider = ({ children }: any) => {
       {children}
     </AuthContext.Provider>
   );
-};
-
-type User = {
-  id: string;
-  email: string;
-  name?: string;
-  picture?: string;
 };
 
 export const useAuth = () => {
