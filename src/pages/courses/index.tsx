@@ -67,7 +67,6 @@ export default function Courses() {
                 if (q1.size > 0) {
                     setAdminStatus(true)
                 }
-                console.log('q1: ', q1)
             } catch (error) {
                 console.error('Error checking admin existence:', error)
             }
@@ -228,8 +227,6 @@ export default function Courses() {
                         courses
                             .filter((course: any) => {
                                 const regex = new RegExp(searchInput, 'i')
-                                console.log(regex)
-
                                 if (course.title.match(regex)) return true
                                 else return false
                             })

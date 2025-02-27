@@ -33,7 +33,6 @@ export default async function noteHandler(
           result: notes,
         });
       } catch (err: any) {
-        console.log(err);
         res.status(405).json({
           err,
         });
@@ -61,9 +60,6 @@ export default async function noteHandler(
           } = body;
           try {
             let generatedTitle = subjectCode+'_'+subjectName+'_'+branch+'_'+semester+'_'+instructorName+'_'+resourceType+'_'+resourceNumber;
-            // console.log(generatedTitle)
-            // console.log(resourceNumber)
-            // console.log(description)
             const newNoteRef = await addDoc(collection(firestore, notesCollection), {
               title:generatedTitle,
               subject_code: subjectCode,
@@ -96,7 +92,6 @@ export default async function noteHandler(
               },
             });
           } catch (err: any) {
-            console.log(err);
             res.status(405).json({
               err,
             });
@@ -180,7 +175,6 @@ export default async function noteHandler(
               });
             }
           } catch (err: any) {
-            console.log(err);
             res.status(405).json({
               err,
             });
@@ -223,7 +217,6 @@ export default async function noteHandler(
               });
             }
           } catch (err: any) {
-            console.log(err);
             res.status(405).json({
               err,
             });

@@ -55,7 +55,6 @@ export default async function resourceTypeshandler(
 
         if (user) {
           const { resourceType } = body;
-          console.log(1)
           try {
             const newResourceTypeRef = await addDoc(
               collection(firestore, resourceTypesCollection),
@@ -64,7 +63,6 @@ export default async function resourceTypeshandler(
                 created_by_id: user.user_id,
               }
             );
-            console.log(2)
 
             res.status(201).json({
               message: 'New Resource Type Created',
