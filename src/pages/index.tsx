@@ -106,16 +106,21 @@ export default function Home() {
           <hr className="col-span-5 mt-1 md:mt-2 bg-primary-light p-0.5 rounded" />
         </h2>
         <p className="text-gray-700 font-semibold col-span-5 m-0">
-          Knowledge sharing platform application aims to get the students acquainted with the courses, professors, evaluation
-          schemes. This webapp does the said things i.e. gathering notes, PYQs, course feedback, professor feedback, and
-          previous year grading schemes.
-          <br />
-          Here people can share their honest reviews without being scrutinized much. Getting reviews from mass makes it easy
-          for one to choose the particular course and get the right information about that course.
-          <br />
-          Moreover, students can also get relevant course resources from the students who already opted for the course. This
-          platform might also act as a general guidance portal.
-        </p>
+                    Knowledge sharing platform application aims to get the
+                    students acquainted with the courses, professors, evaluation
+                    schemes. This webapp does the said things i.e. gathering
+                    notes, PYQs, course feedback, professor feedback, and
+                    previous year grading schemes.
+                    <br />
+                    Here people can share their honest reviews without being
+                    scrutinized much. Getting reviews from mass makes it easy
+                    for one to choose the particular course and get the right
+                    information about that course.
+                    <br />
+                    Moreover, students can also get relevant course resources
+                    from the students who already opted for the course. This
+                    platform might also act as a general guidance portal.
+                </p>
       </div>
     </div>
   );

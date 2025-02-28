@@ -185,7 +185,7 @@ const ProfilePage: React.FC = () => {
               </button>
               <button
                 className="bg-blue-200 w-full py-2 rounded-md mb-2 hover:bg-blue-300"
-                onClick={() => router.push('/discussion')} // Navigate to discussion
+                onClick={() => router.push('/discussion')} 
               >
                 💬 Go to Discussion Page
               </button>
