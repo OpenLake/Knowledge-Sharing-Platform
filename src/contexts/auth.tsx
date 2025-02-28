@@ -7,6 +7,15 @@ import { toast } from 'react-hot-toast';
 import { api } from '../utils/api';
 import { FirebaseError } from 'firebase/app';
 import { firebaseAuth } from '../utils/firebaseInit';
+import { User as FirebaseUser } from "firebase/auth";
+import { getIdToken } from "firebase/auth";
+
+type User = {
+  id: string;
+  email: string | null;
+  name?: string | null;
+  picture?: string | null;
+};
 
 const AuthContext = createContext({
   isAuthenticated: false,
@@ -16,14 +25,14 @@ const AuthContext = createContext({
   login: () => {},
   logout: () => {},
   loading: true,
-});
-
+  });
+  
 export const AuthProvider = ({ children }: any) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [photoURL, setPhotoURL] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(true);
-
+   
   // Functions
   const logout = async () => {
     try {
@@ -36,7 +45,7 @@ export const AuthProvider = ({ children }: any) => {
     } catch (err) {
       toast.error((err as FirebaseError).message);
     }
-  };
+    };
 
   const login = async () => {
     const provider = new GoogleAuthProvider();
@@ -47,7 +56,7 @@ export const AuthProvider = ({ children }: any) => {
       const { accessToken } = user;
 
       if (accessToken) {
-        cookies.set('accessToken', accessToken, { expires: 60 });
+        cookies.set('accessToken', accessToken, { expires: 60  });
 
         api.defaults.headers.Authorization = `Bearer ${accessToken}`;
         const { data } = await api.get('/api/auth/');
@@ -70,17 +79,17 @@ export const AuthProvider = ({ children }: any) => {
   async function loadUserFromCookie() {
     const accessToken = cookies.get('accessToken');
     if (accessToken) {
-      api.defaults.headers.Authorization = `Bearer ${accessToken}`;
-      try {
-        const { data } = await api.get('/api/auth/');
-        const { result: user } = data;
-        const { picture, name, isAdmin } = user;
-        if (user) {
-          setUser(user);
-          setPhotoURL(picture);
-          setDisplayName(name);
-        }
-      } catch (err) {
+        api.defaults.headers.Authorization = `Bearer ${accessToken}`;
+        try {
+            const { data } = await api.get('/api/auth/');
+            const { result: user } = data;
+            if (user) {
+                setUser(user);
+                setPhotoURL(user.picture);
+                setDisplayName(user.name);
+                return;
+                  }
+        } catch (err) {
         if ((err as FirebaseError).code === 'auth/id-token-expired') {
           cookies.remove('accessToken');
           setUser(null);
@@ -88,21 +97,47 @@ export const AuthProvider = ({ children }: any) => {
         }
       }
     }
+    const authUser = firebaseAuth.currentUser;
+    if (authUser) {
+      setUser({
+        id: authUser.uid,
+        email: authUser.email,
+        name: authUser.displayName,
+        picture: authUser.photoURL,
+      });
+      setPhotoURL(authUser.photoURL || '');
+      setDisplayName(authUser.displayName || '');
+      cookies.set('accessToken', authUser.accessToken || '', { expires: 60 });
+    } else {
+      setUser(null);
+    }
     setLoading(false);
   }
 
-  // Effects
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(firebaseAuth, (authUser) => {
-      if (authUser) {
-        loadUserFromCookie();
+ useEffect(() => {
+    const unsubscribe = onAuthStateChanged(firebaseAuth, async (authUser: FirebaseUser | 
+    null) => {
+        if (authUser) {
+        const token = await authUser.getIdToken();
+        
+        setUser({
+          id: authUser.uid,
+          email: authUser.email,
+          name: authUser.displayName,
+          picture: authUser.photoURL,
+        });
+        setPhotoURL(authUser.photoURL || '');
+        setDisplayName(authUser.displayName || '');
+
+        cookies.set('accessToken', token, { expires: 60 });
       } else {
-        setLoading(false);
+        loadUserFromCookie(); 
       }
     });
 
+
     return () => unsubscribe();
-  }, []);
+     }, []);
 
   return (
     <AuthContext.Provider
@@ -121,15 +156,6 @@ export const AuthProvider = ({ children }: any) => {
   );
 };
 
-// Define a type for the user object
-type User = {
-  // Define the properties of your user object
-  // For example:
-  id: string;
-  email: string;
-  // ... other properties
-};
-
 export const useAuth = () => {
   const authContext = useContext(AuthContext);
 
@@ -139,7 +165,7 @@ export const useAuth = () => {
 
   return authContext as {
     isAuthenticated: boolean;
-    user: User | null; // Use the defined User type
+    user: User | null; 
     photoURL: string;
     displayName: string;
     login: () => void;
@@ -159,3 +185,4 @@ export const ProtectRoute = ({ children }: any) => {
   }
   return children;
 };
+
