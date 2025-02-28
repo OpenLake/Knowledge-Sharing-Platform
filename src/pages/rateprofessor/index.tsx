@@ -519,7 +519,7 @@ export default function RateProfessor() {
     currentPage * itemsPerPage
   );
 
-  if (loading || isLoading) return <div className="text-center py-8">Loading...</div>;
+  if (loading || isLoading) return <div className="text-center py-48">Loading...</div>;
   if (error) return <div className="text-center py-8 text-red-600">{error}</div>;
 
   return (

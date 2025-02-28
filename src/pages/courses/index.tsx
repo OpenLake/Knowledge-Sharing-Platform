@@ -1,3 +1,4 @@
+'use client'
 import Head from 'next/head'
 import { BsPencilSquare, BsPlus } from 'react-icons/bs'
 import { useAuth } from '../../contexts/auth'
