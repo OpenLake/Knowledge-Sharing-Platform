@@ -9,19 +9,19 @@ const CollegeFormModal: React.FC<CollegeFormModalProps> = ({ onClose, onSave }) 
   const [name, setName] = useState("");
   const [admissionId, setAdmissionId] = useState("");
   const [collegeName, setCollegeName] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false); // Prevents multiple submissions
+  const [isSubmitting, setIsSubmitting] = useState(false); 
 
   const handleSubmit = () => {
     if (!name || !admissionId || !collegeName) {
       alert("Please fill all fields");
       return;
     }
-    if (isSubmitting) return; // Prevents multiple clicks
+    if (isSubmitting) return; 
 
     setIsSubmitting(true);
     onSave({ name, admissionId, collegeName });
 
-    setTimeout(() => setIsSubmitting(false), 500); // Allow form to be used again after delay
+    setTimeout(() => setIsSubmitting(false), 500); 
     onClose();
   };
 
