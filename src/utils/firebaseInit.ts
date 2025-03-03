@@ -1,5 +1,5 @@
 import { FirebaseOptions, initializeApp, getApp } from 'firebase/app';
-import { getAuth, Auth } from 'firebase/auth';
+import { getAuth, Auth, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { FIREBASE_CONFIG } from '../config';
 
@@ -21,5 +21,7 @@ function createFirebaseApp(config: FirebaseOptions) {
 
 const firestore: Firestore = getFirestore(createFirebaseApp(FIREBASE_CONFIG));
 const firebaseAuth: Auth = getAuth(createFirebaseApp(FIREBASE_CONFIG));
+
+setPersistence(firebaseAuth, browserLocalPersistence).catch(console.error);
 
 export { firestore, firebaseAuth, firebaseApp };
