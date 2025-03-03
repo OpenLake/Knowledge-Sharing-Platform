@@ -25,14 +25,14 @@ const AuthContext = createContext({
   login: () => {},
   logout: () => {},
   loading: true,
-  });
-  
+});
+
 export const AuthProvider = ({ children }: any) => {
   const [user, setUser] = useState<User | null>(null);
   const [photoURL, setPhotoURL] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(true);
-   
+
   // Functions
   const logout = async () => {
     try {
@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }: any) => {
     } catch (err) {
       toast.error((err as FirebaseError).message);
     }
-    };
+  };
 
   const login = async () => {
     const provider = new GoogleAuthProvider();
@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }: any) => {
       const { accessToken } = user;
 
       if (accessToken) {
-        cookies.set('accessToken', accessToken, { expires: 60  });
+        cookies.set('accessToken', accessToken, { expires: 60 });
 
         api.defaults.headers.Authorization = `Bearer ${accessToken}`;
         const { data } = await api.get('/api/auth/');
@@ -79,17 +79,17 @@ export const AuthProvider = ({ children }: any) => {
   async function loadUserFromCookie() {
     const accessToken = cookies.get('accessToken');
     if (accessToken) {
-        api.defaults.headers.Authorization = `Bearer ${accessToken}`;
-        try {
-            const { data } = await api.get('/api/auth/');
-            const { result: user } = data;
-            if (user) {
-                setUser(user);
-                setPhotoURL(user.picture);
-                setDisplayName(user.name);
-                return;
-                  }
-        } catch (err) {
+      api.defaults.headers.Authorization = `Bearer ${accessToken}`;
+      try {
+        const { data } = await api.get('/api/auth/');
+        const { result: user } = data;
+        if (user) {
+          setUser(user);
+          setPhotoURL(user.picture);
+          setDisplayName(user.name);
+          return;
+        }
+      } catch (err) {
         if ((err as FirebaseError).code === 'auth/id-token-expired') {
           cookies.remove('accessToken');
           setUser(null);
@@ -114,30 +114,30 @@ export const AuthProvider = ({ children }: any) => {
     setLoading(false);
   }
 
- useEffect(() => {
-    const unsubscribe = onAuthStateChanged(firebaseAuth, async (authUser: FirebaseUser | 
-    null) => {
-        if (authUser) {
+  // Effects
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(firebaseAuth, async (authUser: FirebaseUser | null) => {  // ✅ Use firebaseAuth
+      if (authUser) {
         const token = await authUser.getIdToken();
-        
+  
         setUser({
           id: authUser.uid,
           email: authUser.email,
           name: authUser.displayName,
           picture: authUser.photoURL,
         });
+  
         setPhotoURL(authUser.photoURL || '');
         setDisplayName(authUser.displayName || '');
 
         cookies.set('accessToken', token, { expires: 60 });
       } else {
-        loadUserFromCookie(); 
+        loadUserFromCookie();
       }
     });
-
-
+  
     return () => unsubscribe();
-     }, []);
+  }, []);  
 
   return (
     <AuthContext.Provider
@@ -165,7 +165,7 @@ export const useAuth = () => {
 
   return authContext as {
     isAuthenticated: boolean;
-    user: User | null; 
+    user: User | null; // Use the defined User type
     photoURL: string;
     displayName: string;
     login: () => void;
@@ -185,4 +185,3 @@ export const ProtectRoute = ({ children }: any) => {
   }
   return children;
 };
-
