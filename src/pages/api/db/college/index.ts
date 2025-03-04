@@ -27,7 +27,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         const collegesRef = collection(db, COLLECTION_NAME);
         const docRef = await addDoc(collegesRef, {
           ...body,
-          likes: 0,  // Initialize likes count
+          likes: 0,  
           createdAt: new Date().toISOString()
         });
         res.status(200).json({ id: docRef.id, ...body });

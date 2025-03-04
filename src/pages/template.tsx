@@ -3,7 +3,9 @@ import CollegeCard from "../components/template/CollegeCard";
 import CollegeFormModal from "../components/template/CollegeFormModal";
 
 const TemplatePage: React.FC = () => {
-  const [colleges, setColleges] = useState<{ id: string; name: string; admissionId: string; collegeName: string; courses: string }[]>([]);
+  const [colleges, setColleges] = useState<
+    { id: string; name: string; admissionId: string; collegeName: string; courses: string; branch: string; year: string }[]
+  >([]);
   const [showModal, setShowModal] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -20,7 +22,9 @@ const TemplatePage: React.FC = () => {
             name: college.name,
             admissionId: college.admissionId,
             collegeName: college.collegeName,
-            courses: college.courses || "", 
+            courses: college.courses || "",
+            branch: college.branch || "",
+            year: college.year || "",
           }));
           setColleges(formattedColleges);
         } else {
@@ -34,12 +38,24 @@ const TemplatePage: React.FC = () => {
     fetchColleges();
   }, []);
 
-  const addCollege = async (college: { name: string; admissionId: string; collegeName: string }) => {
+ 
+  const getSortedColleges = () => {
+    return colleges
+      .map((college) => {
+        
+        const storedLikes = localStorage.getItem(`college-${college.id}-likes`);
+        const likes = storedLikes ? parseInt(storedLikes, 10) : 0;
+        return { ...college, likes };
+      })
+      .sort((a, b) => b.likes - a.likes); 
+  };
+
+  const addCollege = async (college: { name: string; admissionId: string; collegeName: string; branch: string; year: string }) => {
     try {
       const response = await fetch("/api/db/college", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...college, courses: "" }), 
+        body: JSON.stringify({ ...college, courses: "" }),
       });
       const data = await response.json();
       if (response.ok) {
@@ -73,6 +89,13 @@ const TemplatePage: React.FC = () => {
 
   const handleEditCourses = async (id: string, updatedCourses: string) => {
     try {
+      const collegeToUpdate = colleges.find((college) => college.id === id);
+
+      if (!collegeToUpdate) {
+        console.error("College not found");
+        return;
+      }
+
       const response = await fetch("/api/db/college", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -93,12 +116,12 @@ const TemplatePage: React.FC = () => {
     }
   };
 
-  const filteredColleges = colleges.filter(
-  (college) =>
-    college.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    college.collegeName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    college.courses.toLowerCase().includes(searchQuery.toLowerCase()) 
-);
+  const filteredColleges = getSortedColleges().filter(
+    (college) =>
+      college.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      college.collegeName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      college.courses.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="p-6 min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col items-center">
@@ -115,7 +138,7 @@ const TemplatePage: React.FC = () => {
         onClick={() => setShowModal(true)}
         className="mb-6 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition"
       >
-        ➕ Add College
+        ➕ Add
       </button>
       <div className="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {filteredColleges.length > 0 ? (
@@ -126,9 +149,11 @@ const TemplatePage: React.FC = () => {
               name={college.name}
               admissionId={college.admissionId}
               about={`College Name: ${college.collegeName}`}
-              courses={college.courses} 
-              likes={0}
-              onEdit={handleEditCourses} 
+              courses={college.courses}
+              branch={college.branch}
+              year={college.year}
+              likes={college.likes} 
+              onEdit={handleEditCourses}
               onDelete={handleDeleteCollege}
             />
           ))

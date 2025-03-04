@@ -2,26 +2,27 @@ import React, { useState } from "react";
 
 interface CollegeFormModalProps {
   onClose: () => void;
-  onSave: (college: { name: string; admissionId: string; collegeName: string }) => void;
+  onSave: (college: { name: string; admissionId: string; collegeName: string; branch: string; year: string }) => void;
 }
 
 const CollegeFormModal: React.FC<CollegeFormModalProps> = ({ onClose, onSave }) => {
   const [name, setName] = useState("");
   const [admissionId, setAdmissionId] = useState("");
   const [collegeName, setCollegeName] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false); 
+  const [branch, setBranch] = useState("");
+  const [year, setYear] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = () => {
-    if (!name || !admissionId || !collegeName) {
+    if (!name || !admissionId || !collegeName || !branch || !year) {
       alert("Please fill all fields");
       return;
     }
-    if (isSubmitting) return; 
 
+    if (isSubmitting) return;
     setIsSubmitting(true);
-    onSave({ name, admissionId, collegeName });
-
-    setTimeout(() => setIsSubmitting(false), 500); 
+    onSave({ name, admissionId, collegeName, branch, year });
+    setTimeout(() => setIsSubmitting(false), 500);
     onClose();
   };
 
@@ -51,6 +52,22 @@ const CollegeFormModal: React.FC<CollegeFormModalProps> = ({ onClose, onSave }) 
           placeholder="College Name"
           value={collegeName}
           onChange={(e) => setCollegeName(e.target.value)}
+          className="w-full p-3 border rounded-lg mb-3 focus:ring-2 focus:ring-blue-400"
+        />
+
+        <input
+          type="text"
+          placeholder="Branch"
+          value={branch}
+          onChange={(e) => setBranch(e.target.value)}
+          className="w-full p-3 border rounded-lg mb-3 focus:ring-2 focus:ring-blue-400"
+        />
+
+        <input
+          type="text"
+          placeholder="Year"
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
           className="w-full p-3 border rounded-lg mb-3 focus:ring-2 focus:ring-blue-400"
         />
 
