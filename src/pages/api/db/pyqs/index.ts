@@ -58,23 +58,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       case 'PUT':
         try {
-          const { id, commentId, userId, newComment } = req.body;
-          if (!id) return res.status(400).json({ error: 'PYQ ID is required' });
+          const { id, commentId, userId, newComment, upvotes, upvotedBy, title, course, description } = req.body;
+          if (!id) {
+            return res.status(400).json({ error: 'PYQ ID is required' });
+          }
       
           const pyqRef = doc(db, COLLECTION_NAME, id);
           const docSnap = await getDoc(pyqRef);
-          if (!docSnap.exists()) return res.status(404).json({ error: 'PYQ not found' });
+          if (!docSnap.exists()) {
+            return res.status(404).json({ error: 'PYQ not found' });
+          }
       
           const existingData = docSnap.data();
-      
           if (newComment) {
             await updateDoc(pyqRef, {
               comments: arrayUnion(newComment),
             });
             return res.status(200).json({ success: true, id, newComment });
-          } else if (commentId) {
+          }
+          else if (commentId) {
             const commentToDelete = existingData.comments.find((c: any) => c.id === commentId);
-            if (!commentToDelete) return res.status(404).json({ error: 'Comment not found' });
+            if (!commentToDelete) {
+              return res.status(404).json({ error: 'Comment not found' });
+            }
       
             if (commentToDelete.userId !== userId) {
               return res.status(403).json({ error: 'Unauthorized: Cannot delete this comment' });
@@ -86,12 +92,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       
             return res.status(200).json({ success: true, id, commentId });
           }
+          else if (typeof upvotes === 'number' && Array.isArray(upvotedBy)) {
+            await updateDoc(pyqRef, {
+              upvotes,
+              upvotedBy,
+            });
+            return res.status(200).json({ success: true, id, upvotes, upvotedBy });
+          }
+          else if (title || course || description) {
+            const updates: any = {};
+            if (title) updates.title = title;
+            if (course) updates.course = course;
+            if (description) updates.description = description;
+      
+            await updateDoc(pyqRef, updates);
+            return res.status(200).json({ success: true, id, ...updates });
+          }
       
           return res.status(400).json({ error: 'Invalid request' });
         } catch (error) {
           console.error('Error updating PYQ:', error);
           return res.status(500).json({ error: 'Failed to update PYQ' });
         }
+      
+      
            
     case 'DELETE':
       try {

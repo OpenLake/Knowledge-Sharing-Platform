@@ -119,7 +119,7 @@ const PYQCard = ({
       return;
     }
     
-    const comment = pyq.comments.find(c => c.id === commentId);
+    const comment = pyq.comments?.find(c => c.id === commentId);
     if (!comment) return;
     
     if (currentUserId !== comment.userId && currentUserId !== pyq.userId) {
@@ -209,7 +209,7 @@ const PYQCard = ({
       <div className="border-t pt-4">
         <div className="flex items-center justify-between mb-2">
           <h4 className="text-lg font-semibold">
-            Comments ({pyq.comments.length})
+            Comments ({pyq.comments?.length})
           </h4>
           <button
             onClick={toggleComments}
@@ -225,10 +225,10 @@ const PYQCard = ({
 
         {expandedComments && (
           <div className="space-y-3 mb-4 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-            {pyq.comments.length === 0 ? (
+            {pyq.comments?.length === 0 ? (
               <p className="text-gray-500 text-center py-2">No comments yet</p>
             ) : (
-              pyq.comments.map((comment) => (
+              pyq.comments?.map((comment) => (
                 <div key={comment.id} className="bg-gray-50 p-3 rounded relative">
                   <div className="flex justify-between">
                     <p className="text-sm font-semibold">{comment.userName}</p>
@@ -339,16 +339,13 @@ export default function PYQsPage() {
     const file = e.target.files[0];
     setUploadingFile(true);
     try {
-      // Determine file extension and type
       const fileExtension = file.name.split('.').pop()?.toLowerCase() || '';
       
-      // Create form data for Cloudinary upload
       const formData = new FormData();
       formData.append('file', file);
       formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!);
       formData.append('folder', 'pyqs');
       
-      // If file is not an image, set resource_type to "raw"
       if (['pdf', 'doc', 'docx'].includes(fileExtension)) {
         formData.append('resource_type', 'raw');
       }
@@ -556,7 +553,7 @@ export default function PYQsPage() {
         },
         body: JSON.stringify({
           id: pyqId,
-          newComment, // Send only the new comment to API
+          newComment, 
         }),
       });
   
@@ -584,7 +581,7 @@ export default function PYQsPage() {
       const pyq = pyqs.find(p => p.id === pyqId);
       if (!pyq) return;
   
-      const commentToDelete = pyq.comments.find(comment => comment.id === commentId);
+      const commentToDelete = pyq.comments?.find(comment => comment.id === commentId);
       if (!commentToDelete) {
         toast.error("Comment not found.");
         return;
@@ -624,8 +621,8 @@ export default function PYQsPage() {
 
   const itemsPerPage = 4;
   const filteredPYQs = pyqs.filter(pyq =>
-    pyq.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    pyq.course.toLowerCase().includes(searchTerm.toLowerCase())
+    pyq.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    pyq.course?.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const totalPages = Math.ceil(filteredPYQs.length / itemsPerPage);
   const currentPYQs = filteredPYQs.slice(
