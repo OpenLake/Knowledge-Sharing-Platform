@@ -6,7 +6,6 @@ import { FiLogOut } from 'react-icons/fi'
 import { useRouter } from 'next/router'
 import { useAuth } from '../../contexts/auth'
 import Image from 'next/image'
-import { clear } from 'console'
 
 export const Navbar: FC<{}> = ({}) => {
     const router = useRouter()
