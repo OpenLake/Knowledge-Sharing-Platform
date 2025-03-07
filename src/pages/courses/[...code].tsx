@@ -1,3 +1,4 @@
+'use client'
 import { NextPage } from 'next'
 import { useEffect, useState } from 'react'
 import { getCourseById } from '../../services/db/courses/getCourseById'

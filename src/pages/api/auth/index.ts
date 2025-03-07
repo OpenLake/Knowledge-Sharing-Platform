@@ -21,7 +21,6 @@ export default async function authHandler(
           const usersCollection = collection(firestore, 'users');
           const userQuery = await getDocs(usersCollection);
           const existingUser = userQuery.docs.find(doc => doc.data().user_id === uid);
-
           if (!existingUser) {
             await setDoc(doc(usersCollection, uid), {
               user_id: uid,
