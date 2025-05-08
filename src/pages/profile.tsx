@@ -7,14 +7,14 @@ import { firestore } from '../utils/firebaseInit';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 import { useRouter } from 'next/router';
 import cookies from "js-cookie";
-import { getAuth } from 'firebase/auth';
-import { onAuthStateChanged } from 'firebase/auth';
+import { getProfile } from '../services/db/profile/getProfile';
 
 const ProfilePage: React.FC = () => {
-  const { user, loading }: any = useAuth()
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [editMode, setEditMode] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(true);
   const [formData, setFormData] = useState<ProfileData>({
     name: '',
     email: '',
@@ -26,36 +26,49 @@ const ProfilePage: React.FC = () => {
   
   useEffect(() => {
     const fetchProfile = async () => {
+      if (!user?.email) return;
+      
+      
+     setProfileLoading(true);
       try {
         const storedProfile = localStorage.getItem("userProfile");
-
         if (storedProfile) {
           const parsedProfile = JSON.parse(storedProfile) as ProfileData;
           setProfile(parsedProfile);
           setFormData(parsedProfile);
+          return;
+        }
+
+        const userProfile = await getProfile(user.email);
+        
+        if (userProfile) {
+          setProfile(userProfile);
+          setFormData(userProfile);
+          localStorage.setItem("userProfile", JSON.stringify(userProfile));
         } else {
-          const userEmail = user.email; 
-          const profilesCollection = collection(firestore, "profiles");
-          const q = query(profilesCollection, where("email", "==", userEmail));
-          const querySnapshot = await getDocs(q);
-
-          if (!querySnapshot.empty) {
-            const userProfile = querySnapshot.docs[0].data() as ProfileData;
-            setProfile(userProfile);
-            setFormData(userProfile);
-
-            localStorage.setItem("userProfile", JSON.stringify(userProfile));
-          } else {
-            console.warn("Profile not found for email:", userEmail);
-          }
+         
+          const emptyProfile = {
+            name: user.displayName || '',
+            email: user.email || '',
+            branch: '',
+            college: '',
+            bio: '',
+            profileImage: user.photoURL || '/profile.jpeg'
+          };
+          setFormData(emptyProfile);
+           console.warn("Profile not found for email:", user.email);
         }
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        toast.error("Failed to load profile");
+        console.error("Profile fetch error:", error);
+      } finally {
+        setProfileLoading(false);
       }
     };
 
     fetchProfile();
-  }, []);
+  }, [user]);
+          
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -77,6 +90,16 @@ const ProfilePage: React.FC = () => {
     setEditMode(false);
     setFormData(profile!); 
   };
+  
+  if (authLoading || profileLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-white to-blue-200 flex flex-col items-center pt-[140px]">
+        <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-6 text-center">
+          Loading profile...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-blue-200 flex flex-col items-center pt-[140px]">
