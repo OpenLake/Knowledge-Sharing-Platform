@@ -1,4 +1,4 @@
-import { toast } from 'react-hot-toast';
+import { ProfileData } from '../../../types/profileColumnData';
 import { api } from '../../../utils/api';
 
 export const getProfile = async (email: string) => {

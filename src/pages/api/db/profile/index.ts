@@ -1,12 +1,12 @@
 import { firestore } from '../../../../utils/firebaseInit';
 import {
   collection,
-  doc,
-  getDoc,
+  query as fbQuery,
+  where,
   getDocs,
   updateDoc,
-  setDoc,
   addDoc,
+  doc,
 } from 'firebase/firestore';
 import { NextApiRequest, NextApiResponse } from 'next';
 
@@ -14,68 +14,58 @@ const profilesCollection = collection(firestore, 'profiles');
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method, body, query } = req;
+  const { email } = query;
 
-  switch (method) {
-    case 'GET':
-      try {
-        const { id } = query;
-        if (!id || typeof id !== 'string') {
-          return res.status(400).json({ message: 'Profile ID is required' });
-        }
+  if (!email || typeof email !== 'string') {
+    return res.status(400).json({ message: 'Email is required' });
+  }
 
-        const profileDoc = await getDoc(doc(profilesCollection, id));
-        if (!profileDoc.exists()) {
+  try {
+    const q = fbQuery(profilesCollection, where('email', '==', email));
+    const snapshot = await getDocs(q);
+    const profileDoc = snapshot.docs[0]; 
+
+    switch (method) {
+      case 'GET':
+        if (!profileDoc) {
           return res.status(404).json({ message: 'Profile not found' });
         }
 
-        res.status(200).json({ message: 'Profile Fetched', result: profileDoc.data() });
-      } catch (err) {
-        res.status(500).json({ message: 'Error fetching profile', error: err });
-      }
-      break;
+        return res.status(200).json({ message: 'Profile Fetched', result: profileDoc.data(), id: profileDoc.id });
 
-    case 'POST':
-      try {
-        const profileRef = await addDoc(profilesCollection, {
+      case 'POST':
+        if (profileDoc) {
+          return res.status(409).json({ message: 'Profile with this email already exists' });
+        }
+
+        const created = await addDoc(profilesCollection, {
           ...body,
+          email,
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         });
 
-        res.status(201).json({ message: 'Profile created successfully', id: profileRef.id, ...body });
-      } catch (error) {
-        console.error('Error adding profile:', error);
-        res.status(500).json({ error: 'Failed to add profile' });
-      }
-      break;
+        return res.status(201).json({ message: 'Profile created successfully', id: created.id });
 
-    case 'PUT':
-      try {
-        const { id } = query;
-        if (!id || typeof id !== 'string') {
-          return res.status(400).json({ message: 'Profile ID is required' });
-        }
-
-        const profileRef = doc(profilesCollection, id);
-        const profileDoc = await getDoc(profileRef);
-
-        if (!profileDoc.exists()) {
+      case 'PUT':
+        if (!profileDoc) {
           return res.status(404).json({ message: 'Profile not found' });
         }
 
-        await updateDoc(profileRef, {
+        const ref = doc(profilesCollection, profileDoc.id);
+        await updateDoc(ref, {
           ...body,
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         });
 
-        res.status(200).json({ message: 'Hoorayy! Profile Updated' });
-      } catch (err) {
-        res.status(500).json({ message: 'Error updating profile', error: err });
-      }
-      break;
+        return res.status(200).json({ message: 'Profile updated successfully' });
 
-    default:
-      res.status(405).json({ message: 'Method Not Allowed' });
+      default:
+        return res.status(405).json({ message: 'Method Not Allowed' });
+    }
+  } catch (err) {
+    console.error('Error handling profile:', err);
+    return res.status(500).json({ message: 'Internal Server Error', error: err });
   }
 }
 
