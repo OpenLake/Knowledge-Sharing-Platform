@@ -279,15 +279,27 @@ export default function Courses() {
                                         </div>
                                         <div className="flex gap-2 items-center">
                                             <p className="font-semibold">
-                                                Course Code:
+                                                Code:
                                             </p>
                                             <p>{course.code}</p>
                                         </div>
                                         <div className="flex gap-2 items-center">
                                             <p className="font-semibold">
+                                                Title :
+                                            </p>
+                                            <p>{course.title}</p>
+                                        </div>
+                                        <div className="flex gap-2 items-center">
+                                            <p className="font-semibold">
+                                                Credits:
+                                            </p>
+                                            <p>{course.credits}</p>
+                                        </div>
+                                        <div className="flex gap-2 items-center">
+                                            <p className="font-semibold">
                                                 Instructor:
                                             </p>
-                                            <p>{course.instructorName}</p>
+                                            <p>{course.instructor}</p>
                                         </div>
                                         <div className="flex gap-2 items-center">
                                             <p className="font-semibold">
