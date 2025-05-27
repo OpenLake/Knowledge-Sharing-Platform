@@ -1,8 +1,13 @@
 export interface coursesColumnData {
-    sno: string
-    upvotes: number
+    id:string
+    // sno: string
+    // upvotes: number
+    credits:number
+    instructor:string
+    department:string
     title: string
-    courseCode: string
-    uploadedBy: string
-    actions: JSX.Element
+    code: string
+    // uploadedBy: string
+    // actions: JSX.Element
+    
 }

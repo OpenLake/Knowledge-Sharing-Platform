@@ -1,11 +1,14 @@
 import { toast } from 'react-hot-toast'
 import { api } from '../../../utils/api'
+import { Bool } from 'aws-sdk/clients/clouddirectory'
 
 interface Props {
-    id: number
-    title: string
+    id: string
     code: string
-    isAnonymous: boolean
+    title: string
+    department: string
+    credits: number
+    instructor: string
     refetch: Function
 }
 
@@ -13,14 +16,13 @@ export const updateCourse = ({
     id,
     title,
     code,
-    isAnonymous,
+    credits,
     refetch,
 }: Props) => {
     toast.promise(
         api.put('/api/db/courses?id=' + id, {
             title,
             code,
-            anonymous:isAnonymous,
         }),
         {
             loading: 'Updating...',
