@@ -7,6 +7,7 @@ import { useRouter } from 'next/router'
 import { useAuth } from '../../contexts/auth'
 import Image from 'next/image'
 
+
 export const Navbar: FC<{}> = ({}) => {
     const router = useRouter()
     const { user, photoURL, displayName, login, logout, loading } = useAuth()
@@ -49,6 +50,12 @@ export const Navbar: FC<{}> = ({}) => {
                                     <p className="font-semibold ">Logout</p>
                                     <FiLogOut className="h-6 w-6 text-gray-800" />
                                 </div>
+                                  <div
+      onClick={() => router.push('/profile')}
+      className="px-5 py-3 cursor-pointer group hover:bg-black/10 flex space-x-2 items-center justify-between"
+    >
+      <p className="font-semibold">Profile</p>
+    </div>
                             </div>
                         )}
                     </div>
@@ -114,7 +121,13 @@ export const Navbar: FC<{}> = ({}) => {
                 >
                     Rate Professor
                 </span>
-
+                 <span
+                    ref={router.asPath === '/template' ? activeRef : null}
+                    onClick={() => router.push('/template')}
+                    className={`cursor-pointer p-3 relative before:content-[''] before:absolute before:bottom-[-7px] before:left-0 before:w-full before:h-[5px] before:bg-primary/40 before:rounded-[8px_8px_0_0] before:opacity-0 before:duration-100 text-gray-600 hover:before:opacity-100 hover:before:bottom-0 hover:text-gray-800`}
+                >
+                    Templates
+                </span>
                 <span
                     style={{
                         width: `${activeOffsetWidth}px`,
