@@ -201,115 +201,103 @@ export default function Courses() {
                         />
                     </div>
                 </div>
-                <div className="col-span-5 flex flex-wrap md:justify-start justify-center gap-8 h-fit w-full">
+                <div className="col-span-5 w-full overflow-x-auto">
                     {isDataFetching ? (
-                        Array(8)
-                            .fill({})
-                            .map((res, index) => {
-                                return (
-                                    <div
-                                        key={index}
-                                        role="status"
-                                        className="shadow-md p-6 rounded-md animate-pulse"
-                                    >
-                                        <div className="h-2.5 bg-gray-400 rounded-full w-48 mb-4"></div>
-                                        <div className="h-2 bg-gray-400 rounded-full max-w-[360px] mb-2.5"></div>
-                                        <div className="h-2 bg-gray-400 rounded-full mb-2.5"></div>
-                                        <div className="h-2 bg-gray-400 rounded-full max-w-[330px] mb-2.5"></div>
-                                        <div className="h-2 bg-gray-400 rounded-full max-w-[300px] mb-2.5"></div>
-                                        <div className="h-2 bg-gray-400 rounded-full max-w-[360px]"></div>
-                                        <span className="sr-only">
-                                            Loading...
-                                        </span>
-                                    </div>
-                                )
-                            })
+                        <div className="p-6 text-center">Loading...</div>
                     ) : courses.length ? (
-                        courses
-                            .filter((course: any) => {
-                                const regex = new RegExp(searchInput, 'i')
-                                if (course.title.match(regex)) return true
-                                else return false
-                            })
-                            .map((course: any) => {
-                                return (
-                                    <div
-                                        className=" bg-primary/5 shadow-xl duration-150 transition-all p-6 w-full md:w-[20rem] rounded-md flex flex-col gap-3"
-                                        key={course.id}
-                                    >
-                                        <div className="flex gap-7 items-center justify-between">
-                                            <p
-                                                onClick={() => {
+                        <table className="min-w-full table-auto border border-gray-300 rounded-md">
+                            <thead className="bg-primary text-white">
+                                <tr>
+                                    <th className="px-4 py-2 text-left">
+                                        Title
+                                    </th>
+                                    <th className="px-4 py-2 text-left">
+                                        Code
+                                    </th>
+                                    <th className="px-4 py-2 text-left">
+                                        Credits
+                                    </th>
+                                    <th className="px-4 py-2 text-left">
+                                        Instructor
+                                    </th>
+                                    <th className="px-4 py-2 text-left">
+                                        Total Reviews
+                                    </th>
+                                    <th className="px-4 py-2 text-left">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {courses
+                                    .filter((course: any) => {
+                                        const regex = new RegExp(
+                                            searchInput,
+                                            'i'
+                                        )
+                                        return course?.title?.match(regex)
+                                    })
+                                    .map((course: any) => (
+                                        <tr
+                                            key={course.id}
+                                            className="border-t hover:bg-gray-300 transition-colors"
+                                        >
+                                            <td
+                                                className="px-4 py-2 text-primary font-medium cursor-pointer hover:underline"
+                                                onClick={() =>
                                                     router.push(
                                                         '/courses/' +
                                                             course.code
                                                     )
-                                                }}
-                                                className="font-semibold cursor-pointer text-primary hover:underline duration-150 transition-all text-xl"
+                                                }
                                             >
                                                 {course.title}
-                                            </p>
-                                            {user &&
-                                                user.user_id ===
-                                                    course.created_by_id && (
-                                                    <div className="flex items-center gap-1">
-                                                        <button
-                                                            className="p-2 rounded-full hover:bg-gray-200 duration-150"
-                                                            onClick={(e) =>
-                                                                setSelectedCourse(
-                                                                    course
-                                                                )
-                                                            }
-                                                        >
-                                                            <BsPencilSquare className="h-5 w-5 text-primary" />
-                                                        </button>
-                                                        <button
-                                                            className="p-2 rounded-full hover:bg-gray-200 duration-150"
-                                                            onClick={(e) => {
-                                                                deleteCourse(
-                                                                    course.id,
-                                                                    refetchCourses
-                                                                )
-                                                            }}
-                                                        >
-                                                            <RiDeleteBin6Line className="h-5 w-5 text-red-500" />
-                                                        </button>
-                                                    </div>
-                                                )}
-                                        </div>
-                                        <div className="flex gap-2 items-center">
-                                            <p className="font-semibold">
-                                                Code:
-                                            </p>
-                                            <p>{course.code}</p>
-                                        </div>
-                                        <div className="flex gap-2 items-center">
-                                            <p className="font-semibold">
-                                                Title :
-                                            </p>
-                                            <p>{course.title}</p>
-                                        </div>
-                                        <div className="flex gap-2 items-center">
-                                            <p className="font-semibold">
-                                                Credits:
-                                            </p>
-                                            <p>{course.credits}</p>
-                                        </div>
-                                        <div className="flex gap-2 items-center">
-                                            <p className="font-semibold">
-                                                Instructor:
-                                            </p>
-                                            <p>{course.instructor}</p>
-                                        </div>
-                                        <div className="flex gap-2 items-center">
-                                            <p className="font-semibold">
-                                                Total Reviews:
-                                            </p>
-                                            <p>{course._count?.reviews}</p>
-                                        </div>
-                                    </div>
-                                )
-                            })
+                                            </td>
+                                            <td className="px-4 py-2">
+                                                {course.code}
+                                            </td>
+                                            <td className="px-4 py-2">
+                                                {course.credits}
+                                            </td>
+                                            <td className="px-4 py-2">
+                                                {course.instructor}
+                                            </td>
+                                            <td className="px-4 py-2">
+                                                {course._count?.reviews}
+                                            </td>
+                                            <td className="px-4 py-2">
+                                                {user &&
+                                                    user.user_id ===
+                                                        course.created_by_id && (
+                                                        <div className="flex gap-2">
+                                                            <button
+                                                                className="p-1 rounded-full hover:bg-gray-200"
+                                                                onClick={() =>
+                                                                    setSelectedCourse(
+                                                                        course
+                                                                    )
+                                                                }
+                                                            >
+                                                                <BsPencilSquare className="h-5 w-5 text-primary" />
+                                                            </button>
+                                                            <button
+                                                                className="p-1 rounded-full hover:bg-gray-200"
+                                                                onClick={() =>
+                                                                    deleteCourse(
+                                                                        course.id,
+                                                                        refetchCourses
+                                                                    )
+                                                                }
+                                                            >
+                                                                <RiDeleteBin6Line className="h-5 w-5 text-red-500" />
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                            </td>
+                                        </tr>
+                                    ))}
+                            </tbody>
+                        </table>
                     ) : (
                         <div className="col-span-5 pt-24 w-full flex flex-col items-center justify-center">
                             <Player
