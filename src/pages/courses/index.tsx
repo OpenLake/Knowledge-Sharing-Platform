@@ -141,8 +141,8 @@ export default function Courses() {
                     href="/favicon.ico"
                 />
             </Head>
-            <div className="grid grid-cols-5 gap-0 justify-center c px-5 md:px-14 space-y-8 min-h-screen">
-                <div className="col-span-5 flex flex-row items-center gap-4 justify-between">
+            <div className="px-5 md:px-14 min-h-screen space-y-4">
+                <div className="flex flex-row items-center justify-between">
                     <h3 className="font-bold text-xl md:text-3xl">Courses</h3>
                     {adminStatus && (
                         <button
@@ -157,20 +157,31 @@ export default function Courses() {
                             type="button"
                             className="flex items-center space-x-2 px-2 py-1 duration-200 transition-all rounded-md shadow-md hover:shadow-xl bg-primary text-white font-semibold disabled:bg-primary/70 disabled:cursor-wait"
                         >
-                            <BsPlus className="h-8 w-8" />
-                            <span className="">Add Course</span>
+                            <BsPlus className="h-6 w-6" />
+                            <span className="text-sm">Add Course</span>
                         </button>
                     )}
                 </div>
-                <div className="flex col-span-5 w-full px-2 py-3">
+                
+                <div className="w-full relative">
+                    
                     <label
                         htmlFor="search"
-                        className="mb-2 text-sm font-medium text-gray-900 sr-only"
+                        className="text-sm font-medium text-gray-900 sr-only mt-2"
                     >
                         Search
                     </label>
-                    <div className="relative w-full">
-                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <input
+                        value={searchInput}
+                        onChange={(e) => {
+                            setSearchInput(e.target.value)
+                        }}
+                        type="search"
+                        id="search"
+                        className="w-full text-base px-4 py-2 text-gray-700 outline-none ring-2 ring-primary/40 focus:border-none rounded-md bg-primary/5 focus:bg-primary/10 focus:ring-primary placeholder:font-medium placeholder:text-gray-600 mb-10 mt-15"
+                        placeholder={`Search ${courses && courses.length} records...`}
+                    />
+                    {/* <div className="">
                             <svg
                                 aria-hidden="true"
                                 className="w-5 h-5 text-primary"
@@ -186,144 +197,81 @@ export default function Courses() {
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                                 ></path>
                             </svg>
-                        </div>
-                        <input
-                            value={searchInput}
-                            onChange={(e) => {
-                                setSearchInput(e.target.value)
-                            }}
-                            type="search"
-                            id="search"
-                            className="w-full font-medium text-base pl-12 pr-2 py-2 md:pr-4 md:py-4 text-gray-700 outline-none ring-2 ring-primary/40 focus:border-none rounded-md bg-primary/5 focus:bg-primary/10 focus:ring-primary placeholder:font-medium placeholder:text-gray-600"
-                            placeholder={`Search ${
-                                courses && courses.length
-                            } records...`}
-                        />
-                    </div>
+                        </div> */}
                 </div>
-                <div className="col-span-5 flex flex-wrap md:justify-start justify-center gap-8 h-fit w-full">
-                    {isDataFetching ? (
-                        Array(8)
-                            .fill({})
-                            .map((res, index) => {
-                                return (
-                                    <div
-                                        key={index}
-                                        role="status"
-                                        className="shadow-md p-6 rounded-md animate-pulse"
+                
+                {isDataFetching ? (
+                    <div className="p-4 text-center">Loading...</div>
+                ) : courses.length ? (
+                    <div className="w-full overflow-x-auto rounded-lg">
+                        <table className="min-w-full table-auto ">
+                            <thead className="bg-primary text-white">
+                                <tr>
+                                    <th className="px-4 py-2 text-left">Title</th>
+                                    <th className="px-4 py-2 text-left">Code</th>
+                                    <th className="px-4 py-2 text-left">Credits</th>
+                                    <th className="px-4 py-2 text-left">Instructor</th>
+                                    <th className="px-4 py-2 text-left">Total Reviews</th>
+                                    <th className="px-4 py-2 text-left">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {courses
+                                .filter((course: any) => {
+                                    const regex = new RegExp(searchInput, 'i')
+                                    return course?.title?.match(regex)
+                                })
+                                .map((course: any) => (
+                                    <tr
+                                    key={course.id}
+                                    className="border-t bg-red-100 hover:bg-gray-300 transition-colors"
                                     >
-                                        <div className="h-2.5 bg-gray-400 rounded-full w-48 mb-4"></div>
-                                        <div className="h-2 bg-gray-400 rounded-full max-w-[360px] mb-2.5"></div>
-                                        <div className="h-2 bg-gray-400 rounded-full mb-2.5"></div>
-                                        <div className="h-2 bg-gray-400 rounded-full max-w-[330px] mb-2.5"></div>
-                                        <div className="h-2 bg-gray-400 rounded-full max-w-[300px] mb-2.5"></div>
-                                        <div className="h-2 bg-gray-400 rounded-full max-w-[360px]"></div>
-                                        <span className="sr-only">
-                                            Loading...
-                                        </span>
-                                    </div>
-                                )
-                            })
-                    ) : courses.length ? (
-                        courses
-                            .filter((course: any) => {
-                                const regex = new RegExp(searchInput, 'i')
-                                if (course.title.match(regex)) return true
-                                else return false
-                            })
-                            .map((course: any) => {
-                                return (
-                                    <div
-                                        className=" bg-primary/5 shadow-xl duration-150 transition-all p-6 w-full md:w-[20rem] rounded-md flex flex-col gap-3"
-                                        key={course.id}
+                                    <td
+                                        className="px-4 py-2 text-primary font-medium cursor-pointer hover:underline"
+                                        onClick={() => router.push('/courses/' + course.code)}
                                     >
-                                        <div className="flex gap-7 items-center justify-between">
-                                            <p
-                                                onClick={() => {
-                                                    router.push(
-                                                        '/courses/' +
-                                                            course.code
-                                                    )
-                                                }}
-                                                className="font-semibold cursor-pointer text-primary hover:underline duration-150 transition-all text-xl"
+                                        {course.title}
+                                    </td>
+                                    <td className="px-4 py-2">{course.code}</td>
+                                    <td className="px-4 py-2">{course.credits}</td>
+                                    <td className="px-4 py-2">{course.instructor}</td>
+                                    <td className="px-4 py-2">{course._count?.reviews}</td>
+                                    <td className="px-4 py-2">
+                                        {user && user.user_id === course.created_by_id && (
+                                        <div className="flex gap-2">
+                                            <button
+                                            className="p-1 rounded-full hover:bg-gray-300"
+                                            onClick={() => setSelectedCourse(course)}
                                             >
-                                                {course.title}
-                                            </p>
-                                            {user &&
-                                                user.user_id ===
-                                                    course.created_by_id && (
-                                                    <div className="flex items-center gap-1">
-                                                        <button
-                                                            className="p-2 rounded-full hover:bg-gray-200 duration-150"
-                                                            onClick={(e) =>
-                                                                setSelectedCourse(
-                                                                    course
-                                                                )
-                                                            }
-                                                        >
-                                                            <BsPencilSquare className="h-5 w-5 text-primary" />
-                                                        </button>
-                                                        <button
-                                                            className="p-2 rounded-full hover:bg-gray-200 duration-150"
-                                                            onClick={(e) => {
-                                                                deleteCourse(
-                                                                    course.id,
-                                                                    refetchCourses
-                                                                )
-                                                            }}
-                                                        >
-                                                            <RiDeleteBin6Line className="h-5 w-5 text-red-500" />
-                                                        </button>
-                                                    </div>
-                                                )}
+                                            <BsPencilSquare className="h-5 w-5 text-primary" />
+                                            </button>
+                                            <button
+                                            className="p-1 rounded-full hover:bg-gray-200"
+                                            onClick={() => deleteCourse(course.id, refetchCourses)}
+                                            >
+                                            <RiDeleteBin6Line className="h-5 w-5 text-red-500" />
+                                            </button>
                                         </div>
-                                        <div className="flex gap-2 items-center">
-                                            <p className="font-semibold">
-                                                Code:
-                                            </p>
-                                            <p>{course.code}</p>
-                                        </div>
-                                        <div className="flex gap-2 items-center">
-                                            <p className="font-semibold">
-                                                Title :
-                                            </p>
-                                            <p>{course.title}</p>
-                                        </div>
-                                        <div className="flex gap-2 items-center">
-                                            <p className="font-semibold">
-                                                Credits:
-                                            </p>
-                                            <p>{course.credits}</p>
-                                        </div>
-                                        <div className="flex gap-2 items-center">
-                                            <p className="font-semibold">
-                                                Instructor:
-                                            </p>
-                                            <p>{course.instructor}</p>
-                                        </div>
-                                        <div className="flex gap-2 items-center">
-                                            <p className="font-semibold">
-                                                Total Reviews:
-                                            </p>
-                                            <p>{course._count?.reviews}</p>
-                                        </div>
-                                    </div>
-                                )
-                            })
-                    ) : (
-                        <div className="col-span-5 pt-24 w-full flex flex-col items-center justify-center">
-                            <Player
-                                autoplay={true}
-                                loop={true}
-                                className="h-56 w-56"
-                                src="https://assets7.lottiefiles.com/packages/lf20_ttvteyvs.json"
-                            />
-                            <span className="font-bold text-2xl text-gray-700">
-                                No Records Found
-                            </span>
-                        </div>
-                    )}
-                </div>
+                                        )}
+                                    </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                ) : (
+                    <div className="w-full flex flex-col items-center justify-center py-12">
+                    <Player
+                        autoplay={true}
+                        loop={true}
+                        className="h-56 w-56"
+                        src="https://assets7.lottiefiles.com/packages/lf20_ttvteyvs.json"
+                    />
+                    <span className="font-bold text-2xl text-gray-700">
+                        No Records Found
+                    </span>
+                    </div>
+                )}
             </div>
         </div>
     )
