@@ -3,7 +3,7 @@ import { api } from '../../../utils/api'
 import { Dispatch, SetStateAction } from 'react'
 
 interface Props {
-    id: number
+    id: string
     setCount: Dispatch<SetStateAction<number>>
     setIsUpvoted: Dispatch<SetStateAction<boolean>>
 }
