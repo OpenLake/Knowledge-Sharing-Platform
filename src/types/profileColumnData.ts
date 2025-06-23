@@ -4,5 +4,7 @@ export type ProfileData = {
   email: string;
   bio?: string;
   profileImage?: string;
+  branch?: string;
+  college?: string;
 };
 

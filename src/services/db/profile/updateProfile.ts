@@ -1,21 +1,17 @@
 import { toast } from 'react-hot-toast';
 import { api } from '../../../utils/api';
+import { ProfileData } from '../../../types/profileColumnData';
 
-interface Props {
-  id: number;
-  name: string;
-  email: string;
-  bio: string;
-}
-
-export const updateProfile = async ({ id, name, email, bio }: Props) => {
+export const updateProfile = async (profile: ProfileData) => {
   try {
-    const res = await api.put(`/api/db/profile?id=${id}`, { name, email, bio });
+    if (!profile.email) throw new Error("Email is required");
+
+    const res = await api.put(`/api/db/profile?email=${encodeURIComponent(profile.email)}`, profile);
     toast.success(res.data.message);
-    return res.data; 
+    return res.data;
   } catch (err: any) {
     toast.error(`Error: ${err.message}`);
-    throw err; 
+    throw err;
   }
 };
 

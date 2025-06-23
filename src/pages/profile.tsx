@@ -3,11 +3,10 @@ import { ProfileData } from '../types/profileColumnData';
 import { toast } from 'react-hot-toast';
 import { updateProfile } from '../services/db/profile/updateProfile';
 import { useAuth } from '../contexts/auth';
-import { firestore } from '../utils/firebaseInit';
-import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 import { useRouter } from 'next/router';
-import cookies from "js-cookie";
+import Image from 'next/image';
 import { getProfile } from '../services/db/profile/getProfile';
+import { getUserCourses } from '../services/db/courses/getUserCourses';
 
 const ProfilePage: React.FC = () => {
   const { user, loading: authLoading } = useAuth();
@@ -15,6 +14,7 @@ const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [profileLoading, setProfileLoading] = useState(true);
+  const [courses, setCourses] = useState<any[]>([]);
   const [formData, setFormData] = useState<ProfileData>({
     name: '',
     email: '',
@@ -27,9 +27,7 @@ const ProfilePage: React.FC = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       if (!user?.email) return;
-      
-      
-     setProfileLoading(true);
+      setProfileLoading(true);
       try {
         const storedProfile = localStorage.getItem("userProfile");
         if (storedProfile) {
@@ -46,7 +44,6 @@ const ProfilePage: React.FC = () => {
           setFormData(userProfile);
           localStorage.setItem("userProfile", JSON.stringify(userProfile));
         } else {
-         
           const emptyProfile = {
             name: user.displayName || '',
             email: user.email || '',
@@ -56,8 +53,10 @@ const ProfilePage: React.FC = () => {
             profileImage: user.photoURL || '/profile.jpeg'
           };
           setFormData(emptyProfile);
-           console.warn("Profile not found for email:", user.email);
         }
+        
+        const enrolledCourses = await getUserCourses(user.email);
+       setCourses(enrolledCourses || []);
       } catch (error) {
         toast.error("Failed to load profile");
         console.error("Profile fetch error:", error);
@@ -76,15 +75,28 @@ const ProfilePage: React.FC = () => {
   };
 
   const handleSave = async () => {
-    try {
-      await updateProfile(formData);
-      setProfile(formData);
-      setEditMode(false);
-      localStorage.setItem("userProfile", JSON.stringify(formData));
-    } catch (err) {
-      toast.error('Failed to update profile. Please try again.');
-    }
-  };
+  if (!formData.name || !formData.email) {
+    toast.error('Name and email are required.');
+    return;
+  }
+
+  if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    toast.error('Invalid email format.');
+    return;
+  }
+
+  try {
+    await updateProfile(formData);
+    setProfile(formData);
+    setEditMode(false);
+    localStorage.setItem("userProfile", JSON.stringify(formData));
+    toast.success("Profile updated successfully");
+  } catch (err: any) {
+    console.error("Update failed:", err);
+    toast.error('Failed to update profile. Please try again.');
+  }
+};
+
 
   const handleCancel = () => {
     setEditMode(false);
@@ -107,21 +119,24 @@ const ProfilePage: React.FC = () => {
         {profile && (
           <div className="flex flex-col items-center w-full sm:w-96 md:w-80 lg:w-96 mx-auto">
             <div className="relative">
-              <img
-  src={"/profile.jpeg"}
-  alt="Profile"
-  className="w-32 h-32 rounded-full border-4 border-gray-300 shadow-md"
-/>
+   <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-300 shadow-md">
+    <Image
+      src={profile.profileImage || user?.photoURL || '/profile.jpeg'}
+      alt="Profile"
+      width={128}
+      height={128}
+      className="object-cover w-full h-full"
+     />
+    </div>
 
-              <button
-                onClick={() => setEditMode(true)}
-                className="absolute bottom-2 right-2 bg-white p-2 rounded-full shadow-md"
-              >
-                ✏️
-              </button>
-            </div>
- 
-            {editMode ? (
+    <button
+    onClick={() => setEditMode(true)}
+    className="absolute bottom-2 right-2 bg-white p-2 rounded-full shadow-md"
+     >
+    ✏️
+    </button>
+   </div>
+  {editMode ? (
               <div className="mt-6 w-full">
                 <input
                   type="text"
@@ -194,12 +209,22 @@ const ProfilePage: React.FC = () => {
             <button className="mt-4 bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600">
               Connect
             </button>
-            <div className="mt-6 w-full">
+           <div className="mt-6 w-full">
               <h2 className="text-lg font-bold">📑 My Courses</h2>
-              <div className="flex justify-between mt-3 gap-4">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="w-20 h-20 bg-purple-200 rounded-lg"></div>
-                ))}
+              <div className="flex flex-wrap gap-4 mt-3">
+                {courses.length > 0 ? (
+                  courses.map((course, idx) => (
+                    <div
+                      key={idx}
+                      className="w-20 h-20 bg-purple-100 rounded-lg flex items-center justify-center text-xs text-center p-1 shadow"
+                      title={course.title}
+                    >
+                      {course.title || course.code || 'Untitled'}
+                    </div>
+                  ))
+                ) : (
+                  <span className="text-sm text-gray-500">No enrolled courses</span>
+                )}
               </div>
             </div>
             <div className="mt-6 w-full space-y-2">
