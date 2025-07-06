@@ -11,6 +11,8 @@ import { ConnectionsModal } from '../components/Profile/ConnectionsModal';
 import { addConnection } from '../services/db/profile/addConnection';
 import { doc, getDoc, deleteDoc } from 'firebase/firestore';
 import { firestore } from '../utils/firebaseInit';
+import dynamic from 'next/dynamic';
+const ProfileModal = dynamic(() => import('../components/Profile/ProfileModal'), { ssr: false });
 
 const ProfilePage: React.FC = () => {
   const { user, loading: authLoading } = useAuth();
@@ -192,8 +194,8 @@ const ProfilePage: React.FC = () => {
     user?.email?.toLowerCase().trim() ===
     profile?.email?.toLowerCase().trim();
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-blue-200 flex flex-col items-center pt-[170px]">
+ return (
+    <ProfileModal onClose={() => router.back()}>
       {showConnections && user?.email && (
         <ConnectionsModal
           userEmail={profile?.email || user.email}
@@ -338,16 +340,14 @@ const ProfilePage: React.FC = () => {
               >
                 💬 Go to Discussion Page
               </button>
-              <button className="bg-gray-500 text-white w-full py-2 rounded-md hover:bg-gray-600">
-                ⚙️ Settings
-              </button>
             </div>
           </div>
         )}
       </div>
-    </div>
+    </ProfileModal>
+    
   );
-};
 
+};
 export default ProfilePage;
 
