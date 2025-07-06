@@ -274,13 +274,12 @@ const ProfilePage: React.FC = () => {
                 <span className="bg-purple-200 px-4 py-1 mt-2 rounded-full text-sm">
                   {profile.college}
                 </span>
-                <div className="mt-4 w-full">
-                  <textarea
-                    className="w-full h-32 p-3 border rounded-md text-base"
-                    value={profile.bio}
-                    readOnly
-                  />
-                </div>
+                {profile.bio && (
+          <span className="mt-4 bg-purple-100 px-4 py-2 rounded-lg text-sm w-full text-center">
+                {profile.bio}
+                </span>
+        )}
+
               </div>
             )}
 
