@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { getProfile } from '../services/db/profile/getProfile';
 import { getUserCourses } from '../services/db/courses/getUserCourses';
+import { ConnectionsModal } from '../components/Profile/ConnectionsModal'
 
 const ProfilePage: React.FC = () => {
   const { user, loading: authLoading } = useAuth();
@@ -15,6 +16,7 @@ const ProfilePage: React.FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [profileLoading, setProfileLoading] = useState(true);
   const [courses, setCourses] = useState<any[]>([]);
+  const [showConnections, setShowConnections] = useState(false);
   const [formData, setFormData] = useState<ProfileData>({
     name: '',
     email: '',
@@ -105,7 +107,7 @@ const ProfilePage: React.FC = () => {
   
   if (authLoading || profileLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-white to-blue-200 flex flex-col items-center pt-[140px]">
+      <div className="min-h-screen bg-gradient-to-b from-white to-blue-200 flex flex-col items-center pt-[170px]">
         <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-6 text-center">
           Loading profile...
         </div>
@@ -114,7 +116,10 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-blue-200 flex flex-col items-center pt-[140px]">
+   <div className="min-h-screen bg-gradient-to-b from-white to-blue-200 flex flex-col items-center pt-[170px]">
+  {showConnections && user?.email && (
+  <ConnectionsModal userEmail={user.email} onClose={() => setShowConnections(false)} />
+)}
       <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-6">
         {profile && (
           <div className="flex flex-col items-center w-full sm:w-96 md:w-80 lg:w-96 mx-auto">
@@ -228,7 +233,9 @@ const ProfilePage: React.FC = () => {
               </div>
             </div>
             <div className="mt-6 w-full space-y-2">
-              <button className="bg-blue-200 w-full py-2 rounded-md mb-2 hover:bg-blue-300">
+              <button 
+               onClick={() => setShowConnections(true)}
+              className="bg-blue-200 w-full py-2 rounded-md mb-2 hover:bg-blue-300">
                 🔗 Connections
               </button>
               <button

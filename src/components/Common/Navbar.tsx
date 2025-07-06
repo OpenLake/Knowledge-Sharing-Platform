@@ -2,10 +2,11 @@ import { FC, useEffect, useRef, useState } from 'react'
 import { Logo } from './Logo'
 import { FcGoogle } from 'react-icons/fc'
 import { BsThreeDotsVertical } from 'react-icons/bs'
-import { FiLogOut } from 'react-icons/fi'
+import { FiLogOut ,FiUser} from 'react-icons/fi'
 import { useRouter } from 'next/router'
 import { useAuth } from '../../contexts/auth'
 import Image from 'next/image'
+
 
 
 export const Navbar: FC<{}> = ({}) => {
@@ -46,15 +47,16 @@ export const Navbar: FC<{}> = ({}) => {
                                 onClick={logout}
                                 className="absolute top-[5.5rem] z-50 bg-white py-2 rounded-xl flex flex-col items-center justify-center"
                             >
-                                <div className="px-5 py-3 cursor-pointer group hover:bg-black/10 flex space-x-2 items-center justify-between">
+                                <div className="px-5 py-3 cursor-pointer group hover:bg-black/10 flex space-x-2 items-center justify-between w-full">
                                     <p className="font-semibold ">Logout</p>
                                     <FiLogOut className="h-6 w-6 text-gray-800" />
                                 </div>
                                   <div
       onClick={() => router.push('/profile')}
-      className="px-5 py-3 cursor-pointer group hover:bg-black/10 flex space-x-2 items-center justify-between"
+      className="px-5 py-3 cursor-pointer group hover:bg-black/10 flex space-x-2 items-center justify-between w-full"
     >
       <p className="font-semibold">Profile</p>
+      <FiUser className="h-6 w-6 text-gray-800" />
     </div>
                             </div>
                         )}
