@@ -12,6 +12,7 @@ import { addConnection } from '../services/db/profile/addConnection';
 import { doc, getDoc, deleteDoc } from 'firebase/firestore';
 import { firestore } from '../utils/firebaseInit';
 import dynamic from 'next/dynamic';
+
 const ProfileModal = dynamic(() => import('../components/Profile/ProfileModal'), { ssr: false });
 
 const ProfilePage: React.FC = () => {
@@ -41,7 +42,8 @@ const ProfilePage: React.FC = () => {
       setProfileLoading(true);
 
       try {
-       const targetEmail = typeof router.query.email === 'string' ? router.query.email : loggedInEmail;
+        const targetEmail =
+          typeof router.query.email === 'string' ? router.query.email : loggedInEmail;
 
         const userProfile = await getProfile(targetEmail);
         if (userProfile) {
@@ -52,10 +54,7 @@ const ProfilePage: React.FC = () => {
         const enrolledCourses = await getUserCourses(targetEmail);
         setCourses(enrolledCourses || []);
 
-        if (
-          userProfile &&
-          userProfile.email !== loggedInEmail
-        ) {
+        if (userProfile && userProfile.email !== loggedInEmail) {
           const ref = doc(
             firestore,
             'connections',
@@ -147,38 +146,46 @@ const ProfilePage: React.FC = () => {
       toast.error('Something went wrong while connecting.');
     }
   };
-  
+
   const handleDisconnect = async () => {
-  if (!user || !profile) return;
+    if (!user || !profile) return;
 
-  const currentEmail = user.email?.toLowerCase().trim();
-  const profileEmail = profile.email?.toLowerCase().trim();
+    const currentEmail = user.email?.toLowerCase().trim();
+    const profileEmail = profile.email?.toLowerCase().trim();
 
-  try {
-    const ref1 = doc(firestore, 'connections', currentEmail!, 'userConnections', profileEmail!);
-    const ref2 = doc(firestore, 'connections', profileEmail!, 'userConnections', currentEmail!);
+    try {
+      const ref1 = doc(
+        firestore,
+        'connections',
+        currentEmail!,
+        'userConnections',
+        profileEmail!
+      );
+      const ref2 = doc(
+        firestore,
+        'connections',
+        profileEmail!,
+        'userConnections',
+        currentEmail!
+      );
 
-    await Promise.all([deleteDoc(ref1), deleteDoc(ref2)]);
-    setIsConnected(false);
-   toast(
-  'Disconnected successfully',
-  {
-    duration: 3000,
-    position: 'top-center',
-    style: {
-      background: 'white',
-      color: '#dc2626', 
-      fontWeight: '500',
-      boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-    },
-  }
-);
-
-  } catch (err) {
-    console.error('Disconnect error:', err);
-    toast.error('Failed to disconnect.');
-  }
-};
+      await Promise.all([deleteDoc(ref1), deleteDoc(ref2)]);
+      setIsConnected(false);
+      toast('Disconnected successfully', {
+        duration: 3000,
+        position: 'top-center',
+        style: {
+          background: 'white',
+          color: '#dc2626',
+          fontWeight: '500',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+        },
+      });
+    } catch (err) {
+      console.error('Disconnect error:', err);
+      toast.error('Failed to disconnect.');
+    }
+  };
 
   if (authLoading || profileLoading) {
     return (
@@ -191,10 +198,9 @@ const ProfilePage: React.FC = () => {
   }
 
   const isOwnProfile =
-    user?.email?.toLowerCase().trim() ===
-    profile?.email?.toLowerCase().trim();
+    user?.email?.toLowerCase().trim() === profile?.email?.toLowerCase().trim();
 
- return (
+  return (
     <ProfileModal onClose={() => router.back()}>
       {showConnections && user?.email && (
         <ConnectionsModal
@@ -215,19 +221,10 @@ const ProfilePage: React.FC = () => {
                   className="object-cover w-full h-full"
                 />
               </div>
-
-              {isOwnProfile && (
-                <button
-                  onClick={() => setEditMode(true)}
-                  className="absolute bottom-2 right-2 bg-white p-2 rounded-full shadow-md"
-                >
-                  ✏️
-                </button>
-              )}
             </div>
 
             {editMode ? (
-              // ✏️ Editable Form
+              // Editable form
               <div className="mt-6 w-full">
                 {['name', 'email', 'branch', 'college'].map((field) => (
                   <input
@@ -263,7 +260,7 @@ const ProfilePage: React.FC = () => {
                 </div>
               </div>
             ) : (
-              // 👁️ Read-only Display
+              // Read-only display
               <div className="mt-6 flex flex-col items-center">
                 <span className="bg-purple-200 px-4 py-1 rounded-full text-sm">
                   {profile.name}
@@ -275,35 +272,33 @@ const ProfilePage: React.FC = () => {
                   {profile.college}
                 </span>
                 {profile.bio && (
-          <span className="mt-4 bg-purple-100 px-4 py-2 rounded-lg text-sm w-full text-center">
-                {profile.bio}
-                </span>
-        )}
-
+                  <span className="mt-4 bg-purple-100 px-4 py-2 rounded-lg text-sm w-full text-center">
+                    {profile.bio}
+                  </span>
+                )}
               </div>
             )}
 
             {!isOwnProfile && (
-  isConnected ? (
-    <div className="mt-4 flex flex-col items-center space-y-2">
-      <div className="text-green-600 font-semibold">✅ Connected</div>
-      <button
-  onClick={handleDisconnect}
-  className="mt-4 border border-red-500 text-red-500 px-2 py-1.5 rounded-md hover:bg-red-50 transition-colors"
->
-  Disconnect
-</button>
-
-    </div>
-  ) : (
-    <button
-      onClick={handleConnect}
-      className="mt-4 bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600"
-    >
-      Connect
-    </button>
-  )
-)}
+              isConnected ? (
+                <div className="mt-4 flex flex-col items-center space-y-2">
+                  <div className="text-green-600 font-semibold">✅ Connected</div>
+                  <button
+                    onClick={handleDisconnect}
+                    className="mt-4 border border-red-500 text-red-500 px-2 py-1.5 rounded-md hover:bg-red-50 transition-colors"
+                  >
+                    Disconnect
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={handleConnect}
+                  className="mt-4 bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600"
+                >
+                  Connect
+                </button>
+              )
+            )}
 
             <div className="mt-6 w-full">
               <h2 className="text-lg font-bold">📑 My Courses</h2>
@@ -333,20 +328,22 @@ const ProfilePage: React.FC = () => {
               >
                 🔗 Connections
               </button>
-              <button
-                className="bg-blue-200 w-full py-2 rounded-md mb-2 hover:bg-blue-300"
-                onClick={() => router.push('/discussion')}
-              >
-                💬 Go to Discussion Page
-              </button>
+
+              {isOwnProfile && !editMode && (
+                <button
+                  onClick={() => setEditMode(true)}
+                  className="bg-purple-300 w-full py-2 rounded-md hover:bg-yellow-400"
+                >
+                  ✏️ Edit Profile
+                </button>
+              )}
             </div>
           </div>
         )}
       </div>
     </ProfileModal>
-    
   );
-
 };
+
 export default ProfilePage;
 
