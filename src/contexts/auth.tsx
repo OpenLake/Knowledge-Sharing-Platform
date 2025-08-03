@@ -114,30 +114,46 @@ export const AuthProvider = ({ children }: any) => {
     setLoading(false);
   }
 
-  // Effects
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(firebaseAuth, async (authUser: FirebaseUser | null) => {  // ✅ Use firebaseAuth
-      if (authUser) {
-        const token = await authUser.getIdToken();
-  
-        setUser({
-          id: authUser.uid,
-          email: authUser.email,
-          name: authUser.displayName,
-          picture: authUser.photoURL,
-        });
-  
-        setPhotoURL(authUser.photoURL || '');
-        setDisplayName(authUser.displayName || '');
-
-        cookies.set('accessToken', token, { expires: 60 });
+  const unsubscribe = onAuthStateChanged(firebaseAuth, async (authUser) => {
+    if (authUser) {
+      const token = await authUser.getIdToken();
+      const userData = {
+        id: authUser.uid,
+        email: authUser.email,
+        name: authUser.displayName,
+        picture: authUser.photoURL
+      };
+      
+      setUser(userData);
+      setPhotoURL(authUser.photoURL || '');
+      setDisplayName(authUser.displayName || '');
+      cookies.set('accessToken', token, { expires: 1 });
+      api.defaults.headers.Authorization = `Bearer ${token}`;
+    } else {
+      const accessToken = cookies.get('accessToken');
+      if (accessToken) {
+        api.defaults.headers.Authorization = `Bearer ${accessToken}`;
+        try {
+          const { data } = await api.get('/api/auth/');
+          if (data?.result) {
+            setUser(data.result);
+            setPhotoURL(data.result.picture);
+            setDisplayName(data.result.name);
+          }
+        } catch (err) {
+          cookies.remove('accessToken');
+          delete api.defaults.headers.Authorization;
+        }
       } else {
-        loadUserFromCookie();
+        setUser(null);
       }
-    });
-  
-    return () => unsubscribe();
-  }, []);  
+    }
+    setLoading(false);
+  });
+
+  return unsubscribe;
+}, []);
 
   return (
     <AuthContext.Provider
@@ -165,7 +181,7 @@ export const useAuth = () => {
 
   return authContext as {
     isAuthenticated: boolean;
-    user: User | null; // Use the defined User type
+    user: User | null; 
     photoURL: string;
     displayName: string;
     login: () => void;
